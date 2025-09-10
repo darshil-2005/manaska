@@ -39,11 +39,18 @@ cd manaska/
 npm install
 ```
 
-#### 3. Start the postgreSQL database and pgAdmin
+#### 3. Rename .env.example to .env
+Rename the ".env.example" file in the root folder to ".env".
+```bash 
+# Rename file using command or do it manually in your code editor.
+mv .env.example .env
+```
+
+#### 4. Start the postgreSQL database and pgAdmin
 
 ***NOTE: Make sure you have installed **docker** and **docker-compose** on your machine.***
 
-Navigate to ***/db/startdb*** and run the following command:
+Navigate to ***db/startdb*** and run the following command:
 ```bash
 # Starts a postgres database on 5432 port and pgadmin on port 8080 on localhost.
 # Check /db/startdb/docker-compose.yaml for details.
@@ -68,7 +75,15 @@ You can also check if pgadmin is working by going to [localhost:8080](localhost:
 Email: student@dau.ac.in
 Password: student
 ```
-#### 4. Start the development server
+
+#### 5. Run Migrations to fill the database.
+Run the following command to fill your local database on 5432 port to match the schema defined in ***db/schema.ts***.
+```bash
+npx drizzle-kit migrate
+```
+After running, check your local postgres database on port 5432. It should contain the users table defined in ***db/schema.ts***.
+
+#### 6. Start the development server
 
 Now you can navigate back to the root directory and start the development server by running:
 ```bash
