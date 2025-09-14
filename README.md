@@ -13,7 +13,7 @@ Follow the steps below to set up the project on your local machine.
 Make sure you have the following installed:
 
 - [Node.js](https://nodejs.org/) on your machine.
-- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) for running the PostgreSQL database.
+- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) for running the PostgreSQL database (Not required if using an online)
 
 ---
 
@@ -46,7 +46,9 @@ Rename the ".env.example" file in the root folder to ".env".
 mv .env.example .env
 ```
 
-#### 4. Start the postgreSQL database and pgAdmin
+#### 4. Start the postgreSQL database
+
+#### Option 1: Setup a docker postgres database:
 
 ***NOTE: Make sure you have installed **docker** and **docker-compose** on your machine.***
 
@@ -76,12 +78,27 @@ Email: student@dau.ac.in
 Password: student
 ```
 
+#### Option 2: Use an online postgres database:
+1) GOTO: https://neon.com/
+2) Sign Up or Sign In on neon.com
+3) Create a new project, name it manaska, choose AWS or Azure for server, choose region closest to you (Singapore) and click create.
+4) Click the connect button in the "Connect to your database" box.
+5) Copy the connection string using the button "Copy snippet".
+6) Navigate to your .env file in your manaska project root directory and replace the DATABASE_URL present with the previously copied connection string.
+```bash
+#.env
+DATABASE_URL=YOUR_COPIED_CONNECTION_STRING
+```
+7) Save the file and continue with the next step.
+
+
 #### 5. Run Migrations to fill the database.
 Run the following command to fill your local database on 5432 port to match the schema defined in ***db/schema.ts***.
 ```bash
+# Sync database with generated migrations
 npx drizzle-kit migrate
 ```
-After running, check your local postgres database on port 5432. It should contain the users table defined in ***db/schema.ts***.
+After running, check your local postgres database on port 5432 or the online postgres database. It should contain the users table defined in ***db/schema.ts***.
 
 #### 6. Start the development server
 
