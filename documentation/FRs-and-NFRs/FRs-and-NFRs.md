@@ -49,6 +49,41 @@ These requirements define the core intelligent capabilities of the system. The f
 
 **FR15:** The system shall display a non-technical error message and present a "Retry" button to the user in the event that the AI model fails to process an input and generate a mind map.
 
+### **1.3 Editing & Customization**
+
+These requirements ensure users have comprehensive control over the final mind map, allowing for manual refinement, correction, and personalization of the AI-generated output.
+
+**FR16:** The system shall allow users to manually add new nodes, delete existing nodes, and rename the text content of any node within the mind map canvas.
+
+**FR17:** The system shall support direct manipulation of the mind map structure, allowing users to rearrange nodes and entire branches by dragging and dropping them to new positions.
+
+**FR18:** The system shall provide a set of styling tools that allow users to customize the visual appearance of selected nodes or the entire map, including options for changing colors, node shapes, and text fonts.
+
+**FR19:** The system shall allow users to switch between different mind map layout structures, including as a minimum: a Hierarchical Tree, a Radial Map (central idea with branches), and a Flowchart-like structure.
+
+**FR20:** The system shall provide multi-level "Undo" and "Redo" functions, enabling users to easily revert and re-apply recent edits made to the mind map.
+
+**FR20:** The system shall include a code editor view that allows advanced users to directly view and modify the underlying Domain-Specific Language (DSL) script that defines the mind map's structure and content.
+
+**FR21**: The application shall include a comprehensive and easily navigable documentation section that explains all features, with step-by-step instructions and examples.
+
+**FR22**: The system shall provide a dedicated feedback page containing a form for users to submit suggestions, bug reports, and general feedback directly to the development team.
+
+**FR23**: The system shall clearly display a support contact email address, allowing users an alternative method to provide feedback or seek help.
+
+**FR24**: Error messages shall be written in plain language, clearly explaining the nature of the problem and providing actionable steps for the user to resolve the issue.
+
+### **1.4 Navigation**
+
+These requirements ensure users can easily navigate large and complex mind maps.
+
+**FR25:** The system shall allow users to zoom in and out of the mind map canvas. This shall be controllable via on-screen buttons (+/-) and the mouse scroll wheel.
+
+**FR26:** The system shall allow users to span across the mind map canvas by clicking and dragging the background, enabling exploration of areas outside the current viewport.
+
+**FR27:** The system shall enable users to collapse and expand parent nodes, allowing them to hide or reveal the entire branch of child nodes associated with that parent.
+
+
 ## **2\. Non-Functional Requirements (NFRs)**
 
 This section defines the quality attributes, operational standards, and constraints of the system. Each requirement is defined to be measurable and verifiable.
@@ -73,6 +108,20 @@ Performance requirements are critical, as user expectations vary based on the co
 
 **NFR7**: The system must handle all foreseeable errors gracefully, preventing application crashes or data loss. In the event of an unrecoverable error, the system shall provide the user with clear information and a support link.
 
+### **2.3 Security & Privacy**
+
+User survey data reveals a fundamental split in privacy preferences: roughly half of users desire the convenience of cloud access, while the other half prioritizes the security of local-only storage.1 This is not a minor feature preference but a core architectural consideration. To avoid alienating a significant portion of the user base, the system must be designed from the ground up to support both data storage models, giving users explicit control over their information's location.
+
+**NFR8:** **Authentication:** The system shall enforce secure user authentication. User passwords must be salted and hashed using a modern, strong cryptographic algorithm such as Argon2.
+
+**NFR9:** **Data Encryption in Transit:** All communication between the user's client and the system's servers must be encrypted using Transport Layer Security (TLS) version 1.2 or higher.
+
+**NFR10:** **Data Encryption at Rest:** Any user-generated content, including mind map data and personal information, stored on the system's servers must be encrypted at rest using industry-standard encryption (e.g., AES-256).
+
+**NFR11:** **User Data Control:** The system shall provide users with a clear and explicit choice to store their mind map data either on the cloud (enabling cross-device access and collaboration) or exclusively on their local device (for maximum privacy).1 This choice should be available on a per-map basis.
+
+**NFR12:** **GDPR Compliance:** The system shall be designed and operated in compliance with the General Data Protection Regulation (GDPR). This includes providing users with the ability to access, export, and request the deletion of their personal data.
+
 ## **Traceability Matrix**
 
 | Requirement ID | Requirement Description | Elicitation Technique(s) | Reason | Stakeholder(s) |
@@ -92,6 +141,19 @@ Performance requirements are critical, as user expectations vary based on the co
 | FR13 | AI suggestions for extra nodes | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | Developers, LLM, End Users |
 | FR14 | Control detail level of mind map | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | Developers, UI/UX Designers, LLM, End Users |
 | FR15 | Retry \+ error messages on AI failure | Survey | Quick way to ask users how they expect error recovery. | Developers, Testers, UI/UX Designers, LLM, End Users |
+| FR16 | Add/delete/rename nodes | Brainstorming, Questionnaire | Users can list editing needs; brainstorming helps capture a variety of customization. | Developers, UI/UX Designers, End Users |
+| FR17 | Drag-drop rearrangement of nodes | Brainstorming, Questionnaire | Users can list editing needs; brainstorming helps capture a variety of customization. | Developers, UI/UX Designers, End Users |
+| FR18 | Node styling (color, shapes, fonts) | Brainstorming, Questionnaire | Users can list editing needs; brainstorming helps capture a variety of customization. | Developers, UI/UX Designers, End Users |
+| FR19 | Multiple layout options (tree, radial, flowchart) | Brainstorming, Questionnaire | Users can list editing needs; brainstorming helps capture a variety of customization. | Developers, UI/UX Designers, End Users |
+| FR20 (A) | Undo/Redo | Brainstorming, Questionnaire | Users can list editing needs; brainstorming helps capture a variety of customization. | Developers, UI/UX Designers, End Users |
+| FR20 (B) | DSL code editor | Brainstorming, Questionnaire | Users can list editing needs; brainstorming helps capture a variety of customization. | Developers, Power Users, End Users |
+| FR21 | Documentation section | Survey | Easy to ask professors what form of help/documentation they prefer. | Developers, Teaching Assistant, Instructor, End Users |
+| FR22 | Feedback page | Survey | Easy to ask professors what form of help/documentation they prefer. | Developers, UI/UX Designers, End Users |
+| FR23 | Display support email | Survey | Easy to ask professors what form of help/documentation they prefer. | Developers, End Users |
+| FR24 | Plain language error messages | Questionnaire | Quick to validate wording preferences and clarity. | UI/UX Designers, Developers, End Users |
+| FR25 | Zoom in/out mind map | Brainstorming | Helps identify which navigation tools are most intuitive for large mind maps. | Developers, UI/UX Designers, End Users |
+| FR26(A) | Pan across canvas | Brainstorming | Helps identify which navigation tools are most intuitive for large mind maps. | Developers, UI/UX Designers, End Users |
+| FR27 | Collapse/expand nodes | Brainstorming | Helps identify which navigation tools are most intuitive for large mind maps. | Developers, UI/UX Designers, End Users |
 | NFR1 | Generation latency (quick summary) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
 | NFR2 | Generation latency (detailed) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
 | NFR3 | UI responsiveness | Brainstorming, Interview | Technical aspect; requires brainstorming with devs \+ user validation. | Developers, Testers, UI/UX Designers, End Users |
@@ -99,3 +161,8 @@ Performance requirements are critical, as user expectations vary based on the co
 | NFR5 | 99.5% uptime | Interview | Needs clarification of uptime expectations from professors/institute. | DevOps Engineers, Vercel, End Users |
 | NFR6 | Data integrity | Interview | Critical requirement; discussed in detail with stakeholders. | Developers, Testers, DevOps Engineers, End Users |
 | NFR7 | Graceful error handling | Survey | To understand user expectations for error recovery. | Developers, Testers, End Users |
+| NFR8 | Secure authentication (Argon2) | Interview | Security concern; needs domain expert feedback. | Developers, Testers, End Users |
+| NFR9 | Data encryption in transit (TLS 1.2+) | Interview | Technical, requires in-depth expert input. | Developers, DevOps Engineers, End Users |
+| NFR10 | Encryption at rest (AES-256) | Interview | Technical, requires in-depth expert input. | Developers, DevOps Engineers, End Users |
+| NFR11 | Cloud/local storage choice | Survey, Interview | Split preferences; surveys capture trends, interviews capture rationale. | Developers, DevOps Engineers, End Users |
+| NFR12 | GDPR compliance | Interview | Legal/privacy sensitive; requires expert opinion. | Developers, Testers, End Users, Payment Processor |
