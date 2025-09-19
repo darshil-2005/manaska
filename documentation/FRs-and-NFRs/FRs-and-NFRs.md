@@ -71,4 +71,31 @@ Performance requirements are critical, as user expectations vary based on the co
 
 **NFR6:** **Data Integrity:** All save, load, and auto-save operations must complete without data loss or corruption. The system must achieve a success rate of 99.99% for these critical data persistence operations.
 
-**NFR7**: The system must handle all foreseeable errors gracefully, preventing application crashes or data loss. In the event of an unrecoverable error, the system shall provide the user with clear information and a support link
+**NFR7**: The system must handle all foreseeable errors gracefully, preventing application crashes or data loss. In the event of an unrecoverable error, the system shall provide the user with clear information and a support link.
+
+## **Traceability Matrix**
+
+| Requirement ID | Requirement Description | Elicitation Technique(s) | Reason | Stakeholder(s) |
+| :---- | :---- | :---- | :---- | :---- |
+| FR1 | Multi-line text area input | Brainstorming, Interview | To explore diverse input modes and validate feasibility with users and instructors. | UI/UX Designers, Developers, Testers, End Users (Students, Professionals, Writers) |
+| FR2 | Upload files for mind map generation | Brainstorming, Interview | To explore diverse input modes and validate feasibility with users and instructors. | Developers, Testers, End Users (Students, Professionals, Content Creators) |
+| FR3 | Support .txt, .md, .docx, .pdf | Brainstorming, Interview | To explore diverse input modes and validate feasibility with users and instructors. | Developers, Testers, End Users |
+| FR4 | URL input for webpage extraction | Brainstorming, Interview | To explore diverse input modes and validate feasibility with users and instructors. | Developers, Testers, LLM, End Users |
+| FR5 | Image upload \+ OCR | Brainstorming, Interview | To explore diverse input modes and validate feasibility with users and instructors. | Developers, Testers, LLM, End Users |
+| FR6 | Voice input \+ transcription | Brainstorming, Interview | To explore diverse input modes and validate feasibility with users and instructors. | Developers, Testers, LLM, End Users |
+| FR7 | Input validation \+ error messages | Survey, Questionnaire | To gather common error cases from users and preferences on message clarity. | Developers, Testers, UI/UX Designers, End Users |
+| FR8 | Permanent account deletion & data removal | Interview | Sensitive requirement, best clarified with professors on privacy & compliance expectations. | Developers, Testers, End Users, Payment Processor, GDPR (Security/Privacy) |
+| FR9 | AI-generated structured mind map | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | Developers, Testers, LLM, End Users |
+| FR10 | AI summarization for nodes | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | Developers, Testers, LLM, End Users |
+| FR11 | Highlight key concepts | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | UI/UX Designers, Developers, LLM, End Users |
+| FR12 | AI clustering/grouping concepts | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | Developers, LLM, End Users |
+| FR13 | AI suggestions for extra nodes | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | Developers, LLM, End Users |
+| FR14 | Control detail level of mind map | Brainstorming, Interview | Complex functionality needing discussion of academic needs and iterative refinement. | Developers, UI/UX Designers, LLM, End Users |
+| FR15 | Retry \+ error messages on AI failure | Survey | Quick way to ask users how they expect error recovery. | Developers, Testers, UI/UX Designers, LLM, End Users |
+| NFR1 | Generation latency (quick summary) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
+| NFR2 | Generation latency (detailed) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
+| NFR3 | UI responsiveness | Brainstorming, Interview | Technical aspect; requires brainstorming with devs \+ user validation. | Developers, Testers, UI/UX Designers, End Users |
+| NFR4 | 500 concurrent users | Brainstorming | Best discussed with developers/instructors about scalability goals. | Developers, Testers, DevOps Engineers, Vercel |
+| NFR5 | 99.5% uptime | Interview | Needs clarification of uptime expectations from professors/institute. | DevOps Engineers, Vercel, End Users |
+| NFR6 | Data integrity | Interview | Critical requirement; discussed in detail with stakeholders. | Developers, Testers, DevOps Engineers, End Users |
+| NFR7 | Graceful error handling | Survey | To understand user expectations for error recovery. | Developers, Testers, End Users |
