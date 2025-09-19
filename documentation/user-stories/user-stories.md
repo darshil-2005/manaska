@@ -221,3 +221,205 @@
 
   * Basic getting started steps
 
+---
+
+### **User Story 13: Email & Password Login**
+
+**Front of the Card:**  
+ As a registered user, I want to log in using my email and password so that I can access my account.
+
+**Back of the Card:**
+
+* User can enter email and password in input fields.
+
+* The system validates credentials against the database.
+
+* If correct → user is redirected to dashboard/home page.
+
+* If incorrect → error message is shown ("Invalid email or password").
+
+---
+
+### **User Story 14: OAuth Login**
+
+**Front of the Card:**  
+ As a user, I want to log in with Google/Apple/Facebook so that I don’t need to create a new password.
+
+**Back of the Card:**
+
+* Buttons available for "Continue with Google" / "Continue with Apple"/”Continue with Facebook”.
+
+* Redirects to OAuth flow (Open Authorization).
+
+* On success, user account is created/linked automatically.
+
+---
+
+### **User Story 15: Remember Me**
+
+**Front of the Card:**  
+ As a user, I want to stay signed in even after closing the browser so that I don’t have to log in repeatedly.
+
+**Back of the Card:**
+
+* "Remember Me" checkbox available.
+
+* If checked, login session persists after closing the browser.
+
+* If unchecked, session ends on logout or closing browser.
+
+---
+
+### **User Story 16: Error Messages & Validation**
+
+**Front of the Card:**  
+ As a user, I want to see clear error messages so that I know how to fix login issues.
+
+**Back of the Card:**
+
+* Email must follow proper format (e.g., user@example.com).
+
+* Password field must not be empty.
+
+* Invalid credentials show an error banner.
+
+* Server errors display a friendly message.
+
+---
+
+### **User Story 17: Forgot Password**
+
+**Front of the Card:**  
+ As a user who forgot my password, I want to see a button on the login page so that I can reset my password and regain access to my account.
+
+**Back of the Card:**
+
+* "Forgot Password?" link redirects to password recovery flow.
+
+* User can enter registered email.
+
+* System sends reset link via email.
+
+* User can set a new password and log in again.
+
+---
+
+### **User Story 18: Login Notifications**
+
+**Front of the Card:**  
+ As a user, I want to receive an email when a new device logs in so that I can catch unauthorized access.
+
+**Back of the Card:**
+
+* Email includes device and location info.
+
+---
+
+### **User Story 19: Auto Logout on Inactivity**
+
+**Front of the Card:**  
+ As a user, I want the system to log me out automatically after long inactivity so that my account stays secure.
+
+**Back of the Card:**
+
+* After 30 mins of inactivity, session expires.
+
+* Prompt 2 min before expiry to extend.
+
+---
+
+### **User Story 20: Logout**
+
+**Front of the Card:**  
+ As a logged-in user, I want to log out so that I can secure my account on a shared device.
+
+**Back of the Card:**
+
+* Logout button available in profile menu.
+
+* Clears session and cookies.
+
+* Redirects to home page.
+
+---
+
+### **User Story 21: Update Profile Information**
+
+**Front of the Card:**  
+ As a user, I want to update my profile information name, username and profile picture so that my account reflects my identity.
+
+**Back of the Card:**
+
+* User can edit fields: name, username and email.
+
+* System validates input:
+
+  * Username must be unique.
+
+  * Email must follow valid format.
+
+* On saving: changes are stored in the database.
+
+* Success message is displayed ("Profile updated successfully").
+
+* Error message shown if update fails (e.g., duplicate username etc).
+
+---
+
+### **User Story 22: Manage Profile Picture**
+
+**Front of the Card:**  
+ As a user, I want to add, update, or remove my profile picture so that I can personalize my account.
+
+**Back of the Card:**
+
+* User can upload a new image (only supported formats: JPG, PNG, WEBP).
+
+* System checks image size limit (e.g., max 5 MB).
+
+* User can remove current picture (fallback to default avatar).
+
+* On successful upload/update, the new picture is displayed immediately.
+
+* Error message shown if upload fails (invalid format/size).
+
+---
+
+### **User Story 23: Change Password**
+
+**Front of the Card:**  
+ As a logged-in user, I want to change my password so that I can keep my account secure and recover it in case I need to.
+
+**Back of the Card:**
+
+* User navigates to Profile → Settings → Change Password.
+
+* User must enter current password.
+
+* User must enter and confirm new password.
+
+* System validates new password (e.g., min 8 chars, strong).
+
+* On success → password updated, confirmation message shown.
+
+* On failure (wrong current password / weak new password) → error message shown.
+
+---
+
+### **User Story 24: Delete Account**
+
+**Front of the Card:**  
+ As a logged-in user, I want to delete my account permanently so that my data is removed from the system.
+
+**Back of the Card:**
+
+* User navigates to Profile → Settings → Delete Account.
+
+* A confirmation dialog appears (e.g., "Are you sure? This action cannot be undone.").
+
+* User must confirm deletion (e.g., re-enter password or type “DELETE”).
+
+* On confirmation → account & associated data are permanently deleted.
+
+* System logs out the user immediately after deletion.
+
