@@ -83,6 +83,62 @@ These requirements ensure users can easily navigate large and complex mind maps.
 
 **FR27:** The system shall enable users to collapse and expand parent nodes, allowing them to hide or reveal the entire branch of child nodes associated with that parent.
 
+### **1.5 Export**
+
+These requirements define the system's ability to export mind maps for use in other contexts and tools.
+
+**FR28:** The system shall provide an export function allowing users to save the current mind map in a variety of file formats.
+
+**FR29:** The system shall support exporting the mind map as a high-resolution image file in both PNG and JPG formats.
+
+**FR26:** The system shall support exporting the mind map as a vector-based PDF document, preserving the visual layout and styling.
+
+**FR30:** The system shall support exporting the mind map's data structure as a JSON file, formatted with a standard node-edge schema to ensure compatibility with third-party visualization and project management tools.
+
+**FR31:** The system shall support exporting the mind map's content as a hierarchical Markdown (.md) file, suitable for use in text-based editors and tools like Obsidian.
+
+### **1.6 Saving & Workspace**
+
+These requirements cover user accounts and the management of created mind maps.
+
+**FR32:** The system shall provide an explicit "Save" function that allows an authenticated user to store the current mind map in their personal workspace for future access.
+
+**FR33:** The system shall provide a user-configurable "auto-save" feature that, when enabled, periodically saves changes to the currently open mind map without requiring manual user action.
+
+**FR34:** The system shall provide a personal workspace or dashboard for each authenticated user, where all their saved mind maps are listed and can be opened for editing.
+
+**FR35:** The system shall allow users to permanently delete a saved mind map from their workspace. A confirmation prompt must be displayed before the deletion is finalized.
+
+### **1.7 Sharing**
+
+These requirements define how users can share their work with others.
+
+**FR36:** The system shall allow a user to generate a unique, publicly accessible URL for a mind map, which allows anyone with the link to view a read-only version of the map.
+
+**FR37**: The system shall require explicit, opt-in consent from the user before placing any non-essential cookies or enabling third-party tracking tools. Users must be given granular control over cookie categories.
+
+### **1.8 Accessibility & Personalization**
+
+These requirements focus on enhancing the user experience and making the tool accessible to more users.
+
+**FR38:** The system shall offer a "Dark Mode" theme. Users must be able to toggle between the default light theme and the dark theme, and their preference shall be saved to their user profile.
+
+**FR39:** The system shall support keyboard shortcuts for frequently used actions, including but not limited to: adding a node, deleting a node, saving the mind map, undo, and redo.
+
+**FR40:** The system shall provide an easily accessible help menu or modal window that lists all available keyboard shortcuts for user reference.
+
+**FR41:** The system shall be fully navigable and operable using only a keyboard. All interactive elements, including menus, buttons, nodes, and links, must be reachable and activatable via keyboard commands
+
+**FR42**: All visual information and interactive components shall be compatible with screen readers. This includes providing descriptive aria-label and aria-describedby tags for all UI elements and ensuring that screen readers can announce system responses
+
+**FR43**: The system shall provide an option to turn on audio cues for key actions and notifications. Users must be able to adjust the volume and speech rate of these audio cues.
+
+**FR44**: The system shall provide tooltips or contextual help that explain the function of all interactive elements upon hover or keyboard focus.
+
+**FR45**: The system shall present a confirmation dialog before executing any action that results in data deletion or significant, irreversible changes (e.g., deleting a user account).
+
+**FR46**: Users shall be able to specify a color preference (e.g., high-contrast, specific color-blind friendly palettes) that the LLM will use when generating the visual style of the mind map
+
 
 ## **2\. Non-Functional Requirements (NFRs)**
 
@@ -122,6 +178,25 @@ User survey data reveals a fundamental split in privacy preferences: roughly hal
 
 **NFR12:** **GDPR Compliance:** The system shall be designed and operated in compliance with the General Data Protection Regulation (GDPR). This includes providing users with the ability to access, export, and request the deletion of their personal data.
 
+### **2.4 Usability & Accessibility**
+
+**NFR13:** **Learnability:** A new user, without prior training or documentation, must be able to successfully perform the core workflow of generating a mind map from text, making a basic edit (e.g., renaming a node), and saving the map within 5 minutes of their first interaction with the application.
+
+**NFR14:** **Platform Support:** The application must be fully functional and render correctly on the latest two stable versions of the following platforms: Google Chrome (Desktop), Mozilla Firefox (Desktop), Safari (Desktop & iOS), Microsoft Edge (Desktop), Android, and dedicated desktop applications for Windows and macOS.
+
+**NFR15**: The entire application shall conform to the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA, at a minimum.
+
+**NFR16**: The contrast ratio between all text and its background shall be at least 4.5:1 to ensure readability for users with low vision.
+
+**NFR17**: All user-facing language, both within the application interface and in the documentation, shall be written in simple, clear prose, avoiding jargon and complex terminology to support cognitive accessibility.
+
+### **2.5 Maintainability & Extensibility**
+
+**NFR18:** **Modular Design for Premium Features:** The software architecture must be modular to facilitate the seamless addition of future subscription-based premium features (e.g., advanced collaboration tools, unlimited private maps) without requiring significant refactoring of the core application.
+
+**NFR19:** **DSL Extensibility:** The parser and interpreter for the Domain-Specific Language (DSL) must be designed to be extensible, allowing for the straightforward addition of new commands, attributes, and node types in future software updates.
+
+
 ## **Traceability Matrix**
 
 | Requirement ID | Requirement Description | Elicitation Technique(s) | Reason | Stakeholder(s) |
@@ -154,6 +229,26 @@ User survey data reveals a fundamental split in privacy preferences: roughly hal
 | FR25 | Zoom in/out mind map | Brainstorming | Helps identify which navigation tools are most intuitive for large mind maps. | Developers, UI/UX Designers, End Users |
 | FR26(A) | Pan across canvas | Brainstorming | Helps identify which navigation tools are most intuitive for large mind maps. | Developers, UI/UX Designers, End Users |
 | FR27 | Collapse/expand nodes | Brainstorming | Helps identify which navigation tools are most intuitive for large mind maps. | Developers, UI/UX Designers, End Users |
+| FR28 | Export mind map in formats | Survey, Questionnaire | To prioritize which export formats are most useful to professors/students. | Developers, End Users |
+| FR29 | Export PNG/JPG | Survey, Questionnaire | To prioritize which export formats are most useful to professors/students. | Developers, End Users |
+| FR26 (B) | Export PDF | Survey, Questionnaire | To prioritize which export formats are most useful to professors/students. | Developers, End Users |
+| FR30 | Export JSON schema | Survey, Questionnaire | To prioritize which export formats are most useful to professors/students. | Developers, Power Users, End Users |
+| FR31 | Export Markdown | Survey, Questionnaire | To prioritize which export formats are most useful to professors/students. | Developers, End Users (Writers, Researchers) |
+| FR32 | Save mind map | Interview | To understand academic workflow and expectations for storage. | Developers, Testers, End Users |
+| FR33 | Auto-save | Interview | To understand academic workflow and expectations for storage. | Developers, Testers, End Users |
+| FR34 | Personal workspace/dashboard | Interview | To understand academic workflow and expectations for storage. | Developers, UI/UX Designers, End Users |
+| FR35 | Delete saved mind map | Interview | To understand academic workflow and expectations for storage. | Developers, Testers, End Users |
+| FR36 | Share via unique URL (read-only) | Interview, Survey | Sharing needs vary; interviews capture depth, surveys capture majority preference. | Developers, Testers, End Users |
+| FR37 | Consent for cookies/tracking | Interview, Survey | Sharing needs vary; interviews capture depth, surveys capture majority preference. | Developers, Testers, End Users, GDPR, Vercel |
+| FR38 | Dark mode | Questionnaire, Survey | Easy to ask users if they prefer dark mode and save preference. | Developers, UI/UX Designers, End Users |
+| FR39 | Keyboard shortcuts | Brainstorming, Questionnaire | To identify most useful shortcuts and confirm with users. | Developers, UI/UX Designers, End Users |
+| FR40 | Shortcut help menu | Survey | Quick way to check how users prefer accessing help. | Developers, UI/UX Designers, End Users |
+| FR41 | Full keyboard navigation | Interview, Survey | Accessibility requirement; needs validation from real users. | Developers, UI/UX Designers, End Users |
+| FR42 | Screen reader support | Interview | Requires feedback from accessibility experts/professors. | Developers, UI/UX Designers, End Users |
+| FR43 | Audio cues for actions | Questionnaire, Survey | To know if audio cues are useful and in which scenarios. | Developers, UI/UX Designers, End Users |
+| FR44 | Tooltips/context help | Survey | Quick preference check on tooltip usefulness. | Developers, UI/UX Designers, End Users |
+| FR45 | Confirmation dialog for irreversible actions | Questionnaire | To validate safety expectations for irreversible actions. | Developers, Testers, End Users |
+| FR46 | Color preferences (contrast, accessibility) | Interview, Questionnaire | Needs input from color-blind or accessibility-focused users. | Developers, UI/UX Designers, End Users |
 | NFR1 | Generation latency (quick summary) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
 | NFR2 | Generation latency (detailed) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
 | NFR3 | UI responsiveness | Brainstorming, Interview | Technical aspect; requires brainstorming with devs \+ user validation. | Developers, Testers, UI/UX Designers, End Users |
@@ -166,3 +261,10 @@ User survey data reveals a fundamental split in privacy preferences: roughly hal
 | NFR10 | Encryption at rest (AES-256) | Interview | Technical, requires in-depth expert input. | Developers, DevOps Engineers, End Users |
 | NFR11 | Cloud/local storage choice | Survey, Interview | Split preferences; surveys capture trends, interviews capture rationale. | Developers, DevOps Engineers, End Users |
 | NFR12 | GDPR compliance | Interview | Legal/privacy sensitive; requires expert opinion. | Developers, Testers, End Users, Payment Processor |
+| NFR13 | Learnability (5 min usability) | Survey, Questionnaire | To test how easily new users adapt. | Developers, UI/UX Designers, End Users |
+| NFR14 | Platform support (browsers, OS, mobile) | Survey | Easy to ask which devices/platforms users use most. | Developers, Testers, UI/UX Designers, End Users |
+| NFR15 | WCAG 2.1 AA compliance | Interview, Questionnaire | Needs both expert review \+ user input. | Developers, UI/UX Designers, End Users |
+| NFR16 | Contrast ratio 4.5:1 | Interview, Questionnaire | Needs both expert review \+ user input. | Developers, UI/UX Designers, End Users |
+| NFR17 | Plain language everywhere | Questionnaire, Survey | To confirm clarity and ease of understanding. | Developers, UI/UX Designers, End Users |
+| NFR18 | Modular design for premium features | Brainstorming, Interview | Technical feature; requires dev brainstorming and validation. | Project Leader, Developers, DevOps Engineers, End Users |
+| NFR19 | Extensible DSL | Brainstorming, Interview | Needs technical discussion with instructors and dev team. | Developers, Power Users, End Users |
