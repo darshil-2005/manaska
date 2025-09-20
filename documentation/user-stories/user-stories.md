@@ -1,10 +1,11 @@
-# User Stories for Manaska
+# **User Stories**
 
 #### Authored by: 
 - Tirth Patel (202301023)
 - Viraj Mehta (202301008)  
 - Bhumsar Boro (202301002)
 - Dhruv Patel (202301024)
+- Darshil Gandhi (202301056)
 
 
 ---
@@ -225,7 +226,7 @@
 
 ---
 
-### **User Story 13: Email & Password Login**
+## **User Story 13: Email & Password Login**
 
 **Front of the Card:**  
  As a registered user, I want to log in using my email and password so that I can access my account.
@@ -242,7 +243,7 @@
 
 ---
 
-### **User Story 14: OAuth Login**
+## **User Story 14: OAuth Login**
 
 **Front of the Card:**  
  As a user, I want to log in with Google/Apple/Facebook so that I don’t need to create a new password.
@@ -257,7 +258,7 @@
 
 ---
 
-### **User Story 15: Remember Me**
+## **User Story 15: Remember Me**
 
 **Front of the Card:**  
  As a user, I want to stay signed in even after closing the browser so that I don’t have to log in repeatedly.
@@ -272,7 +273,7 @@
 
 ---
 
-### **User Story 16: Error Messages & Validation**
+## **User Story 16: Error Messages & Validation**
 
 **Front of the Card:**  
  As a user, I want to see clear error messages so that I know how to fix login issues.
@@ -289,7 +290,7 @@
 
 ---
 
-### **User Story 17: Forgot Password**
+## **User Story 17: Forgot Password**
 
 **Front of the Card:**  
  As a user who forgot my password, I want to see a button on the login page so that I can reset my password and regain access to my account.
@@ -306,7 +307,7 @@
 
 ---
 
-### **User Story 18: Login Notifications**
+## **User Story 18: Login Notifications**
 
 **Front of the Card:**  
  As a user, I want to receive an email when a new device logs in so that I can catch unauthorized access.
@@ -317,7 +318,7 @@
 
 ---
 
-### **User Story 19: Auto Logout on Inactivity**
+## **User Story 19: Auto Logout on Inactivity**
 
 **Front of the Card:**  
  As a user, I want the system to log me out automatically after long inactivity so that my account stays secure.
@@ -330,7 +331,7 @@
 
 ---
 
-### **User Story 20: Logout**
+## **User Story 20: Logout**
 
 **Front of the Card:**  
  As a logged-in user, I want to log out so that I can secure my account on a shared device.
@@ -345,7 +346,7 @@
 
 ---
 
-### **User Story 21: Update Profile Information**
+## **User Story 21: Update Profile Information**
 
 **Front of the Card:**  
  As a user, I want to update my profile information name, username and profile picture so that my account reflects my identity.
@@ -368,7 +369,7 @@
 
 ---
 
-### **User Story 22: Manage Profile Picture**
+## **User Story 22: Manage Profile Picture**
 
 **Front of the Card:**  
  As a user, I want to add, update, or remove my profile picture so that I can personalize my account.
@@ -387,7 +388,7 @@
 
 ---
 
-### **User Story 23: Change Password**
+## **User Story 23: Change Password**
 
 **Front of the Card:**  
  As a logged-in user, I want to change my password so that I can keep my account secure and recover it in case I need to.
@@ -408,7 +409,7 @@
 
 ---
 
-### **User Story 24: Delete Account**
+## **User Story 24: Delete Account**
 
 **Front of the Card:**  
  As a logged-in user, I want to delete my account permanently so that my data is removed from the system.
@@ -745,5 +746,292 @@
 * Users must be able to view and edit cached maps without internet access.
 
 * When connectivity is restored, offline edits must automatically sync with the server to ensure consistency.
+
+---
+
+## **User Story 48: Accessibility for Visually Impaired Users**
+
+**Front of the Card**  
+As a visually impaired user, I want to navigate the app using only audio cues, so I can use Manaska just like any other user.  
+
+**Back of the Card**  
+* All navigation must be accessible via keyboard controls and screen readers.  
+* The user must be able to access all features without needing visual interaction.  
+* The audio must be clear, understandable, and its volume and speed must be adjustable.  
+* All responses (e.g., mind map generated, changes saved, syntax error) must be available in audio format.  
+* `aria-label` and `aria-describedby` tags must be added in HTML where needed.  
+* The solution must follow WCAG accessibility guidelines and standards.  
+
+---
+
+## **User Story 49: Accessibility for Users Hard of Hearing**
+
+**Front of the Card**  
+As a user that is hard of hearing, I want to navigate the app without needing any audio cues, so I can use Manaska just like any other user.  
+
+**Back of the Card**  
+* If any audio feedback is provided by Manaska, it must include appropriate captions.  
+* Users must be able to access the entire app without relying on audio cues.  
+
+---
+
+## **User Story 50: Accessibility for Cognitively Impaired Users**
+
+**Front of the Card**  
+As a cognitively impaired user, I want the app to be easy to use by having:  
+
+* A layout with clear structure and hierarchy.  
+* Sections with proper headings and descriptions.  
+* Simple, easy-to-understand language.  
+* Tooltips with explanations for elements on the screen.  
+* Confirmation messages before performing drastic actions.  
+
+So that I can use the app to its full potential.  
+
+**Back of the Card**  
+* The layout must use consistent headings and section schemes to organize content clearly.  
+* All interactive elements must have accessible labels and tooltips describing their function.  
+* Text content must be written in plain language, avoiding jargon and domain-specific terms.  
+* Actions that delete or significantly alter data must prompt the user with a confirmation dialog before proceeding.  
+
+---
+
+## **User Story 51: Accessibility for Color Blind Users**
+
+**Front of the Card**  
+As a color blind user, I want to specify which kinds of color schemes the system should use while generating the mind map, and I want to clearly read the text on the website, so I can use Manaska properly.  
+
+**Back of the Card**  
+* The LLM prompt must consider the user’s color preferences when generating the mind map.  
+* Text and background must maintain sufficiently high contrast, following WCAG guidelines.  
+
+---
+
+## **User Story 52: Comprehensive & Easy-to-Understand Documentation**
+
+**Front of the Card**  
+As a user, I want reference and guidance on all aspects of the app in the documentation, and I want it to be easy to understand.  
+
+**Back of the Card**  
+* The website must have extensive documentation explaining how to use features, with clearly listed steps and examples.  
+* The language must be grammatically correct, simple, and easy to understand.  
+* The documentation must have a clear structure, with closely related topics grouped together.  
+
+---
+
+## **User Story 53: Searchable Documentation**
+
+**Front of the Card**  
+As a user, I want to be able to search the documentation so that I can quickly find answers and guidance without scrolling through all the content.  
+
+**Back of the Card**  
+* A search bar must be available at the top of the documentation page.  
+* The system must search across all documentation topics, guides, and FAQs.  
+* Search must return:  
+  * A list of relevant results with titles, short excerpts, and direct links to the section.  
+  * Results sorted by relevance (most likely matches first).  
+* The search must support:  
+  * Keyword queries (e.g., “export mind map”).  
+  * Partial matches (e.g., “expor” still finds “export”).  
+* If no results are found, show a friendly message (e.g., “No matches found. Try another keyword.”).  
+* Mobile-friendly design: search must work seamlessly on phones and tablets.  
+
+---
+
+## **User Story 54: Feedback Providing**
+
+**Front of the Card**  
+As a user, I want to provide detailed feedback on what the app does well, what it does poorly, and what features I’d like to see in the future.  
+
+**Back of the Card**  
+* The website must include a feedback page where users can submit feedback directly to developers.  
+* The website must provide a contact email for submitting feedback.  
+
+---
+
+## **User Story 55: Error Handling & Support**
+
+**Front of the Card**  
+As a user, I want clear and helpful error messages when something goes wrong, so I can quickly understand and fix issues.  
+
+**Back of the Card**  
+* All potential errors must be handled gracefully with explanations of what went wrong and how to resolve it.  
+* A help section or support link must be easily accessible during issues.  
+
+---
+
+## **User Story 56: Security & Privacy**
+
+**Front of the Card**  
+As a privacy-conscious user, I want my data to be secure and handled transparently, so I can trust the app with my sensitive information.  
+
+**Back of the Card**  
+* Users must be informed about data collection, storage, and usage.  
+* Mind maps and personal data must be encrypted during storage and transmission.  
+* Users must be able to easily delete their data.  
+* Users must be notified and explicitly consent before any third-party cookies or tracking tools are set.  
+
+---
+
+## **User Story 57: Personal Dashboard for Recent Maps & Favorites**
+
+**Front of the Card**  
+As a user, I want a dashboard showing my recently generated maps and favorite charts, so I can quickly resume my work without searching through old files.  
+
+**Back of the Card**  
+* The dashboard must display:  
+  * A list/grid of recently created or edited maps/charts (with timestamps).  
+  * A section for favorites, pinned by the user.  
+* Each dashboard item must include:  
+  * Map/Chart title.  
+  * Thumbnail or preview.  
+  * Date of last update.  
+* Users must be able to:  
+  * Click an item to open it directly.  
+  * Pin/unpin maps to/from favorites.  
+  * Sort and filter items (e.g., by date modified, alphabetical order, type).  
+* The dashboard must load automatically upon login as the home screen.  
+* A clear “Create New Map” button must be visible.  
+
+---
+
+## **User Story 58: Responsive Mobile Web Support**
+
+**Front of the Card**  
+As a user, I want the website to be fully responsive and accessible on my phone, so I can create and edit mind maps on the go without needing a separate app.  
+
+**Back of the Card**  
+* The website layout must automatically adjust for different screen sizes (desktop, tablet, mobile).  
+* Core desktop features must also be usable on mobile:  
+  * Creating mind maps from text prompts.  
+  * Adding, removing, renaming, and moving nodes.  
+  * Viewing recent and favorite maps.  
+  * Saving and syncing maps with the cloud.  
+* UI must be touch-friendly:  
+  * Large tap targets for buttons and menus.  
+  * Swipe gestures for interactions (e.g., opening/closing sidebars).  
+  * Collapsible menus and simplified toolbars for small screens.  
+
+---
+
+## **User Story 59: AI Summarization of Mind Maps**
+
+**Front of the Card**  
+As a user, I want the system to automatically generate a concise textual summary of my mind map so that I can quickly understand the main points without scanning the whole map.  
+
+**Back of the Card**  
+* The system must analyze the nodes and branches of a map and produce a structured summary.  
+* The summary must highlight:  
+  * The central topic.  
+  * Key branches (main categories).  
+  * A short explanation of each major node.  
+* Summaries must be displayed in a side panel or pop-up.  
+* The summary must be exportable as Markdown, TXT, or PDF.  
+* AI must adapt the summary length depending on map size (shorter for small maps, more detailed for large ones).  
+* Users can regenerate summaries to get different phrasing or generate it in different languages.  
+
+---
+
+## **User Story 60: Scalability for Large Mind Maps (50+ Nodes)**
+
+**Front of the Card**  
+As a user, I want the system to handle very large mind maps (50+ nodes) smoothly so that I can work on complex projects without performance issues.  
+
+**Back of the Card**  
+* The system must remain responsive when loading, editing, or navigating maps with 50+ nodes.  
+* Zooming, panning, and dragging nodes must be smooth.  
+* The rendering engine must use techniques such as:  
+  * Virtualization / lazy loading of nodes (only render visible nodes).     
+* Memory usage must be optimized to prevent browser crashes.  
+* The system must be tested with maps up to 50 nodes to ensure headroom.   
+* Users must see a loading indicator when opening very large maps.  
+
+---
+
+## **User Story 61: Crash Recovery (Restore Last State)**
+
+**Front of the Card**  
+As a user, I want the system to automatically restore my last working state after a crash or unexpected closure so that I don’t lose progress on my mind map.  
+
+**Back of the Card**  
+* The system must periodically save session data (map structure, zoom level, open tabs, active edits) in local storage or cache.  
+* If the browser crashes, tab closes, or device restarts:  
+  * On reopening the app, the user is prompted with “Restore last session?”.  
+  * If accepted, the map reloads exactly as it was before.  
+* Autosave must trigger every 30–60 seconds or after significant changes.  
+* Restored maps must include:  
+  * Node data (text, styles, relationships).  
+  * User position in the canvas (zoom, pan).  
+* Restored state must expire after 7 days to avoid storage bloat.    
+
+---
+
+## **User Story 62: Pricing Page**
+
+**Front of the Card**  
+As a potential user, I want to view a clear pricing page so that I can understand the differences between the Free and Pro plans before subscribing.  
+
+**Back of the Card**  
+* Pricing page must list available plans (Free, Pro, Enterprise if applicable).  
+* Each plan must show included features (maps, AI expansions, collaboration).  
+* Plans must clearly display costs (monthly/annual).  
+* A comparison table must highlight differences.  
+* Pricing page must be accessible from the homepage and dashboard.  
+
+---
+
+## **User Story 63: Upgrade to Pro Plan**
+
+**Front of the Card**  
+As a free user, I want the ability to upgrade to the Pro plan so that I can access premium features.  
+
+**Back of the Card**  
+* An “Upgrade to Pro” button must be visible on the pricing page and dashboard.  
+* Clicking it must lead to a secure checkout flow.  
+* After payment, account status must change to Pro immediately.  
+* User must receive a confirmation/receipt email.  
+
+---
+
+## **User Story 64: Pro-Only Features**
+
+**Front of the Card**  
+As a Pro user, I want exclusive features so that I feel I’m getting value for my subscription.  
+
+**Back of the Card**  
+* Pro-only features may include:  
+  * Unlimited mind maps.  
+  * Priority support.  
+* Free users see lock icons or “Upgrade to access” notices for restricted features.  
+
+---
+
+## **User Story 65: Manage Subscription**
+
+**Front of the Card**  
+As a Pro user, I want to manage my subscription so that I can change or cancel my plan anytime.  
+
+**Back of the Card**  
+* Settings must include a “Manage Subscription” link.  
+* Users must be able to:  
+  * Switch billing (monthly ↔ annual).  
+  * Update payment method.  
+  * Cancel subscription.  
+* System must show next billing date + past invoices.  
+* On cancel, Pro features remain until the billing period ends.  
+
+---
+
+## **User Story 66: Use Own LLM API Key**
+
+**Front of the Card**  
+As a user, I want to use my own LLM API key to generate charts/mind maps so that I can control cost and model choice.  
+
+**Back of the Card**  
+* Users can add and manage their own API key in settings.  
+* Keys are securely stored and masked in the UI.  
+* System validates the key before use.  
+* Generations show whether a user key or platform key is being used.  
+* Errors (invalid/expired key, rate limits) display clear messages.  
 
 ---
