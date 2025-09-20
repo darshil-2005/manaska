@@ -1,6 +1,8 @@
-# **Authentication and Account Management**
----
+# User Stories for Manaska
+
 #### Authored by: 
+- Tirth Patel (202301023)
+- Viraj Mehta (202301008)  
 - Bhumsar Boro (202301002)
 - Dhruv Patel (202301024)
 
@@ -423,3 +425,172 @@
 
 * System logs out the user immediately after deletion.
 
+---
+
+## **User Story 25: Raw Idea Input**
+
+**Front of the Card**  
+ As a user, I want to type or paste my unstructured ideas so that I can generate a structured mind map.
+
+**Back of the Card**
+
+* The text area must support multi-line input.
+
+* If the input field is empty, a clear error message must be displayed.
+
+* Clicking **Generate Mind Map** must send the input for processing.
+
+---
+
+## **User Story 26: File Upload**
+
+**Front of the Card**  
+ As a user, I want to upload a file with my notes so that I don’t have to retype them.
+
+**Back of the Card**
+
+* Supported file types include **.txt**, **.md**, **.docx**, and **.pdf**.
+
+* Invalid file types must trigger an error message.
+
+* File content must be extracted and used to generate the mind map.
+
+---
+
+## **User Story 27: Voice Input for Ideas**
+
+**Front of the Card**  
+ As a user, I want to speak my thoughts and have them transcribed into nodes so that I can brainstorm hands-free.
+
+**Back of the Card**
+
+* Voice input must convert speech to text accurately.
+
+* The transcribed notes must appear as nodes in the mind map.
+
+---
+
+## **User Story 28: AI Organization**
+
+**Front of the Card**  
+ As a user, I want the system to organize my raw input into nodes and sub-nodes so that I can clearly see relationships.
+
+**Back of the Card**
+
+* The system must automatically convert input into a structured mind map.
+
+* The generated map must display categories, nodes, and sub-nodes.
+
+---
+
+## **User Story 29: Error Handling**
+
+**Front of the Card**  
+ As a user, I want a retry option if the AI fails so that I don’t lose my input.
+
+**Back of the Card**
+
+* A clear error message must be displayed if the AI cannot generate a map.
+
+* A **Retry** button must be available to attempt regeneration.
+
+---
+
+## **User Story 30: Highlight Key Nodes**
+
+**Front of the Card**  
+ As a user, I want the system to highlight the important nodes so that I can quickly identify the key ideas in my mind map.
+
+**Back of the Card**
+
+* The system must emphasize central or high-priority nodes.
+
+* Key nodes must be visually distinct using size, color, or style.
+
+---
+
+## **User Story 31: AI Suggestions for Expansion**
+
+**Front of the Card**  
+ As a user, I want the AI to suggest additional nodes based on my content so that I can expand my thinking.
+
+**Back of the Card**
+
+* Suggested nodes must appear in a separate **AI Suggestions** panel.
+
+* Users must be able to drag suggestions into the main map.
+
+* Suggestions must refresh on demand.
+
+---
+
+## **User Story 32: Context Notes on Node Hover**
+
+**Front of the Card**  
+ As a user, I want to see a context note when I hover over a node so that I can get a detailed explanation of what the node’s content actually means.
+
+**Back of the Card**
+
+* When the user hovers over a node, a context note appears near the node.
+
+* The context note provides additional details or explanation about the node’s content.
+
+* The context note should not obstruct the main view of the mind map.
+
+* The note disappears when the user moves the cursor away from the node.
+
+* The context note can be edited by the node’s creator (or whoever has permission).
+
+---
+
+## **User Story 33: Add/Delete/Rename Nodes**
+
+**Front of the Card**  
+ As a user, I want to add, delete, or rename nodes so that I can refine my mind map.
+
+**Back of the Card**
+
+* Each node must support add, delete, and rename operations.
+
+* Changes must be reflected in the map immediately.
+
+---
+
+## **User Story 34: Rearranging Nodes**
+
+**Front of the Card**  
+ As a user, I want to rearrange nodes by dragging and dropping so that I can adjust the structure.
+
+**Back of the Card**
+
+* Nodes must be draggable.
+
+* Rearrangements must persist within the session.
+
+---
+
+## **User Story 35: Styling Options**
+
+**Front of the Card**  
+ As a user, I want to change node colors, shapes, and fonts so that my map is visually clear.
+
+**Back of the Card**
+
+* Styling options must be provided for nodes.
+
+* Styles must apply instantly to selected nodes.
+
+---
+
+## **User Story 36: Undo/Redo**
+
+**Front of the Card**  
+ As a user, I want to undo or redo changes so that I can recover from mistakes.
+
+**Back of the Card**
+
+* Undo and redo actions must be available.
+
+* The system must maintain a history of recent actions.
+
+---
