@@ -594,3 +594,156 @@
 * The system must maintain a history of recent actions.
 
 ---
+
+## **User Story 37: Keyboard Shortcuts**
+
+**Front of the Card**  
+ As a user, I want keyboard shortcuts for frequent actions (add node, delete node, save) so that I can work faster.
+
+**Back of the Card**
+
+* All shortcuts must be listed in a help or reference menu.
+
+* Shortcuts must trigger the same actions as buttons.
+
+---
+
+## **User Story 38: Drag, Drop & Edit**
+
+**Front of the Card**  
+ As a user, I want to drag and drop nodes and edit the underlying code so that I can customize the structure and content of my mind map.
+
+**Back of the Card**
+
+* Users must be able to rearrange nodes in the mind map visually.
+
+* A built-in editor must allow users to modify the underlying script representation of the map.
+
+* Changes made in either the visual map or code editor must remain synchronized automatically.
+
+---
+
+## **User Story 39: Zoom & Pan**
+
+**Front of the Card**  
+ As a user, I want to zoom and pan so that I can explore large mind maps easily.
+
+**Back of the Card**
+
+* Mouse scroll and drag must allow zooming and panning.
+
+* Zoom controls (**+/-**) must be visible on the interface.
+
+---
+
+## **User Story 40: Collapse/Expand Branches**
+
+**Front of the Card**  
+ As a user, I want to collapse and expand branches so that I can focus on specific areas.
+
+**Back of the Card**
+
+* Each parent node must include expand and collapse options.
+
+* Collapsed branches must hide all child nodes.
+
+---
+
+## **User Story 41: Export Mind Map**
+
+**Front of the Card**  
+ As a user, I want to export my mind map in different formats (PNG, PDF, JSON, Markdown) so that I can use it in slides, documents, or external tools like Miro and Obsidian.
+
+**Back of the Card**
+
+* Export options must include **PNG**, **PDF**, **JSON**, and **Markdown**.
+
+* **PNG** and **PDF** exports must capture the current map layout and styling.
+
+* **JSON** export must follow a standard node-edge schema for compatibility with external mind map tools.
+
+* **Markdown** export must produce a file compatible with Miro and Obsidian.
+
+* Each selected format must trigger an automatic file download.
+
+---
+
+## **User Story 42: Save Mind Map**
+
+**Front of the Card**  
+ As a user, I want to save my mind map so that I can revisit it later.
+
+**Back of the Card**
+
+* A **Save** option must be available.
+
+* Saved maps must appear in the user’s workspace.
+
+---
+
+## **User Story 43: Auto-Save**
+
+**Front of the Card**  
+ As a user, I want my work to auto-save so that I don’t lose progress.
+
+**Back of the Card**
+
+* The system must automatically save changes at periodic intervals.
+
+---
+
+## **User Story 44: Delete Mind Maps**
+
+**Front of the Card**  
+ As a user, I want to delete mind maps so that I can keep my workspace clean.
+
+**Back of the Card**
+
+* Each saved map must have a delete option.
+
+* A confirmation message must appear before deletion is executed.
+
+---
+
+## **User Story 45: Shareable Link**
+
+**Front of the Card**  
+ As a user, I want to share my mind map with others via a link so that they can view it.
+
+**Back of the Card**
+
+* A **Share** option must generate a unique link.
+
+* Shared maps must be view-only.
+
+---
+
+## **User Story 46: Dark Mode**
+
+**Front of the Card**  
+ As a user, I want a dark mode option so that I can work comfortably in low-light environments.
+
+**Back of the Card**
+
+* A toggle must switch between light and dark themes.
+
+* The theme preference must persist across user sessions.
+
+---
+
+## **User Story 47: Offline Mode**
+
+**Front of the Card**  
+ As a user, I want to access and edit my saved mind maps offline so that I can continue working without internet connectivity.
+
+**Back of the Card**
+
+* The application must use browser storage to store cached mind maps locally.
+
+* Cached maps must be retained for **15 days** by default.
+
+* Users must be able to view and edit cached maps without internet access.
+
+* When connectivity is restored, offline edits must automatically sync with the server to ensure consistency.
+
+---
