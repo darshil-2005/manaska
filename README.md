@@ -39,11 +39,11 @@ cd manaska/
 npm install
 ```
 
-#### 3. Rename .env.example to .env
-Rename the ".env.example" file in the root folder to ".env".
+#### 3. Create .env file
+Add a file named ".env" in the root folder.
 ```bash 
-# Rename file using command or do it manually in your code editor.
-mv .env.example .env
+# Create a file name .env and add a environment variable named DATABASE_URL in it.
+echo "DATABASE_URL="postgres://user:password@localhost:5432/manaskadb"" >> .env
 ```
 
 #### 4. Start the postgreSQL database
