@@ -137,8 +137,7 @@ These requirements focus on enhancing the user experience and making the tool ac
 
 **FR45**: The system shall present a confirmation dialog before executing any action that results in data deletion or significant, irreversible changes (e.g., deleting a user account).
 
-**FR46**: Users shall be able to specify a color preference (e.g., high-contrast, specific color-blind friendly palettes) that the LLM will use when generating the visual style of the mind map
-
+**FR46**: Users shall be able to specify a color preference (e.g., high-contrast, specific color-blind friendly palettes) that the LLM will use when generating the visual style of the mind map.
 
 ## **2\. Non-Functional Requirements (NFRs)**
 
@@ -196,6 +195,89 @@ User survey data reveals a fundamental split in privacy preferences: roughly hal
 
 **NFR19:** **DSL Extensibility:** The parser and interpreter for the Domain-Specific Language (DSL) must be designed to be extensible, allowing for the straightforward addition of new commands, attributes, and node types in future software updates.
 
+## **3\. Domain Requirements (DRs)**
+
+### **3.1 Information Structuring & Representation**
+
+**DR1:** All mind maps must represent information as a graph structure consisting of nodes (concepts/ideas) and edges (relationships).
+
+**DR2:** Each mind map must have exactly one central/root node, from which all other nodes branch out.
+
+**DR3:** All edges between nodes should include metadata to describe the type of relationship. This additional context will help users better understand the connections between nodes.
+
+**DR4:** Each node must carry a unique identifier within a given mind map to ensure unambiguous reference.
+
+**DR5:** The whole map should be presented in a neat and clean way on any device, with no clutter even in mind maps with a high number of nodes.
+
+---
+
+### **3.2 Domain Knowledge Integration**
+
+**DR6:** The system must operate on unstructured human-readable text and convert it into structured knowledge representations.
+
+**DR7:** Concepts extracted from input must be domain-agnostic, allowing adaptation to diverse user inputs without assuming a fixed subject area.
+
+**DR8:** The system must support multiple levels of abstraction (overview vs detail), ensuring domain knowledge can be represented broadly and deeply.
+
+**DR9:** Input content must be preserved in meaning—AI summarization and clustering must not distort or misrepresent the original concepts.
+
+---
+
+### **3.3 User Roles & Collaboration Context**
+
+**DR10:** Ownership of a mind map must always belong to exactly one user, who is the creator of the mind map.
+
+**DR11:** Collaborators must only have view-only access to shared maps. Editing privileges are reserved exclusively for the owner.
+
+---
+
+### **3.4 Compliance & Ethical Requirements**
+
+**DR12:** All processing of user-generated data must comply with intellectual property rights; the system must not re-use content without consent.
+
+**DR13:** AI-generated suggestions must remain assistive and transparent, clearly distinguished from user-created nodes.
+
+**DR14:** The system must provide users with full data ownership rights, ensuring they can control, export, and delete their information at will.
+
+**DR15:** The system must conform to universal accessibility standards (WCAG, inclusive color schemes, screen readers).
+
+**DR16:** System usage must not promote plagiarism—users remain responsible for original content creation.
+
+---
+
+### **3.5 System Constraints**
+
+**DR17:** Mind maps must remain human-readable regardless of complexity, ensuring layouts do not obscure understanding.
+
+**DR18:** A single mind map must be capable of scaling to at least 50 nodes without breaking logical consistency.
+
+**DR19:** The system must preserve the semantic integrity of input during transformations (text → nodes → visual representation).
+
+**DR20:** The DSL (Domain-Specific Language) representation of a mind map must always be serializable into a visual mind map.
+
+**DR21:** The DSL must support advanced interactivity, allowing users to click on nodes or connections to reveal advanced details, sources, etc.
+
+**DR22:** The platform must remain domain-neutral, functioning across all fields (education, business, medicine, etc.) without bias.
+
+**DR23:** The prompt given to the LLM should be able to generate valid and serializable scripts with accuracy above 99%.
+
+---
+
+### **3.6 Accessibility & Customer Support Requirements**
+
+**DR24:** Ensure all non-text content is provided with text alternatives, and error messages are clearly labeled to meet WCAG accessibility standards.
+
+**DR25:** Guarantee that all interactive elements are fully operable via keyboard and alternative input methods in compliance with WCAG.
+
+**DR26:** Allow users sufficient time to read and interact with content, including adjustable timeouts for alerts and sessions.
+
+**DR27:** Use high contrast, clear typography, and proper spacing to ensure readability and accessibility.
+
+**DR28:** Use high-contrast color schemes so that all interface elements remain distinguishable.
+
+**DR29:** Ensure all content is written in clear, simple language easily understandable by all users.
+
+**DR30:** Provide thorough user documentation, including instructions for using features, troubleshooting common issues, and accessing support.
 
 ## **Traceability Matrix**
 
@@ -249,6 +331,10 @@ User survey data reveals a fundamental split in privacy preferences: roughly hal
 | FR44 | Tooltips/context help | Survey | Quick preference check on tooltip usefulness. | Developers, UI/UX Designers, End Users |
 | FR45 | Confirmation dialog for irreversible actions | Questionnaire | To validate safety expectations for irreversible actions. | Developers, Testers, End Users |
 | FR46 | Color preferences (contrast, accessibility) | Interview, Questionnaire | Needs input from color-blind or accessibility-focused users. | Developers, UI/UX Designers, End Users |
+
+## Non-Funtional Requirements Traceability Matrix
+| Requirement ID | Requirement Description | Elicitation Technique(s) | Reason | Stakeholder(s) |
+| :---- | :---- | :---- | :---- | :---- |
 | NFR1 | Generation latency (quick summary) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
 | NFR2 | Generation latency (detailed) | Survey | To capture acceptable waiting times from a large group. | Developers, Testers, LLM, End Users |
 | NFR3 | UI responsiveness | Brainstorming, Interview | Technical aspect; requires brainstorming with devs \+ user validation. | Developers, Testers, UI/UX Designers, End Users |
@@ -268,3 +354,37 @@ User survey data reveals a fundamental split in privacy preferences: roughly hal
 | NFR17 | Plain language everywhere | Questionnaire, Survey | To confirm clarity and ease of understanding. | Developers, UI/UX Designers, End Users |
 | NFR18 | Modular design for premium features | Brainstorming, Interview | Technical feature; requires dev brainstorming and validation. | Project Leader, Developers, DevOps Engineers, End Users |
 | NFR19 | Extensible DSL | Brainstorming, Interview | Needs technical discussion with instructors and dev team. | Developers, Power Users, End Users |
+
+## Domain Requirements Traceability Matrix
+| Requirement ID | Requirement Description | Elicitation Technique(s) | Reason | Stakeholder(s) |
+| :---- | :---- | :---- | :---- | :---- |
+| DR1  | Represent information as a graph of nodes (concepts/ideas) and edges (relationships). | Document Analysis, Workshops | To structure ideas visually and logically. | Users, Designers |
+| DR2  | Each mind map must have exactly one central/root node with branches. | Brainstorming, Prototyping | Ensures clarity and hierarchy in maps. | Users |
+| DR3  | All edges between nodes should include metadata to describe the type of relationship. | Interviews, Document Review | Provides context and meaning to connections. | Users, Analysts |
+| DR4  | Each node must carry a unique identifier within a given mind map. | Workshops, Prototyping | Prevents ambiguity and duplication. | Developers |
+| DR5  | The whole map must be neat, uncluttered, and scalable across devices. | Observation, Prototyping | Ensures usability even with large maps. | Users, UI/UX Designers |
+| DR6  | The system must operate on unstructured human-readable text and convert it into structured knowledge representations. | Document Analysis, Interviews | Enables automated mind map generation. | Users, Developers |
+| DR7  | Concepts extracted from input must be domain-agnostic. | Brainstorming, Surveys | Allows system flexibility across fields. | Users |
+| DR8  | The system must support multi-level abstraction (overview vs detail). | Prototyping, Storyboarding | Provides depth without losing overview. | Users, Analysts |
+| DR9  | Input content must be preserved in meaning—AI summarization and clustering must not distort or misrepresent the original concepts. | Interviews, Observation | Prevents loss/distortion of information. | Users |
+| DR10 | Ownership of a mind map must always belong to exactly one user, who is the creator. | Workshops, Document Analysis | Ensures accountability and authorship. | Users, Admin |
+| DR11 | Collaborators must only have view-only access; editing privileges reserved for owner. | Interviews, Prototyping | Protects content integrity. | Users, Admin |
+| DR12 | All processing of user-generated data must comply with intellectual property rights. | Document Analysis, Legal Review | Prevents copyright violations. | Users, Legal Team |
+| DR13 | AI-generated suggestions must remain assistive and transparent, clearly distinguished from user-created nodes. | Interviews, Workshops | Ensures user trust in AI output. | Users |
+| DR14 | Users must have data ownership rights—control, export, and deletion. | Interviews, Document Analysis | Ensures user control of data. | Users |
+| DR15 | The system must conform to universal accessibility standards (WCAG, inclusive color schemes, screen readers). | Standards Review, Prototyping | Provides universal access. | Users, Accessibility Experts |
+| DR16 | System usage must not promote plagiarism—users remain responsible for original content. | Document Review, Interviews | Upholds ethical standards. | Users |
+| DR17 | Mind maps must remain human-readable regardless of complexity. | Prototyping, Observation | Preserves usability at scale. | Users |
+| DR18 | A single mind map must be capable of scaling to at least 50 nodes without breaking consistency. | Stress Testing, Prototyping | Supports large projects. | Developers |
+| DR19 | The system must preserve semantic integrity during transformations (text → nodes → visual representation). | Document Analysis, Testing | Maintains meaning accuracy. | Users, Developers |
+| DR20 | DSL representation of a mind map must always be serializable into a visual map. | Prototyping, Testing | Enables portability and reliability. | Developers |
+| DR21 | DSL must support advanced interactivity (click to see details, sources, etc.). | Prototyping, Workshops | Adds functionality for deeper exploration. | Users, Developers |
+| DR22 | The platform must remain domain-neutral across fields. | Surveys, Brainstorming | Increases applicability. | Users |
+| DR23 | The prompt given to LLM must generate valid and serializable scripts with accuracy above 99%. | Testing, Prototyping | Ensures reliability of automation. | Developers |
+| DR24 | Provide text alternatives for non-text content and accessible error messages. | Standards Review, Prototyping | Supports accessibility for screen readers. | Accessibility Experts, Users |
+| DR25 | Guarantee all interactive elements are fully operable via keyboard and alternative input methods. | Testing, Prototyping | Accessibility for non-mouse users. | Accessibility Experts, Users |
+| DR26 | Allow users sufficient time to read and interact with content, including adjustable timeouts for alerts/sessions. | Surveys, Interviews | Accommodates users with varying reading and interaction speeds. | Users, Accessibility Experts |
+| DR27 | Use high contrast, clear typography, and proper spacing, ensuring compliance with WCAG. | Standards Review, Prototyping | Improves readability and accessibility. | Accessibility Experts, Users |
+| DR28 | Use color schemes with high contrast so elements are visible to all users. | Surveys, Testing | Supports visually impaired users, avoids reliance on color alone. | UI/UX Designers, Developers |
+| DR29 | Ensure that all content is written in clear, simple language that is easily understandable by all users. | Document Review, Pilot Testing | Improves comprehension for all user groups. | Writers, Educators, General Users |
+| DR30 | Provide thorough user documentation, including instructions, troubleshooting guides, and support access. | Surveys, Prototyping | Helps users operate the system effectively. | Users, Support Team |
