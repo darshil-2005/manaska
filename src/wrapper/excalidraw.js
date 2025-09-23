@@ -224,34 +224,6 @@ const ExcalidrawWrapper = ({
         }
     };
 
-    // Handle Excalidraw changes with canvas size protection
-    const handleChange = (elements, appState, files) => {
-        // Prevent zoom levels that could cause canvas size issues
-        const safeAppState = {
-            ...appState,
-            zoom: {
-                ...appState.zoom,
-                value: Math.min(Math.max(appState.zoom?.value || 1, 0.1), 10) // Limit zoom between 0.1x and 10x
-            }
-        };
-
-        onChange(elements, safeAppState, files);
-    };
-
-    // Enhanced UI options with canvas protection
-    const uiOptions = {
-        canvasActions: {
-            loadScene: false,
-            saveToActiveFile: false,
-            export: false,
-            theme: false,
-            clearCanvas: true
-        },
-        tools: {
-            image: true
-        }
-    };
-
     // Render only on client side
     if (!isClient) {
         return (
@@ -263,28 +235,14 @@ const ExcalidrawWrapper = ({
 
     return (
         <>
-            <Excalidraw />
+            <Excalidraw
+                initialData={defaultInitialData}
+                onChange={onChange}
+                theme="light"
+                className={`text-black border border-gray-200 rounded-lg ${className}`}
+            />
         </>
     );
 };
 
 export default ExcalidrawWrapper;
-
-// "use client";
-// import { Excalidraw, convertToExcalidrawElements } from "@excalidraw/excalidraw";
-//
-//
-// const ExcalidrawWrapper = () => {
-//     console.info(convertToExcalidrawElements([{
-//         type: "rectangle",
-//         id: "rect-1",
-//         width: 186.47265625,
-//         height: 141.9765625,
-//     },]));
-//     return (
-//         <div style={{ height: "500px", width: "500px" }}>
-//             <Excalidraw />
-//         </div>
-//     );
-// };
-// export default ExcalidrawWrapper;

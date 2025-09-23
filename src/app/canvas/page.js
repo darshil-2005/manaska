@@ -16,12 +16,13 @@ import {
     Upload,
     Download
 } from 'lucide-react';
-import ExcalidrawWrapper from '@/components/excalidraw';
+import ExcalidrawWrapper from '@/wrapper/excalidraw';
 
 export default function MindMapDesigner() {
     const handleCanvasChange = (elements, appState, files) => {
         console.log('Canvas updated:', elements);
     };
+
     const [scriptCode, setScriptCode] = useState(`// Manaska Mind Map Script
 // Available functions:
 // - addNode(text, x, y, color, parentId)
