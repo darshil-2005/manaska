@@ -45,22 +45,27 @@ CREATE TABLE "userAPIKeys" (
 	"apiKey" varchar(255)
 );
 --> statement-breakpoint
-CREATE TABLE "verificationTokens" (
-	"verificationToken" varchar
+CREATE TABLE "users" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(255),
+	"username" varchar(255),
+	"email" varchar(255),
+	"hashedPassword" text,
+	"email_verified" boolean DEFAULT false,
+	"avatar" text,
+	"createdAt" timestamp DEFAULT now(),
+	"coins" integer DEFAULT 0
 );
 --> statement-breakpoint
-ALTER TABLE "users" DROP CONSTRAINT "users_username_unique";--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "name" SET DATA TYPE varchar(255);--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "name" DROP NOT NULL;--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "email" SET DATA TYPE varchar(255);--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "email" DROP NOT NULL;--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "username" SET DATA TYPE varchar(255);--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "username" DROP NOT NULL;--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "hashedPassword" text;--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "email_verified" boolean DEFAULT false;--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "avatar" text;--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "createdAt" timestamp DEFAULT now();--> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "coins" integer DEFAULT 0;--> statement-breakpoint
+CREATE TABLE "verificationTokens" (
+	"id" integer PRIMARY KEY NOT NULL,
+	"verificationToken" varchar,
+	"userId" integer,
+	"createdAt" date,
+	"expiryAt" date,
+	"tokenUsed" boolean
+);
+--> statement-breakpoint
 ALTER TABLE "feedback" ADD CONSTRAINT "feedback_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "invoice" ADD CONSTRAINT "invoice_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "map" ADD CONSTRAINT "map_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
