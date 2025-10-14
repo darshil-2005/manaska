@@ -64,3 +64,14 @@ export const userAPIKeys = pgTable("userAPIKeys", {
   userId: integer("userId").references(() => users.id),
   apiKey: varchar("apiKey", { length: 255 }),
 });
+
+// ---------------- Verification Tokens ----------------
+export const verificationTokens = pgTable("verificationTokens", {
+
+  id: integer("id").primaryKey(),
+  token: varchar("verificationToken"),
+  userId: integer("userId"),
+  createdAt: date("createdAt"),  
+  expiryAt: date("expiryAt"),  
+  tokenUsed: boolean("tokenUsed"),
+})
