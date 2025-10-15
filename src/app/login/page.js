@@ -4,8 +4,13 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import Link from "next/link";
+import axios from "axios";
+import logo from "@/../public/logo/logo.png"
+import Image from "next/image";
 
-export default function Page() {   // ✅ Important: function name should start with uppercase
+
+export default function Page() {
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,21 +25,30 @@ export default function Page() {   // ✅ Important: function name should start 
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login data:", formData);
+    
+    const response = await axios.post("http://localhost:3000/api/auth/login", {
+          email: formData.email,
+          password: formData.password,
+        });
+    
+        console.log("Response: ", response);
+
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 font-inter px-4 sm:px-6">
+    <div className="h-screen flex items-center justify-center bg-gray-50 font-inter px-4 sm:px-6">
       <div className="w-full max-w-5xl bg-white shadow-xl rounded-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
         {/* Left Section */}
         <div className="flex flex-col items-center justify-center bg-gray-50 p-8 sm:p-10 md:p-12">
-          <div className="bg-white shadow-md rounded-2xl p-4 sm:p-5 mb-5 sm:mb-6">
-            <img
-              src="https://via.placeholder.com/64"
+          <div className="shadow-md mb-5 sm:mb-6">
+            <Image
+              src={logo}
               alt="ManaskaAI Logo"
-              className="w-14 h-14 sm:w-16 sm:h-16 object-contain"
+              className="object-contain rounded-lg"
+              width={100}
+              height={100}
             />
           </div>
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 tracking-tight">
@@ -76,7 +90,7 @@ export default function Page() {   // ✅ Important: function name should start 
                 placeholder="Enter your email or username"
                 value={formData.email}
                 onChange={handleChange}
-                className="h-11 sm:h-12 border border-gray-300 rounded-lg px-3 sm:px-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="text-black h-11 sm:h-12 border border-gray-300 rounded-lg px-3 sm:px-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
 
@@ -95,7 +109,7 @@ export default function Page() {   // ✅ Important: function name should start 
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
-                className="h-11 sm:h-12 border border-gray-300 rounded-lg px-3 sm:px-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="text-black h-11 sm:h-12 border border-gray-300 rounded-lg px-3 sm:px-4 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
 
@@ -133,11 +147,11 @@ export default function Page() {   // ✅ Important: function name should start 
 
           {/* Social Buttons */}
           <div className="space-y-2 sm:space-y-3">
-            <button className="w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
+            <button className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
               <FcGoogle size={18} className="mr-2" />
               Continue with Google
             </button>
-            <button className="w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
+            <button className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
               <FaGithub size={18} className="mr-2" />
               Continue with GitHub
             </button>
