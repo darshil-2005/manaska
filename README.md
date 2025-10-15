@@ -13,7 +13,7 @@ Follow the steps below to set up the project on your local machine.
 Make sure you have the following installed:
 
 - [Node.js](https://nodejs.org/) on your machine.
-- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) for running the PostgreSQL database (Not required if using an online)
+- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/) for running the PostgreSQL database (Not required if using an online database)
 
 ---
 
