@@ -7,7 +7,7 @@ export const users = pgTable("users", {
   username: varchar("username", { length: 255 }),
   email: varchar("email", { length: 255 }),
   hashedPassword: text("hashedPassword"),
-  email_verified: boolean("email_verified").default(false),
+  emailVerified: boolean("email_verified").default(false),
   avatar: text("avatar") ,
   createdAt: timestamp("createdAt").defaultNow(),
   coins: integer("coins").default(0),
