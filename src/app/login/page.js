@@ -7,7 +7,7 @@ import Link from "next/link";
 import axios from "axios";
 import logo from "@/../public/logo/logo.png"
 import Image from "next/image";
-
+import SignIn from "@/components/register-button";
 
 export default function Page() {
 
@@ -151,6 +151,7 @@ export default function Page() {
               <FcGoogle size={18} className="mr-2" />
               Continue with Google
             </button>
+            <SignIn/>
             <button className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
               <FaGithub size={18} className="mr-2" />
               Continue with GitHub
