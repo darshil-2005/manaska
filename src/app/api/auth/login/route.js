@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db"; // your drizzle db instance
-import { users } from "@/db/schema";
+import { db } from "@/../db/db.js"; // your drizzle db instance
+import { users } from "@/../db/schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { eq } from "drizzle-orm";

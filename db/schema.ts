@@ -1,4 +1,8 @@
-import { pgTable, serial, text, varchar, integer, boolean, real, timestamp, date, primaryKey, foreignKey } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, varchar, integer, boolean, real, pgEnum, timestamp, date, primaryKey, foreignKey } from "drizzle-orm/pg-core";
+
+
+export const typeOfTokenEnum = pgEnum("typeOfToken", ["FORGOT_PASSWORD"]);
+
 
 // ---------------- USERS ----------------
 export const users = pgTable("users", {
@@ -70,7 +74,8 @@ export const verificationTokens = pgTable("verificationTokens", {
 
   id: integer("id").primaryKey(),
   token: varchar("verificationToken"),
-  userId: integer("userId"),
+  email: integer("email").references(() => users.email),
+  typeOfToken: typeOfTokenEnum("typeOfToken").notNull(),
   createdAt: date("createdAt"),  
   expiryAt: date("expiryAt"),  
   tokenUsed: boolean("tokenUsed"),
