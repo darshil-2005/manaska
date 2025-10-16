@@ -242,8 +242,7 @@ export default function ForgotPasswordPage() {
                 message.toLowerCase().includes("success")
                   ? "text-green-600"
                   : "text-red-600"
-              }`}
-            >
+              }`}>
               {message}
             </p>
           )}
