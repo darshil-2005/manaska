@@ -1,5 +1,5 @@
 {
-  "id": "8385ac6d-56eb-48e5-9a47-db3045b7cce1",
+  "id": "b1699ff3-f45c-426d-9908-54ed31ad0583",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -26,8 +26,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "email2": {
-          "name": "email2",
+        "username": {
+          "name": "username",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -36,7 +36,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

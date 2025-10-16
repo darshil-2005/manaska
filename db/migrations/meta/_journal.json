@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1757515575866,
+      "when": 1757609989205,
       "tag": "0000_lively_wallow",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1757520528568,
-      "tag": "0001_overrated_thing",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1757524739094,
-      "tag": "0002_petite_the_hunter",
       "breakpoints": true
     }
   ]
