@@ -5,9 +5,9 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
-import logo from "@/../public/logo/logo.png"
 import Image from "next/image";
-
+import SignInGoogle from "../../components/signin-google";
+import SignInGitHub from "../../components/signin-github";
 
 export default function Page() {
 
@@ -44,7 +44,7 @@ export default function Page() {
         <div className="flex flex-col items-center justify-center bg-gray-50 p-8 sm:p-10 md:p-12">
           <div className="shadow-md mb-5 sm:mb-6">
             <Image
-              src={logo}
+              src="/logo/logo.png"
               alt="ManaskaAI Logo"
               className="object-contain rounded-lg"
               width={100}
@@ -147,14 +147,8 @@ export default function Page() {
 
           {/* Social Buttons */}
           <div className="space-y-2 sm:space-y-3">
-            <button className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
-              <FcGoogle size={18} className="mr-2" />
-              Continue with Google
-            </button>
-            <button className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
-              <FaGithub size={18} className="mr-2" />
-              Continue with GitHub
-            </button>
+            <SignInGoogle/>
+            <SignInGitHub/>
           </div>
 
           {/* Register Link */}

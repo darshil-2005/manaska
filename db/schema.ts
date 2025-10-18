@@ -1,82 +1,125 @@
-import { pgTable, serial, text, varchar, integer, boolean, real, pgEnum, timestamp, date, primaryKey, foreignKey } from "drizzle-orm/pg-core";
+// src/db/schema.ts
+import {
+  boolean,
+  timestamp,
+  pgTable,
+  text,
+  integer,
+  varchar,
+  real,
+  primaryKey,
+  pgEnum,
+} from "drizzle-orm/pg-core"
+import type { AdapterAccountType } from "@auth/core/adapters"
 
-
-export const typeOfTokenEnum = pgEnum("typeOfToken", ["FORGOT_PASSWORD"]);
-
+// Optional enum (you had this for verification tokens)
+export const typeOfTokenEnum = pgEnum("typeOfToken", ["FORGOT_PASSWORD"])
 
 // ---------------- USERS ----------------
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }),
-  username: varchar("username", { length: 255 }),
-  email: varchar("email", { length: 255 }),
-  hashedPassword: text("hashedPassword"),
-  emailVerified: boolean("email_verified").default(false),
-  avatar: text("avatar") ,
-  createdAt: timestamp("createdAt").defaultNow(),
+export const users = pgTable("user", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+
+  name: text("name").default("guest"),
+  username: varchar("username", { length: 255 }).default(""),
+  email: varchar("email", { length: 255 }).unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
   coins: integer("coins").default(0),
-});
+  hashedPassword: text("hashedPassword").default(""), // for credentials login
+  createdAt: timestamp("createdAt").defaultNow(),
+})
 
-// ---------------- OAUTH ACCOUNTS ----------------
-export const oauth_accounts = pgTable("oauth_accounts", {
-  id: serial("id").primaryKey(),
-  userId: integer("userId").references(() => users.id),
-  oauth_id: varchar("oauth_id", { length: 255 }),
-  oauth_provider: varchar("oauth_provider", { length: 255 }),
-  refresh_token: text("refresh_token"),
-  access_token: text("access_token") ,
-  expires_at: integer("expires_at") ,
-  token_type: text("token_type") ,
-  scope: text("scope") ,
-  id_token: text("id_token") ,
-  session_state: text("session_state") ,
-});
+// ---------------- ACCOUNTS ----------------
+export const accounts = pgTable(
+  "account",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
 
-// ---------------- MAP ----------------
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (account) => [
+    {
+      compoundKey: primaryKey({
+        columns: [account.provider, account.providerAccountId],
+      }),
+    },
+  ]
+)
+
+// ---------------- SESSIONS ----------------
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+})
+
+// ---------------- VERIFICATION TOKENS ----------------
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+    typeOfToken: typeOfTokenEnum("typeOfToken").default("FORGOT_PASSWORD"),
+  },
+  (verificationToken) => [
+    {
+      compositePk: primaryKey({
+        columns: [verificationToken.identifier, verificationToken.token],
+      }),
+    },
+  ]
+)
+
+// MAP table
 export const map = pgTable("map", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   title: varchar("title", { length: 255 }),
-  description: text("description") ,
-  userId: integer("userId").references(() => users.id),
-  url: text("url") ,
-  createdAt: date("createdAt").defaultNow(),
-  updatedAt: date("updatedAt").defaultNow(),
-  pinned: date("pinned") ,
-});
+  description: text("description"),
+  userId: text("userId").references(() => users.id),
+  url: text("url"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
+  pinned: boolean("pinned").default(false),
+})
 
-// ---------------- INVOICE ----------------
+// INVOICE table
 export const invoice = pgTable("invoice", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: integer("userId").references(() => users.id),
-  amount:  real("amount"),
+  id: text("id").primaryKey(),
+  userId: text("userId").references(() => users.id),
+  amount: real("amount"),
   purchase: varchar("purchase", { length: 255 }),
-  comment: text("comment") ,
-  paymentId: varchar("paymentId", { length: 255 }) ,
-});
+  comment: text("comment"),
+  paymentId: varchar("paymentId", { length: 255 }),
+})
 
-// ---------------- FEEDBACK ----------------
+// FEEDBACK table
 export const feedback = pgTable("feedback", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: integer("userId").references(() => users.id),
+  id: text("id").primaryKey(),
+  userId: text("userId").references(() => users.id),
   response: text("response"),
-  createdAt: date("createdAt").defaultNow(),
-});
+  createdAt: timestamp("createdAt").defaultNow(),
+})
 
-// ---------------- USER API KEYS ----------------
+// USER API KEYS table
 export const userAPIKeys = pgTable("userAPIKeys", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: integer("userId").references(() => users.id),
+  id: text("id").primaryKey(),
+  userId: text("userId").references(() => users.id),
   apiKey: varchar("apiKey", { length: 255 }),
-});
-
-// ---------------- Verification Tokens ----------------
-export const verificationTokens = pgTable("verificationTokens", {
-
-  id: integer("id").primaryKey(),
-  token: varchar("verificationToken"),
-  email: integer("email").references(() => users.email),
-  typeOfToken: typeOfTokenEnum("typeOfToken").notNull(),
-  createdAt: date("createdAt"),  
-  expiryAt: date("expiryAt"),  
-  tokenUsed: boolean("tokenUsed"),
 })

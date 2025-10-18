@@ -1,11 +1,10 @@
 "use client";
   import React, { useState } from "react";
   import Image from "next/image";
-  import { FcGoogle } from "react-icons/fc";
-  import { FaGithub } from "react-icons/fa";
   import Link from "next/link";
   import axios from "axios";
-  import logo from "@/../public/logo/logo.png"
+  import SignInGitHub from "../../components/signin-github";
+  import SignInGoogle from "../../components/signin-google";
 
   export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -47,7 +46,7 @@
           <div className="flex flex-col items-center justify-center bg-gray-50 p-8 sm:p-10 md:p-12">
             <div className="shadow-md mb-5 sm:mb-6">
               <Image
-                src={logo}
+                src="/logo/logo.png"
                 alt="ManaskaAI Logo"
                 width={100}
                 height={100}
@@ -219,14 +218,8 @@
 
             {/* Social buttons */}
             <div className="space-y-2 sm:space-y-3">
-              <button className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
-                <FcGoogle size={18} className="mr-2" />
-                Sign up with Google
-              </button>
-              <button className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
-                <FaGithub size={18} className="mr-2" />
-                Sign up with GitHub
-              </button>
+              <SignInGoogle/>
+              <SignInGitHub/>
             </div>
 
             {/* Login link */}
