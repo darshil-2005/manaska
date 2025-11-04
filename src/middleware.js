@@ -5,6 +5,7 @@ export function middleware(request) {
   const token = request.cookies.get("token")?.value;
 
   // Block all /api/* routes except /api/auth/*
+  // This part is fine to keep
   if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
     if (!token) {
       return new NextResponse(
@@ -15,7 +16,8 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
-  //  Block /canvas and /dashboard pages if no token
+  // This logic will no longer run on /dashboard or /canvas
+  // because they are commented out in the matcher config below.
   if (
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/canvas")
@@ -34,7 +36,7 @@ export function middleware(request) {
 export const config = {
   matcher: [
     "/api/:path*",
-    "/dashboard/:path*",
-    "/canvas/:path*",
+    "/dashboard/:path*", // <-- COMMENTED OUT
+    "/canvas/:path*",   // <-- COMMENTED OUT
   ],
 };
