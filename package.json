@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.0",
-    "@excalidraw/excalidraw": "^0.17.6",
+    "@excalidraw/excalidraw": "^0.18.0",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",

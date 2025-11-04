@@ -16,32 +16,15 @@ import {
     Upload,
     Download
 } from 'lucide-react';
-import ExcalidrawWrapper from '@/wrapper/excalidraw';
+import ExcalidrawWrapper from '../../wrapper/excalidraw';
 
 export default function MindMapDesigner() {
     const handleCanvasChange = (elements, appState, files) => {
         console.log('Canvas updated:', elements);
     };
 
-    const [scriptCode, setScriptCode] = useState(`// Manaska Mind Map Script
-// Available functions:
-// - addNode(text, x, y, color, parentId)
-// - updateNode(id, text, x, y, color)
-// - deleteNode(id)
-// - getNodes() - returns all nodes
-// - findNode(text) - find node by text
-
-// Example: Add a new node
-addNode("New Concept", 300, 100, "#fdeafe");
-
-// Example: Update existing node
-// updateNode("1", {text: "Updated Text", color: "#dcfce7"});
-
-// Example: Create a branch
-const parent = findNode("Product Launch Strategy");
-if (parent) {
-  addNode("Timeline", parent.x + 200, parent.y + 100, "#fef3c7", parent.id);
-}`);
+    const [scriptCode, setScriptCode] = useState(`// Write your sript here.
+        `);
 
     const [activeTab, setActiveTab] = useState('script');
     const [aiPrompt, setAiPrompt] = useState('');
@@ -97,7 +80,7 @@ if (parent) {
 
             <div className="flex flex-1 overflow-hidden">
                 {/* Left Sidebar */}
-                <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+                <div className="w-96 bg-white border-r border-gray-200 flex flex-col">
                     {/* Sidebar Header */}
                     <div className="p-4 border-b border-gray-200">
                         <h2 className="font-semibold text-gray-900">Mind Map Designer</h2>
