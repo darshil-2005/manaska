@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Share,
     Save,
@@ -16,18 +16,68 @@ import {
     Upload,
     Download
 } from 'lucide-react';
-import ExcalidrawWrapper from '../../wrapper/excalidraw';
+import dynamic from "next/dynamic"; 
+import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
+
+const ExcalidrawWrapper = dynamic(
+  () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
+  {
+    ssr: false, // This is the most important part
+    loading: () => (
+        <div className="w-full h-screen flex items-center justify-center bg-white">
+            <div className="text-gray-500 text-sm">Loading canvas...</div>
+        </div>
+    )
+  }
+);
 
 export default function MindMapDesigner() {
     const handleCanvasChange = (elements, appState, files) => {
         console.log('Canvas updated:', elements);
     };
 
-    const [scriptCode, setScriptCode] = useState(`// Write your sript here.
-        `);
-
+    const [scriptCode, setScriptCode] = useState(`Node "welcomeNode" {
+label: "Welcome To Manaska!!",
+height: 100,
+width: 390,
+x: 400,
+y: 300,
+backgroundColor: "#fff3bf",
+borderColor: "#000000",
+textColor: "#000000",
+};`);
     const [activeTab, setActiveTab] = useState('script');
     const [aiPrompt, setAiPrompt] = useState('');
+    const [elements, setElements] = useState(null);
+    const [excalidrawAPI, setExcalidrawAPI] = useState(null);
+
+   useEffect(() => {
+        // Don't run if the API isn't ready
+        if (!excalidrawAPI) return;
+
+        const newElementSkeletons = DSLToExcalidraw(scriptCode);
+        setElements(newElementSkeletons);
+
+        // Pass the new elements directly to updateScene
+        updateScene(newElementSkeletons);
+
+    }, [scriptCode, excalidrawAPI]);   
+    
+ const updateScene = async (elementSkeletons) => {
+        // Safety check
+        if (!excalidrawAPI || !elementSkeletons) return;
+
+        // Dynamically import the function *inside* here
+        const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
+
+        const sceneData = {
+            elements: convertToExcalidrawElements(elementSkeletons),
+            appState:{},
+            // "CaptureUpdateAction" was not defined, so I removed it.
+        };
+        excalidrawAPI.updateScene(sceneData);
+    };
+
 
     return (
         <div className="h-screen bg-gray-50 flex flex-col">
@@ -242,6 +292,8 @@ export default function MindMapDesigner() {
                     <ExcalidrawWrapper
                         onChange={handleCanvasChange}
                         theme="light"
+                        initialData={null}
+                        excalidrawAPI={setExcalidrawAPI}
                         className="text-black border border-gray-200 rounded-lg"
                     />
                 </div>
