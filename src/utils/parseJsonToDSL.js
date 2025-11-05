@@ -1,9 +1,10 @@
-import { json } from "stream/consumers";
+'use client';
+
 import { randomId } from "./randomIdGenerator.js";
 
 // Defaults
-const NODE_HEIGHT = 200;
-const NODE_WIDTH = 400;
+const NODE_HEIGHT = 100;
+const NODE_WIDTH = 240;
 const NODE_BACKGROUND_COLOR = `#3bc9db`;
 const NODE_TEXT_COLOR = `#000000`;
 const NODE_BORDER_COLOR = `#000000`;
@@ -42,11 +43,14 @@ function getCoordinates(n, range) {
 }
 
 function buildNodes(jsonNode, coordinate) {
+
+  const labelLength = jsonNode.label.length;
+  const nodeWidth = labelLength * 15;
   const script =
     `Node "${jsonNode.id}" {\n` +
     `  label: "${jsonNode.label}",\n` +
     `  height: ${NODE_HEIGHT},\n` +
-    `  width: ${NODE_WIDTH},\n` +
+    `  width: ${nodeWidth},\n` +
     `  x: ${coordinate.x},\n` +
     `  y: ${coordinate.y},\n` +
     `  backgroundColor: "${NODE_BACKGROUND_COLOR}",\n` +
@@ -73,7 +77,7 @@ function buildConnections(jsonConnection) {
   return script;
 }
 
-function parseMindmapToBlocks(mindmap) {
+export function parseMindmapToDSL(mindmap) {
   if (!mindmap) {
     return -1;
   }
@@ -111,7 +115,7 @@ function parseMindmapToBlocks(mindmap) {
   }
 
   const script = nodes.join("\n") + connections.join("\n");
-  console.log(script);
+  return script;
 }
 
 /* ---------------------------
@@ -181,6 +185,4 @@ const mindmap = {
     },
   ],
 };
-
-parseMindmapToBlocks(mindmap);
 
