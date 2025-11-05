@@ -126,7 +126,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
     const processedElements = [];
     
 
-    console.log("jbijbkjn");
 
     for (let i = 0; i < elements.length; i++) {
 
@@ -141,6 +140,8 @@ export function DSLToExcalidraw(DSLSrcipt) {
 
     for (let i = 0; i< processedElements.length; i++) {
 
+     
+      if (processedElements[i].type == "Node") {
       let label;
       
       try {        
@@ -158,9 +159,8 @@ export function DSLToExcalidraw(DSLSrcipt) {
         backgroundColor = "#fff3bf";
       }
       
-      if (processedElements[i].type == "Node") {
-
         const node = {
+          id: unquote(processedElements[i].properties.name),
           type: "rectangle",
           x: parseFloat(processedElements[i].properties.x),
           y: parseFloat(processedElements[i].properties.y),
@@ -170,10 +170,32 @@ export function DSLToExcalidraw(DSLSrcipt) {
           label: {
             text: label,
             fontSize: 20,
-          },
-  };
-
+          }
+        }
         excalidrawElements.push(node); 
+      } else {
+
+        let sourceId;
+        let targetId;
+
+        try {
+          sourceId = unquote(processedElements[i].properties.source);
+          targetId = unquote(processedElements[i].properties.target);
+        } catch (error) {
+         console.log("Cannot connect the arrows to nodes properly!!");
+        }
+
+        const connection = {
+          type: "arrow",:
+          startBinding: {
+            elementId: sourceId,
+          },
+          endBinding: {
+            elementId: targetId,
+          }
+        }
+
+        excalidrawElements.push(connection);
       }
     }
 
