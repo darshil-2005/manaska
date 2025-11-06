@@ -3,7 +3,7 @@
 import { randomId } from "./randomIdGenerator.js";
 import {parseMindmapToDSL} from './parseJsonToDSL.js';
 import {unquote} from "./removeQuotes.js";
-import {getBaseCoordinates, getArrowEndRelativePoints} from "./arrowCoordinatesHelpers.js"
+import {getBaseCoordinates, getPointsArrayForArrows} from "./arrowCoordinatesHelpers.js"
 
 const mindmap = {
   nodes: [
@@ -162,7 +162,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
           x: parseFloat(processedElements[i].properties.x),
           y: parseFloat(processedElements[i].properties.y),
           height: parseFloat(processedElements[i].properties.height),
-          width: parseFloat(processedElements[i].properties.width),
+          width: parseFloat(processedElements[i].properties.width) ? parseFloat(processedElements[i].properties.width) : 300,    
           backgroundColor,
           label: {
             text: label,
@@ -182,8 +182,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
          console.log("Cannot connect the arrows to nodes properly!!");
         }
 
-        let referenceX;
-        let referenceY;
 
         let sourceNode = null;
         let targetNode = null;
@@ -207,21 +205,32 @@ export function DSLToExcalidraw(DSLSrcipt) {
           continue;
         };
         
-        const references = getBaseCoordinates(sourceNode, targetNode);
-        referenceX = references.referenceX;
-        referenceY = references.referenceY;
-
+        let referenceX;
+        let referenceY;
         let relativeEndX;
         let relativeEndY;
 
-        const end = getArrowEndRelativePoints(sourceNode, targetNode, referenceX, referenceY);
-
-        relativeEndX = end.relativeEndX;
-        relativeEndY = end.relativeEndY;
+        const references = getBaseCoordinates(sourceNode, targetNode);
+        referenceX = references.sourceCoordinates[0];
+        referenceY = references.sourceCoordinates[1];
+        relativeEndX = references.targetCoordinates[0];
+        relativeEndY = references.targetCoordinates[1];
         
-        console.log("Hello: ", sourceId, targetId);
+
+        const points = getPointsArrayForArrows(relativeEndX, relativeEndY);
+        console.log("References: ", references);
+        let label;
+
+        try {
+          label = unquote(processedElements[i].properties.relation);
+        } catch {
+          console.log("Unable to process the arrow label.")
+          continue;
+        }
+        console.log("Label: ", processedElements[i].properties.relation);
 
         const connection = {
+          id: processedElements[i].name,
           type: "arrow",
           elbowed: true,
 
@@ -229,8 +238,11 @@ export function DSLToExcalidraw(DSLSrcipt) {
           y: referenceY,
           points: [
             [0, 0],
-            [relativeEndX, relativeEndY]
+            [relativeEndX, relativeEndY],
           ],
+          label: {
+            text: label,  
+          },
           start: {
             id: sourceId,
           },
