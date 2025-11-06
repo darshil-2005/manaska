@@ -31,6 +31,10 @@ const ExcalidrawWrapper = dynamic(
   }
 );
 
+function tinyNudge(elements, delta = 0.0001) {
+  return elements.map(el => ({ ...el, x: (el.x ?? 0) + delta }));
+}
+
 export default function MindMapDesigner() {
     const handleCanvasChange = (elements, appState, files) => {
         console.log('Canvas updated:', elements);
@@ -69,7 +73,7 @@ textColor: "#000000",
 
         // Dynamically import the function *inside* here
         const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
-
+            
         const sceneData = {
           elements: convertToExcalidrawElements(elementSkeletons),
             appState:{},
