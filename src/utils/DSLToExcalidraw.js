@@ -3,6 +3,7 @@
 import { randomId } from "./randomIdGenerator.js";
 import {parseMindmapToDSL} from './parseJsonToDSL.js';
 import {unquote} from "./removeQuotes.js";
+import {getBaseCoordinates, getArrowEndRelativePoints} from "./arrowCoordinatesHelpers.js"
 
 const mindmap = {
   nodes: [
@@ -89,10 +90,11 @@ function processElement(element) {
     }
 
     
-  if (propertiesString == null || propertiesString == undefined) {
-    return -1;
-  }
-const properties = {};
+    if (propertiesString == null || propertiesString == undefined) {
+      return -1;
+    }
+
+    const properties = {};
     for (let i = 0; i < propertiesString.length; i++) {
         
         let splitString;
@@ -120,17 +122,13 @@ const properties = {};
 
 export function DSLToExcalidraw(DSLSrcipt) {
     
-    
     const elements = DSLSrcipt.split(";").filter(Boolean).filter(d => d != '\n');
-
     const processedElements = [];
-    
-
 
     for (let i = 0; i < elements.length; i++) {
 
         const processedElement = processElement(elements[i]);
-        if (processElement == -1) {
+        if (processedElement == -1) {
           continue;
         }
         processedElements.push(processedElement);
@@ -139,7 +137,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
     const excalidrawElements = [];
 
     for (let i = 0; i< processedElements.length; i++) {
-
      
       if (processedElements[i].type == "Node") {
       let label;
@@ -160,7 +157,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
       }
       
         const node = {
-          id: unquote(processedElements[i].properties.name),
+          id: unquote(processedElements[i].name),
           type: "rectangle",
           x: parseFloat(processedElements[i].properties.x),
           y: parseFloat(processedElements[i].properties.y),
@@ -185,21 +182,65 @@ export function DSLToExcalidraw(DSLSrcipt) {
          console.log("Cannot connect the arrows to nodes properly!!");
         }
 
+        let referenceX;
+        let referenceY;
+
+        let sourceNode = null;
+        let targetNode = null;
+
+        for (let j=0; j < processedElements.length; j++) {
+
+          if (processedElements[j].name == sourceId) {
+            sourceNode = processedElements[j];
+          }
+
+          if (processedElements[j].name == targetId) {
+            targetNode = processedElements[j];
+          }
+        }
+        
+        if (sourceNode == null) {
+          continue;
+        };
+
+        if (targetNode == null) {
+          continue;
+        };
+        
+        const references = getBaseCoordinates(sourceNode, targetNode);
+        referenceX = references.referenceX;
+        referenceY = references.referenceY;
+
+        let relativeEndX;
+        let relativeEndY;
+
+        const end = getArrowEndRelativePoints(sourceNode, targetNode, referenceX, referenceY);
+
+        relativeEndX = end.relativeEndX;
+        relativeEndY = end.relativeEndY;
+        
+        console.log("Hello: ", sourceId, targetId);
+
         const connection = {
-          type: "arrow",:
-          startBinding: {
-            elementId: sourceId,
+          type: "arrow",
+          elbowed: true,
+
+          x: referenceX,
+          y: referenceY,
+          points: [
+            [0, 0],
+            [relativeEndX, relativeEndY]
+          ],
+          start: {
+            id: sourceId,
           },
-          endBinding: {
-            elementId: targetId,
+          end: {
+            id: targetId,
           }
         }
 
         excalidrawElements.push(connection);
       }
     }
-
-    console.log("Kakakqaa", excalidrawElements);
-
     return excalidrawElements;
 };

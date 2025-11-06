@@ -71,7 +71,7 @@ textColor: "#000000",
         const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
 
         const sceneData = {
-            elements: convertToExcalidrawElements(elementSkeletons),
+          elements: convertToExcalidrawElements(elementSkeletons),
             appState:{},
             // "CaptureUpdateAction" was not defined, so I removed it.
         };
