@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { map } from "@/lib/schema";
+import { db } from "../../../../db/db";
+import { map } from "../../../../db/schema";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { eq, desc } from "drizzle-orm";
