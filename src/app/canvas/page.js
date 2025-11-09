@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Share,
     Save,
@@ -20,9 +20,9 @@ import dynamic from "next/dynamic";
 import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
 
 const ExcalidrawWrapper = dynamic(
-  () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
+  () => import('../../wrapper/excalidraw.js'),
   {
-    ssr: false, // This is the most important part
+    ssr: false,
     loading: () => (
         <div className="w-full h-screen flex items-center justify-center bg-white">
             <div className="text-gray-500 text-sm">Loading canvas...</div>
@@ -30,10 +30,6 @@ const ExcalidrawWrapper = dynamic(
     )
   }
 );
-
-function tinyNudge(elements, delta = 0.0001) {
-  return elements.map(el => ({ ...el, x: (el.x ?? 0) + delta }));
-}
 
 export default function MindMapDesigner() {
     const handleCanvasChange = (elements, appState, files) => {
@@ -54,6 +50,9 @@ textColor: "#000000",
     const [aiPrompt, setAiPrompt] = useState('');
     const [elements, setElements] = useState(null);
     const [excalidrawAPI, setExcalidrawAPI] = useState(null);
+    
+    // Track previous script to detect text changes
+    const previousScriptRef = useRef(scriptCode);
 
    useEffect(() => {
         // Don't run if the API isn't ready
@@ -61,26 +60,41 @@ textColor: "#000000",
 
         const newElementSkeletons = DSLToExcalidraw(scriptCode);
         setElements(newElementSkeletons);
-
         // Pass the new elements directly to updateScene
         updateScene(newElementSkeletons);
 
     }, [scriptCode, excalidrawAPI]);   
     
  const updateScene = async (elementSkeletons) => {
-        // Safety check
-        if (!excalidrawAPI || !elementSkeletons) return;
+      if (!excalidrawAPI || !elementSkeletons) return;
 
-        // Dynamically import the function *inside* here
-        const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
-            
-        const sceneData = {
-          elements: convertToExcalidrawElements(elementSkeletons),
-            appState:{},
-            // "CaptureUpdateAction" was not defined, so I removed it.
-        };
-        excalidrawAPI.updateScene(sceneData);
-    };
+      const { convertToExcalidrawElements, restoreElements } = await import("@excalidraw/excalidraw");
+
+      const oldLabels = previousScriptRef.current.match(/label:\s*"[^"]*"/g) || [];
+      const newLabels = scriptCode.match(/label:\s*"[^"]*"/g) || [];
+      const textChanged = JSON.stringify(oldLabels) !== JSON.stringify(newLabels);
+
+     // After creating your elements programmatically
+     const normalizedElements = restoreElements(elementSkeletons, null, {
+       refreshDimensions: textChanged,  // Only refresh when text changes (OPTIMIZATION)
+       repairBindings: true,
+       normalizeIndices: true
+     });
+      
+      const sceneData = {
+        elements: convertToExcalidrawElements(normalizedElements),
+          appState:{
+          },
+      };
+      excalidrawAPI.updateScene(sceneData);
+      
+      // Only refresh if text changed (OPTIMIZATION)
+      if (textChanged) {
+          excalidrawAPI.refresh();
+      }
+      
+      previousScriptRef.current = scriptCode;
+  };
 
 
     return (
