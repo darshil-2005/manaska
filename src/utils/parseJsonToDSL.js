@@ -7,8 +7,6 @@ const NODE_TEXT_COLOR = `#000000`;
 const NODE_BORDER_COLOR = `#000000`;
 
 function buildNodes(jsonNode) {
-  // Removed unused 'nodeWidth' calculation.
-  // The script directly uses jsonNode.width from the layout.
   const script =
     `Node "${jsonNode.id}" {\n` +
     `  label: "${jsonNode.label}",\n` +
@@ -29,18 +27,12 @@ function buildConnections(jsonConnection) {
   const target = jsonConnection.target;
   const relation = jsonConnection.label;
   const id = randomId();
-  const points = jsonConnection.points;
-  const encodedPoints = JSON.stringify(points); // e.g., "[[0,0]]"
-  const absoluteStart = jsonConnection.absoluteStart;
-  const encodedAbsoluteStart = JSON.stringify(absoluteStart); // e.g., "{"x":1,"y":1}"
 
   const script =
     `Connection "${id}" {\n` +
     `  source: "${source}",\n` +
     `  target: "${target}",\n` +
     `  relation: "${relation}",\n` +
-    `  points: ${encodedPoints}, \n` +
-    `  absoluteStart: ${encodedAbsoluteStart}, \n` +
     `};\n`;
 
   return script;
@@ -137,6 +129,8 @@ export function parseMindmapToDSL(mindmap) {
     marginX: 600,
     marginY: 80,
     orientation: "horizontal",
+    factor: 12,
+    minWidth: 220,
   });
 
   const laidOut = extractNodesAndConnections(mapWithCoodinates, 1, "root");

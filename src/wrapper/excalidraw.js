@@ -22,13 +22,15 @@ const ExcalidrawWrapper = ({
     onChange = () => { },
     className = "",
     theme,
-    excalidrawAPI
+    excalidrawAPI,
+    onPointerUpdate
 }) => {
  
      return (
         <>
             <Excalidraw
                 initialData={initialData}
+                onPointerUpdate={onPointerUpdate}
                 onChange={onChange}
                 theme={theme}
                 className={`text-black border border-gray-200 rounded-lg ${className}`}

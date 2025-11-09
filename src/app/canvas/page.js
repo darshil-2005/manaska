@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Share,
     Save,
@@ -20,9 +20,9 @@ import dynamic from "next/dynamic";
 import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
 
 const ExcalidrawWrapper = dynamic(
-  () => import('../../wrapper/excalidraw.js'),
+  () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
   {
-    ssr: false,
+    ssr: false, // This is the most important part
     loading: () => (
         <div className="w-full h-screen flex items-center justify-center bg-white">
             <div className="text-gray-500 text-sm">Loading canvas...</div>
@@ -50,51 +50,46 @@ textColor: "#000000",
     const [aiPrompt, setAiPrompt] = useState('');
     const [elements, setElements] = useState(null);
     const [excalidrawAPI, setExcalidrawAPI] = useState(null);
-    
-    // Track previous script to detect text changes
-    const previousScriptRef = useRef(scriptCode);
+    const [debounceIndicator, setDebounceIndicator] = useState(true);  
+    const [coordinates, setCoordinates] = useState([0, 0]);
+
+  useEffect(() => {
+
+    const time = setTimeout(() => {
+      setDebounceIndicator(!debounceIndicator);
+    }, 700);
+    return () => clearTimeout(time);
+  }, [scriptCode, excalidrawAPI]);
 
    useEffect(() => {
         // Don't run if the API isn't ready
         if (!excalidrawAPI) return;
 
         const newElementSkeletons = DSLToExcalidraw(scriptCode);
+     console.log(scriptCode, newElementSkeletons);
         setElements(newElementSkeletons);
+
         // Pass the new elements directly to updateScene
         updateScene(newElementSkeletons);
 
-    }, [scriptCode, excalidrawAPI]);   
+    }, [debounceIndicator]);   
     
  const updateScene = async (elementSkeletons) => {
-      if (!excalidrawAPI || !elementSkeletons) return;
+        // Safety check
+        if (!excalidrawAPI || !elementSkeletons) return;
 
-      const { convertToExcalidrawElements, restoreElements } = await import("@excalidraw/excalidraw");
+        // Dynamically import the function *inside* here
+        const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
+            
+        const sceneData = {
+          elements: convertToExcalidrawElements(elementSkeletons),
+            appState:{
 
-      const oldLabels = previousScriptRef.current.match(/label:\s*"[^"]*"/g) || [];
-      const newLabels = scriptCode.match(/label:\s*"[^"]*"/g) || [];
-      const textChanged = JSON.stringify(oldLabels) !== JSON.stringify(newLabels);
-
-     // After creating your elements programmatically
-     const normalizedElements = restoreElements(elementSkeletons, null, {
-       refreshDimensions: textChanged,  // Only refresh when text changes (OPTIMIZATION)
-       repairBindings: true,
-       normalizeIndices: true
-     });
-      
-      const sceneData = {
-        elements: convertToExcalidrawElements(normalizedElements),
-          appState:{
-          },
-      };
-      excalidrawAPI.updateScene(sceneData);
-      
-      // Only refresh if text changed (OPTIMIZATION)
-      if (textChanged) {
-          excalidrawAPI.refresh();
-      }
-      
-      previousScriptRef.current = scriptCode;
-  };
+            },
+            // "CaptureUpdateAction" was not defined, so I removed it.
+        };
+        excalidrawAPI.updateScene(sceneData);
+    };
 
 
     return (
@@ -309,6 +304,10 @@ textColor: "#000000",
                 <div className="flex-1 relative">
                     <ExcalidrawWrapper
                         onChange={handleCanvasChange}
+                        onPointerUpdate={(event) => {
+                          setCoordinates([event.pointer.x, event.pointer.y]);
+                          console.log(coordinates);
+                        }}
                         theme="light"
                         initialData={null}
                         excalidrawAPI={setExcalidrawAPI}
