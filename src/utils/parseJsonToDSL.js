@@ -1,58 +1,21 @@
-'use client';
-
 import { randomId } from "./randomIdGenerator.js";
+import { layoutMindmap } from "./getDimensions.js"; // Corrected typo "Diminsions"
 
 // Defaults
-const NODE_HEIGHT = 100;
-const NODE_WIDTH = 240;
 const NODE_BACKGROUND_COLOR = `#3bc9db`;
 const NODE_TEXT_COLOR = `#000000`;
 const NODE_BORDER_COLOR = `#000000`;
-const RANGE = 1000;
 
-/**
- *
- * @param {*} n
- * @param {*} range
- *
- * @brief Returns an array of coordinates that arranges n nodes in the space of (0, 0) to (range, range).
- *
- * @return An Array of coordinates for each node.
- */
-function getCoordinates(n, range) {
-  const center = { x: range / 2, y: range / 2 };
-  const radius = range / 2;
-
-  const angleStep = (2 * Math.PI) / n;
-  const angleVec = [];
-
-  for (let i = 0; i < n; i++) {
-    angleVec.push((i * angleStep).toFixed(2));
-  }
-
-  const coordinates = [];
-
-  for (let i = 0; i < n; i++) {
-    let x = center.x + radius * Math.cos(angleVec[i]);
-    let y = center.y + radius * Math.sin(angleVec[i]);
-
-    coordinates.push({ x, y });
-  }
-
-  return coordinates;
-}
-
-function buildNodes(jsonNode, coordinate) {
-
-  const labelLength = jsonNode.label.length;
-  const nodeWidth = labelLength * 15;
+function buildNodes(jsonNode) {
+  // Removed unused 'nodeWidth' calculation.
+  // The script directly uses jsonNode.width from the layout.
   const script =
     `Node "${jsonNode.id}" {\n` +
     `  label: "${jsonNode.label}",\n` +
-    `  height: ${NODE_HEIGHT},\n` +
-    `  width: ${nodeWidth},\n` +
-    `  x: ${coordinate.x},\n` +
-    `  y: ${coordinate.y},\n` +
+    `  height: ${jsonNode.height},\n` +
+    `  width: ${jsonNode.width},\n` +
+    `  x: ${jsonNode.x},\n` +
+    `  y: ${jsonNode.y},\n` +
     `  backgroundColor: "${NODE_BACKGROUND_COLOR}",\n` +
     `  borderColor: "${NODE_BORDER_COLOR}",\n` +
     `  textColor: "${NODE_TEXT_COLOR}",\n` +
@@ -64,17 +27,103 @@ function buildNodes(jsonNode, coordinate) {
 function buildConnections(jsonConnection) {
   const source = jsonConnection.source;
   const target = jsonConnection.target;
-  const relation = jsonConnection.relation;
+  const relation = jsonConnection.label;
   const id = randomId();
+  const points = jsonConnection.points;
+  const encodedPoints = JSON.stringify(points); // e.g., "[[0,0]]"
+  const absoluteStart = jsonConnection.absoluteStart;
+  const encodedAbsoluteStart = JSON.stringify(absoluteStart); // e.g., "{"x":1,"y":1}"
 
   const script =
     `Connection "${id}" {\n` +
     `  source: "${source}",\n` +
     `  target: "${target}",\n` +
     `  relation: "${relation}",\n` +
+    `  points: ${encodedPoints}, \n` +
+    `  absoluteStart: ${encodedAbsoluteStart}, \n` +
     `};\n`;
 
   return script;
+}
+
+function extractNodesAndConnections(
+  inputNode,
+  depth = 0,
+  parent = null,
+  nodeSize = { w: 240, h: 100 }
+) {
+  if (!inputNode) return { nodes: [], connections: [] };
+
+  const thisWidth =
+    typeof inputNode.width === "number" ? inputNode.width : nodeSize.w;
+  const thisHeight =
+    typeof inputNode.height === "number" ? inputNode.height : nodeSize.h;
+
+  const node = {
+    id: inputNode.id,
+    label: inputNode.label,
+    depth,
+    parent,
+    x: inputNode.x,
+    y: inputNode.y,
+    width: thisWidth,
+    height: thisHeight,
+  };
+
+  let nodes = [node];
+  let connections = [];
+
+  if (Array.isArray(inputNode.children) && inputNode.children.length > 0) {
+    for (const child of inputNode.children) {
+      const { nodes: childNodes, connections: childConnections } =
+        extractNodesAndConnections(child, depth + 1, inputNode.id, nodeSize);
+
+      nodes = nodes.concat(childNodes);
+      connections = connections.concat(childConnections);
+
+      const childWidth =
+        typeof child.width === "number" ? child.width : nodeSize.w;
+      const childHeight =
+        typeof child.height === "number" ? child.height : nodeSize.h;
+
+      if (
+        typeof inputNode.x !== "number" ||
+        typeof inputNode.y !== "number" ||
+        typeof child.x !== "number" ||
+        typeof child.y !== "number"
+      ) {
+        continue;
+      }
+
+      const parentBottomX = inputNode.x + thisWidth / 2;
+      const parentBottomY = inputNode.y + thisHeight;
+      const childTopX = child.x + childWidth / 2;
+      const childTopY = child.y;
+      const midY = parentBottomY + (childTopY - parentBottomY) / 2;
+
+      const absPoints = [
+        [parentBottomX, parentBottomY], // absolute start
+        [parentBottomX, midY],
+        [childTopX, midY],
+        [childTopX, childTopY], // absolute end at child's top midpoint
+      ];
+
+      const relPoints = absPoints.map(([ax, ay]) => [
+        ax - parentBottomX,
+        ay - parentBottomY,
+      ]);
+
+      connections.push({
+        source: inputNode.id,
+        target: child.id,
+        label: `${inputNode.label} → ${child.label}`,
+        absoluteStart: { x: parentBottomX, y: parentBottomY },
+        points: relPoints,
+      });
+    }
+  }
+
+  return { nodes, connections };
 }
 
 export function parseMindmapToDSL(mindmap) {
@@ -82,108 +131,81 @@ export function parseMindmapToDSL(mindmap) {
     return -1;
   }
 
-  // Processing Nodes
-  const jsonNodes = mindmap["nodes"];
+  const mapWithCoodinates = layoutMindmap(mindmap, {
+    dx: 400,
+    dy: 400,
+    marginX: 600,
+    marginY: 80,
+    orientation: "horizontal",
+  });
 
-  if (!jsonNodes) {
-    return -1;
+  const laidOut = extractNodesAndConnections(mapWithCoodinates, 1, "root");
+
+  const scriptNodes = [];
+  const scriptConnections = [];
+
+  for (let i = 0; i < laidOut.nodes.length; i++) {
+    const SNode = buildNodes(laidOut.nodes[i]);
+    scriptNodes.push(SNode);
   }
 
-  const n = jsonNodes.length;
-  const coordinates = getCoordinates(n, RANGE);
-
-  const nodes = [];
-  const connections = [];
-
-  for (let i = 0; i < jsonNodes.length; i++) {
-    const node = buildNodes(jsonNodes[i], coordinates[i]);
-    nodes.push(node);
+  for (let i = 0; i < laidOut.connections.length; i++) {
+    const SConnection = buildConnections(laidOut.connections[i]);
+    scriptConnections.push(SConnection);
   }
 
-  //Processing Connections
-
-  const jsonConnection = mindmap["edges"];
-  const m = jsonConnection.length;
-
-  if (!jsonConnection) {
-    return -1;
-  }
-
-  for (let i = 0; i < m; i++) {
-    const connection = buildConnections(jsonConnection[i]);
-    connections.push(connection);
-  }
-
-  const script = nodes.join("\n") + connections.join("\n");
+  const script = scriptNodes.join("\n") + "\n" + scriptConnections.join("\n");
   return script;
 }
 
-/* ---------------------------
-   Example usage with your mindmap JSON
-   --------------------------- */
 
-const mindmap = {
-  nodes: [
-    { id: "discrete_speech_processing", label: "Discrete Speech Processing" },
-    { id: "speech_signal", label: "Speech Signal" },
-    { id: "digitization", label: "Digitization" },
-    { id: "feature_extraction", label: "Feature Extraction" },
-    { id: "quantization", label: "Quantization" },
-    { id: "speech_units", label: "Speech Units" },
-    { id: "pattern_recognition", label: "Pattern Recognition" },
-    { id: "applications", label: "Applications" },
-    { id: "speech_recognition", label: "Speech Recognition" },
-    { id: "speaker_identification", label: "Speaker Identification" },
-    { id: "speech_synthesis", label: "Speech Synthesis" },
-  ],
-  edges: [
+const mindmap = 
+{
+  "id": "discrete_speech_processing",
+  "label": "Discrete Speech Processing",
+  "relation": "root",
+  "children": [
     {
-      source: "discrete_speech_processing",
-      target: "speech_signal",
-      relation: "processes",
+      "id": "speech_signal",
+      "label": "Speech Signal",
+      "relation": "subtopic",
+      "children": [
+        { "id": "digitization", "label": "Digitization", "relation": "subtopic", "children": [] }
+      ]
     },
     {
-      source: "speech_signal",
-      target: "digitization",
-      relation: "converted_by",
+      "id": "feature_extraction",
+      "label": "Feature Extraction",
+      "relation": "subtopic",
+      "children": [
+        { "id": "spectral", "label": "Spectral Features", "relation": "subtopic", "children": [] }
+      ]
     },
     {
-      source: "digitization",
-      target: "feature_extraction",
-      relation: "enables",
+      "id": "speech_modeling",
+      "label": "Speech Modeling",
+      "relation": "subtopic",
+      "children": [
+        { "id": "source_filter", "label": "Source-Filter Model", "relation": "subtopic", "children": [] }
+      ]
     },
     {
-      source: "feature_extraction",
-      target: "quantization",
-      relation: "followed_by",
-    },
-    { source: "quantization", target: "speech_units", relation: "produces" },
-    {
-      source: "speech_units",
-      target: "pattern_recognition",
-      relation: "used_in",
+      "id": "applications",
+      "label": "Applications",
+      "relation": "subtopic",
+      "children": [
+        { "id": "speech_recognition", "label": "Speech Recognition", "relation": "subtopic", "children": [] }
+      ]
     },
     {
-      source: "pattern_recognition",
-      target: "applications",
-      relation: "applied_in",
-    },
-    {
-      source: "applications",
-      target: "speech_recognition",
-      relation: "includes",
-    },
-    {
-      source: "applications",
-      target: "speaker_identification",
-      relation: "includes",
-    },
-    {
-      source: "applications",
-      target: "speech_synthesis",
-      relation: "includes",
-    },
-  ],
-};
+      "id": "evaluation_metrics",
+      "label": "Evaluation Metrics",
+      "relation": "subtopic",
+      "children": [
+        { "id": "objective_metrics", "label": "Objective Metrics", "relation": "subtopic", "children": [] }
+      ]
+    }
+  ]
+}
 
 console.log(parseMindmapToDSL(mindmap));
