@@ -215,7 +215,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
       const arrowMeta = getPoints(processedElements, sourceId, targetId);
 
       if (currentElement?.properties?.points != undefined) {
-        points = currentElement.properties.points;
+        points = currentElement?.properties?.points;
         let temp = points[0];
         points = points.map((d) => [d[0] - temp[0], d[1] - temp[1]]);
         console.log("Points: ", points);
@@ -248,12 +248,12 @@ export function DSLToExcalidraw(DSLSrcipt) {
         strokeColor: currentElement.properties.arrowColor,
         strokeWidth: currentElement.properties.arrowWidth,
         strokeStyle: currentElement.properties.arrowStyle ? currentElement.properties.arrowStyle : "dotted",
-        startArrowhead: "dot",
-        endArrowhead: "dot",
+        startArrowhead: currentElement.properties.startArrowhead ? currentElement.properties.startArrowhead : "dot",
+        endArrowhead: currentElement.properties.endArrowhead ? currentElement.properties.endArrowhead : "dot",
         points,
         label: {
           text: label,
-          fontSize: 12,
+          fontSize: currentElement.properties.fontSize,
         },
         start: {
           id: sourceId,
