@@ -1,4 +1,5 @@
 import { randomId } from "./randomIdGenerator.js";
+import {getPoints} from "./getPoints.js"
 //import {parseMindmapToDSL} from './parseJsonToDSL.js';
 import { unquote } from "./removeQuotes.js";
 // Removed unused imports: getBaseCoordinates, getPointsArrayForArrows
@@ -13,10 +14,8 @@ function processElement(element) {
   let type;
   let name;
 
-  // --- 1. Get Type ---
   try {
-    // Original regex: ^(\s*)\b(Node|Connection)\b
-    const typeMatch = element.match(/^(\s*)\b(Node|Connection)\b/);
+    const typeMatch = element.match(/^(\s*)\b(Node|Connection|Text)\b/);
     if (!typeMatch || !typeMatch[2]) {
       throw new Error("Type match failed.");
     }
@@ -26,15 +25,12 @@ function processElement(element) {
     return -1;
   }
 
-  if (type !== "Node" && type !== "Connection") {
+  if (type !== "Node" && type !== "Connection" && type !== "Text") {
     console.log("Type of node is not valid.", type);
     return -1;
   }
 
-  // --- 2. Get Name ---
   try {
-    // Original regex: \s{1,}"([^"]+)"
-    // This captures the ID *inside* the quotes
     const nameMatch = element.match(/\s{1,}"([^"]+)"/);
     if (!nameMatch || !nameMatch[1]) {
       throw new Error("Name match failed.");
@@ -46,22 +42,17 @@ function processElement(element) {
   }
 
   if (name == null || name === undefined) {
-    // This check is from the original code
     return -1;
   }
 
-  // --- 3. Get Properties (Robust Regex Version) ---
   let propertiesText;
   try {
-    // Use regex to find all content between the first { and last }
     const match = element.match(/{([\s\S]*)}/);
     if (!match || typeof match[1] === "undefined") {
-      // No properties block found
       throw new Error("No properties block {} found.");
     }
     propertiesText = match[1].trim();
 
-    // If the block is empty, return properties as an empty object
     if (propertiesText.length === 0) {
       return { type, name, properties: {} };
     }
@@ -72,12 +63,9 @@ function processElement(element) {
 
   const properties = {};
 
-  // This regex splits by a comma, ONLY IF that comma is followed by
-  // optional whitespace, a "word" (key), optional whitespace, and a colon.
   const propertiesRegex = /,(?=\s*[\w\d_]+\s*:)/g;
   const propertiesArray = propertiesText.split(propertiesRegex);
 
-  // Return the final object as in the original function
   for (const propString of propertiesArray) {
     let key, valueString;
     try {
@@ -87,18 +75,12 @@ function processElement(element) {
       key = propString.substring(0, colonIndex).trim();
       valueString = propString.substring(colonIndex + 1).trim();
 
-      // Remove any trailing comma leftover from input
       valueString = valueString.replace(/,+\s*$/, "").trim();
 
-      // --- FIX ---
-      // Updated logic to handle properties based on the fix in File 1
       if (key === "points" || key === "absoluteStart") {
-        // These are now raw JSON, not strings.
-        // e.g., points: [[0,0],[...]] or absoluteStart: {"x":430,"y":1500}
         try {
           properties[key] = JSON.parse(valueString);
         } catch (err) {
-          // If JSON.parse fails, keep the raw string (safer than crashing)
           console.warn(
             `Failed to JSON.parse(${key}) — saving raw:`,
             valueString,
@@ -107,9 +89,6 @@ function processElement(element) {
           properties[key] = valueString;
         }
       } else {
-        // Other keys (label, source, etc.) are still strings.
-        // e.g., label: "Hello", source: "node-1"
-        // Use your unquote helper to remove surrounding " or '
         try {
           properties[key] = unquote(valueString);
         } catch (e) {
@@ -157,9 +136,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
 
   const excalidrawElements = [];
 
-  // --- OPTIMIZATION ---
-  // Create a Map of nodes for fast lookup
-  // This avoids the slow O(N^2) loop inside the connection builder
   const nodeMap = new Map();
   for (const el of processedElements) {
     if (el.type === "Node") {
@@ -173,7 +149,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
     if (currentElement.type == "Node") {
       let label;
       try {
-        // 'label' was already unquoted by processElement
         label = currentElement.properties.label;
       } catch (error) {
         console.log("Error Processing label of the node.");
@@ -182,7 +157,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
 
       let backgroundColor;
       try {
-        // 'backgroundColor' was already unquoted by processElement
         backgroundColor = currentElement.properties.backgroundColor;
       } catch (error) {
         console.log("Error Processing Background Color");
@@ -217,15 +191,13 @@ export function DSLToExcalidraw(DSLSrcipt) {
       let targetId;
 
       try {
-        // 'source' and 'target' were already unquoted by processElement
         sourceId = currentElement.properties.source;
         targetId = currentElement.properties.target;
       } catch (error) {
         console.log("Cannot connect the arrows to nodes properly!!");
-        continue; // Skip this connection
+        continue;
       }
 
-      // Use the fast Map lookup
       const sourceNode = nodeMap.get(sourceId);
       const targetNode = nodeMap.get(targetId);
 
@@ -239,8 +211,21 @@ export function DSLToExcalidraw(DSLSrcipt) {
         continue;
       }
 
-      const points = currentElement.properties.points;
-      const absoluteStart = currentElement.properties.absoluteStart;
+      let points;
+      const arrowMeta = getPoints(processedElements, sourceId, targetId);
+
+      if (currentElement?.properties?.points != undefined) {
+        points = currentElement.properties.points;
+        let temp = points[0];
+        points = points.map((d) => [d[0] - temp[0], d[1] - temp[1]]);
+        console.log("Points: ", points);
+      } else {
+        points = arrowMeta.points;
+      }
+
+      const absoluteStart = arrowMeta.absoluteStart;
+      if (sourceId == "speech_signal" && targetId == "evaluation_metrics") {
+      }
       let label;
 
       if (!points || !absoluteStart) {
@@ -249,7 +234,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
       }
 
       try {
-        // 'relation' was already unquoted by processElement
         label = currentElement.properties.relation;
       } catch {
         console.log("Unable to process the arrow label.");
@@ -259,15 +243,18 @@ export function DSLToExcalidraw(DSLSrcipt) {
       const connection = {
         id: currentElement.name, // The connection's own ID
         type: currentElement.properties.type ? currentElement.properties.type : "arrow",
-        elbowed: true, // Assuming this is desired
         x: absoluteStart.x,
         y: absoluteStart.y,
         strokeColor: currentElement.properties.arrowColor,
         strokeWidth: currentElement.properties.arrowWidth,
-        strokeStyle: currentElement.properties.arrowStyle,
+        strokeStyle: currentElement.properties.arrowStyle ? currentElement.properties.arrowStyle : "dotted",
         startArrowhead: "dot",
         endArrowhead: "dot",
         points,
+        label: {
+          text: label,
+          fontSize: 12,
+        },
         start: {
           id: sourceId,
         },
@@ -280,6 +267,21 @@ export function DSLToExcalidraw(DSLSrcipt) {
       };
 
       excalidrawElements.push(connection);
+    } else if(currentElement.type == "Text") {
+      const text = {
+        id: currentElement.name,
+        type: "text",
+        x: currentElement.properties.x,
+        y: currentElement.properties.y,
+        text: currentElement.properties.text,
+        fontSize: currentElement.properties.fontSize,
+        strokeColor: currentElement.properties.color,
+        customData: {
+          persistentId: currentElement.name,
+        }
+      }
+
+      excalidrawElements.push(text);
     }
   }
 
