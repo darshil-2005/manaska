@@ -1,4 +1,4 @@
-import jwt from "jose";
+import jwt from "jsonwebtoken";
 import { users } from "../../db/schema";
 import { db } from "../../db/db";
 import { eq } from "drizzle-orm";

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { db } from "../../../../db/db.js";
-import { users } from "../../../../db/schema";
+import { db } from "../../../../../db/db";
+import { users } from "../../../../../db/schema";
 import { eq } from "drizzle-orm";
-import { verifyAuth } from "../../../utils/verifyAuth";
+import { verifyAuth } from "../../../../utils/verifyAuth";
 
 const PUBLIC_FIELDS = ["id", "name", "username", "email", "image", "coins", "createdAt"];
 const ALLOWED_UPDATE_FIELDS = new Set(["name", "username", "image"]);
