@@ -95,8 +95,13 @@ export default function SettingsPage() {
 
     // Profile Editing
     const [isProfileEditing, setProfileEditing] = useState(false);
-    const [profileData, setProfileData] = useState({ name: 'Manaska User', username: 'manaska_user' });
-    const [originalProfileData, setOriginalProfileData] = useState(profileData);
+    const [profileData, setProfileData] = useState({ name: '', username: '' });
+    const [originalProfileData, setOriginalProfileData] = useState({ name: '', username: '' });
+    const [email, setEmail] = useState('');
+    const [profileLoading, setProfileLoading] = useState(false);
+    const [profileSaving, setProfileSaving] = useState(false);
+    const [profileError, setProfileError] = useState('');
+    const [profileSuccess, setProfileSuccess] = useState('');
 
 
     // API Key Editing
@@ -117,6 +122,39 @@ export default function SettingsPage() {
         }
     }, []);
 
+    // Load profile
+    useEffect(() => {
+        let isMounted = true;
+        setProfileLoading(true);
+        setProfileError('');
+        fetch('/api/user/profile', { method: 'GET' })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    throw new Error(data.error || 'Failed to load profile');
+                }
+                return res.json();
+            })
+            .then((data) => {
+                if (!isMounted) return;
+                const p = data?.profile || {};
+                const next = { name: p.name || '', username: p.username || '' };
+                setProfileData(next);
+                setOriginalProfileData(next);
+                setEmail(p.email || '');
+            })
+            .catch((err) => {
+                if (!isMounted) return;
+                setProfileError(err.message || 'Failed to load profile');
+            })
+            .finally(() => {
+                if (!isMounted) return;
+                setProfileLoading(false);
+            });
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
 
     // --- Data ---
@@ -140,12 +178,33 @@ export default function SettingsPage() {
         setProfileData(originalProfileData);
         setProfileEditing(false);
     };
-    const handleProfileSave = (e) => {
+    const handleProfileSave = async (e) => {
         e.preventDefault();
-        // In a real app, save to backend here
-        console.log('Saving profile:', profileData);
-        setOriginalProfileData(profileData);
-        setProfileEditing(false);
+        setProfileError('');
+        setProfileSuccess('');
+        setProfileSaving(true);
+        try {
+            const res = await fetch('/api/user/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: profileData.name, username: profileData.username }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to save profile');
+            }
+            const p = data?.profile || {};
+            const next = { name: p.name || '', username: p.username || '' };
+            setProfileData(next);
+            setOriginalProfileData(next);
+            setEmail(p.email || email);
+            setProfileSuccess('Profile updated');
+            setProfileEditing(false);
+        } catch (err) {
+            setProfileError(err.message || 'Failed to save profile');
+        } finally {
+            setProfileSaving(false);
+        }
     };
     const handleProfileChange = (e) => {
         setProfileData({ ...profileData, [e.target.name]: e.target.value });
@@ -221,16 +280,25 @@ export default function SettingsPage() {
                     {activeTab === 'profile' && (
                         <section id="profile" className="space-y-8">
                             <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
+                            {profileLoading && (
+                                <div className="text-sm text-gray-500">Loading profile…</div>
+                            )}
+                            {!!profileError && (
+                                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">{profileError}</div>
+                            )}
+                            {!!profileSuccess && (
+                                <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2">{profileSuccess}</div>
+                            )}
 
                             <SettingsCard title="Profile Picture" description="Update your profile picture. (Max 5MB: JPG, PNG, WEBP)">
                                 <div className="flex items-center space-x-4">
                                     <img className="h-16 w-16 rounded-full" src="https://placehold.co/128x128/4F46E5/FFFFFF?text=MA" alt="Profile placeholder" />
                                     <input type="file" id="profile-pic-upload" className="hidden" accept=".jpg,.jpeg,.png,.webp" />
-                                    <button onClick={() => document.getElementById('profile-pic-upload').click()} className={btnSecondary}>
+                                    <button onClick={() => document.getElementById('profile-pic-upload').click()} className={btnSecondary} disabled={profileLoading || profileSaving}>
                                         <Upload className="w-4 h-4 mr-2" />
                                         Upload New
                                     </button>
-                                    <button className={btnSecondary}>
+                                    <button className={btnSecondary} disabled={profileLoading || profileSaving}>
                                         <Trash2 className="w-4 h-4 mr-2" />
                                         Remove
                                     </button>
@@ -243,11 +311,27 @@ export default function SettingsPage() {
                                     title="Profile Information"
                                     footer={
                                         !isProfileEditing ? (
-                                            <button type="button" onClick={handleProfileEdit} className={btnPrimary}>Edit Profile</button>
+                                            <button
+                                                type="button"
+                                                onClick={handleProfileEdit}
+                                                className={btnPrimary}
+                                                disabled={profileLoading}
+                                            >
+                                                Edit Profile
+                                            </button>
                                         ) : (
                                             <>
-                                                <button type="button" onClick={handleProfileCancel} className={btnSecondary}>Cancel</button>
-                                                <button type="submit" className={btnPrimary}>Save Changes</button>
+                                                <button type="button" onClick={handleProfileCancel} className={btnSecondary} disabled={profileSaving}>Cancel</button>
+                                                <button
+                                                    type="submit"
+                                                    className={btnPrimary}
+                                                    disabled={
+                                                        profileSaving ||
+                                                        (profileData.name === originalProfileData.name && profileData.username === originalProfileData.username)
+                                                    }
+                                                >
+                                                    {profileSaving ? 'Saving…' : 'Save Changes'}
+                                                </button>
                                             </>
                                         )
                                     }
@@ -255,15 +339,15 @@ export default function SettingsPage() {
                                     <div className="space-y-4">
                                         <div>
                                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                                            <input type="text" name="name" id="name" value={profileData.name} onChange={handleProfileChange} disabled={!isProfileEditing} className={`${inputClasses} ${inputDisabledClasses} mt-1`} />
+                                            <input type="text" name="name" id="name" value={profileData.name} onChange={handleProfileChange} disabled={!isProfileEditing || profileSaving} className={`${inputClasses} ${inputDisabledClasses} mt-1`} />
                                         </div>
                                         <div>
                                             <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-                                            <input type="text" name="username" id="username" value={profileData.username} onChange={handleProfileChange} disabled={!isProfileEditing} className={`${inputClasses} ${inputDisabledClasses} mt-1`} />
+                                            <input type="text" name="username" id="username" value={profileData.username} onChange={handleProfileChange} disabled={!isProfileEditing || profileSaving} className={`${inputClasses} ${inputDisabledClasses} mt-1`} />
                                         </div>
                                         <div>
                                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                                            <input type="email" name="email" id="email" value="user@manaska.ai" disabled className={`${inputClasses} ${inputDisabledClasses} mt-1`} />
+                                            <input type="email" name="email" id="email" value={email} disabled className={`${inputClasses} ${inputDisabledClasses} mt-1`} />
                                             <p className="mt-2 text-xs text-gray-500">Email address cannot be changed.</p>
                                         </div>
                                     </div>
