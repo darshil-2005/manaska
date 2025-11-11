@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Share,
     Save,
@@ -16,35 +16,81 @@ import {
     Upload,
     Download
 } from 'lucide-react';
-import ExcalidrawWrapper from '@/wrapper/excalidraw';
+import dynamic from "next/dynamic"; 
+import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
+
+const ExcalidrawWrapper = dynamic(
+  () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
+  {
+    ssr: false, // This is the most important part
+    loading: () => (
+        <div className="w-full h-screen flex items-center justify-center bg-white">
+            <div className="text-gray-500 text-sm">Loading canvas...</div>
+        </div>
+    )
+  }
+);
 
 export default function MindMapDesigner() {
     const handleCanvasChange = (elements, appState, files) => {
         console.log('Canvas updated:', elements);
     };
 
-    const [scriptCode, setScriptCode] = useState(`// Manaska Mind Map Script
-// Available functions:
-// - addNode(text, x, y, color, parentId)
-// - updateNode(id, text, x, y, color)
-// - deleteNode(id)
-// - getNodes() - returns all nodes
-// - findNode(text) - find node by text
-
-// Example: Add a new node
-addNode("New Concept", 300, 100, "#fdeafe");
-
-// Example: Update existing node
-// updateNode("1", {text: "Updated Text", color: "#dcfce7"});
-
-// Example: Create a branch
-const parent = findNode("Product Launch Strategy");
-if (parent) {
-  addNode("Timeline", parent.x + 200, parent.y + 100, "#fef3c7", parent.id);
-}`);
-
+    const [scriptCode, setScriptCode] = useState(`Node "welcomeNode" {
+label: "Welcome To Manaska!!",
+height: 100,
+width: 390,
+x: 400,
+y: 300,
+backgroundColor: "#fff3bf",
+borderColor: "#000000",
+textColor: "#000000",
+};`);
     const [activeTab, setActiveTab] = useState('script');
     const [aiPrompt, setAiPrompt] = useState('');
+    const [elements, setElements] = useState(null);
+    const [excalidrawAPI, setExcalidrawAPI] = useState(null);
+    const [debounceIndicator, setDebounceIndicator] = useState(true);  
+    const [coordinates, setCoordinates] = useState([0, 0]);
+
+  useEffect(() => {
+
+    const time = setTimeout(() => {
+      setDebounceIndicator(!debounceIndicator);
+    }, 700);
+    return () => clearTimeout(time);
+  }, [scriptCode, excalidrawAPI]);
+
+   useEffect(() => {
+        // Don't run if the API isn't ready
+        if (!excalidrawAPI) return;
+
+        const newElementSkeletons = DSLToExcalidraw(scriptCode);
+     console.log(scriptCode, newElementSkeletons);
+        setElements(newElementSkeletons);
+
+        // Pass the new elements directly to updateScene
+        updateScene(newElementSkeletons);
+
+    }, [debounceIndicator]);   
+    
+ const updateScene = async (elementSkeletons) => {
+        // Safety check
+        if (!excalidrawAPI || !elementSkeletons) return;
+
+        // Dynamically import the function *inside* here
+        const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
+            
+        const sceneData = {
+          elements: convertToExcalidrawElements(elementSkeletons),
+            appState:{
+
+            },
+            // "CaptureUpdateAction" was not defined, so I removed it.
+        };
+        excalidrawAPI.updateScene(sceneData);
+    };
+
 
     return (
         <div className="h-screen bg-gray-50 flex flex-col">
@@ -97,7 +143,7 @@ if (parent) {
 
             <div className="flex flex-1 overflow-hidden">
                 {/* Left Sidebar */}
-                <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+                <div className="w-96 bg-white border-r border-gray-200 flex flex-col">
                     {/* Sidebar Header */}
                     <div className="p-4 border-b border-gray-200">
                         <h2 className="font-semibold text-gray-900">Mind Map Designer</h2>
@@ -258,7 +304,13 @@ if (parent) {
                 <div className="flex-1 relative">
                     <ExcalidrawWrapper
                         onChange={handleCanvasChange}
+                        onPointerUpdate={(event) => {
+                          setCoordinates([event.pointer.x, event.pointer.y]);
+                          console.log(coordinates);
+                        }}
                         theme="light"
+                        initialData={null}
+                        excalidrawAPI={setExcalidrawAPI}
                         className="text-black border border-gray-200 rounded-lg"
                     />
                 </div>

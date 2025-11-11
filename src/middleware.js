@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(request) {
+export async function middleware(request) {
+  console.log(process.env.NODE_ENV)
+  // if in development
+  if (process.env.NODE_ENV === "development") {
+    return NextResponse.next();
+  }
+
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
+
+  const session = await getToken({req: request, secret: process.env.AUTH_SECRET});
+  console.log("Session: ", session);
 
   // Block all /api/* routes except /api/auth/*
   if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {

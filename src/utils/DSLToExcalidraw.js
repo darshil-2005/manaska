@@ -1,0 +1,289 @@
+import { randomId } from "./randomIdGenerator.js";
+import {getPoints} from "./getPoints.js"
+//import {parseMindmapToDSL} from './parseJsonToDSL.js';
+import { unquote } from "./removeQuotes.js";
+// Removed unused imports: getBaseCoordinates, getPointsArrayForArrows
+
+/**
+ * Processes a string element to extract its type, name, and properties object.
+ * This version uses robust regex parsing for the properties block.
+ * @param {string} element - The raw string representation of the element.
+ * @returns {object | number} An object {type, name, properties} or -1 on failure.
+ */
+function processElement(element) {
+  let type;
+  let name;
+
+  try {
+    const typeMatch = element.match(/^(\s*)\b(Node|Connection|Text)\b/);
+    if (!typeMatch || !typeMatch[2]) {
+      throw new Error("Type match failed.");
+    }
+    type = typeMatch[2];
+  } catch (error) {
+    console.log("Error finding type of element.", error);
+    return -1;
+  }
+
+  if (type !== "Node" && type !== "Connection" && type !== "Text") {
+    console.log("Type of node is not valid.", type);
+    return -1;
+  }
+
+  try {
+    const nameMatch = element.match(/\s{1,}"([^"]+)"/);
+    if (!nameMatch || !nameMatch[1]) {
+      throw new Error("Name match failed.");
+    }
+    name = nameMatch[1]; // e.g., "welcomeNode"
+  } catch (error) {
+    console.log("Error capturing programmatic name of node.", error);
+    return -1;
+  }
+
+  if (name == null || name === undefined) {
+    return -1;
+  }
+
+  let propertiesText;
+  try {
+    const match = element.match(/{([\s\S]*)}/);
+    if (!match || typeof match[1] === "undefined") {
+      throw new Error("No properties block {} found.");
+    }
+    propertiesText = match[1].trim();
+
+    if (propertiesText.length === 0) {
+      return { type, name, properties: {} };
+    }
+  } catch (error) {
+    console.log("Not a valid Element (Error finding properties block): ", error);
+    return -1;
+  }
+
+  const properties = {};
+
+  const propertiesRegex = /,(?=\s*[\w\d_]+\s*:)/g;
+  const propertiesArray = propertiesText.split(propertiesRegex);
+
+  for (const propString of propertiesArray) {
+    let key, valueString;
+    try {
+      const colonIndex = propString.indexOf(":");
+      if (colonIndex === -1) continue;
+
+      key = propString.substring(0, colonIndex).trim();
+      valueString = propString.substring(colonIndex + 1).trim();
+
+      valueString = valueString.replace(/,+\s*$/, "").trim();
+
+      if (key === "points" || key === "absoluteStart") {
+        try {
+          properties[key] = JSON.parse(valueString);
+        } catch (err) {
+          console.warn(
+            `Failed to JSON.parse(${key}) — saving raw:`,
+            valueString,
+            err
+          );
+          properties[key] = valueString;
+        }
+      } else {
+        try {
+          properties[key] = unquote(valueString);
+        } catch (e) {
+          // fall back to raw valueString if unquote fails
+          properties[key] = valueString;
+        }
+      }
+    } catch (error) {
+      console.log(
+        "Not a valid Element because properties cannot be parsed properly: ",
+        error,
+        "on string:",
+        propString
+      );
+      return -1;
+    }
+  }
+  return { type, name, properties };
+}
+
+console.log(
+  processElement(` Node "welcomeNode" {
+label: "Welcome To: Manaska!!",
+height: 50,
+width: 200,
+x: 400,
+y: 300,
+backgroundColor: "#fff3bf",
+borderColor: "#000000",
+textColor: "#000000",
+}`)
+);
+
+export function DSLToExcalidraw(DSLSrcipt) {
+  const elements = DSLSrcipt.split(";").filter(Boolean).filter((d) => d != "\n");
+  const processedElements = [];
+
+  for (let i = 0; i < elements.length; i++) {
+    const processedElement = processElement(elements[i]);
+    if (processedElement == -1) {
+      continue;
+    }
+    processedElements.push(processedElement);
+  }
+
+  const excalidrawElements = [];
+
+  const nodeMap = new Map();
+  for (const el of processedElements) {
+    if (el.type === "Node") {
+      nodeMap.set(el.name, el);
+    }
+  }
+
+  for (let i = 0; i < processedElements.length; i++) {
+    const currentElement = processedElements[i];
+
+    if (currentElement.type == "Node") {
+      let label;
+      try {
+        label = currentElement.properties.label;
+      } catch (error) {
+        console.log("Error Processing label of the node.");
+        label = "No Name!!";
+      }
+
+      let backgroundColor;
+      try {
+        backgroundColor = currentElement.properties.backgroundColor;
+      } catch (error) {
+        console.log("Error Processing Background Color");
+        backgroundColor = "#fff3bf";
+      }
+
+      const node = {
+        id: currentElement.name,
+        type: currentElement.properties.type ? currentElement.properties.type : "rectangle",
+        x: parseFloat(currentElement.properties.x),
+        y: parseFloat(currentElement.properties.y),
+        height: parseFloat(currentElement.properties.height),
+        width: parseFloat(currentElement.properties.width)
+          ? parseFloat(currentElement.properties.width)
+          : 300,
+        backgroundColor,
+        strokeColor: currentElement.properties.borderColor,
+        strokeStyle: currentElement.properties.borderStyle,
+        fillStyle: currentElement.properties.backgroundStyle,
+        strokeWidth: currentElement.properties.borderWidth,
+        label: {
+          text: label,
+          fontSize: currentElement.properties.fontSize ? currentElement.properties.fontSize : 20,
+        },
+        customData: {
+          persistentId: currentElement.name,
+        }
+      };
+      excalidrawElements.push(node);
+    } else if (currentElement.type == "Connection") {
+      let sourceId;
+      let targetId;
+
+      try {
+        sourceId = currentElement.properties.source;
+        targetId = currentElement.properties.target;
+      } catch (error) {
+        console.log("Cannot connect the arrows to nodes properly!!");
+        continue;
+      }
+
+      const sourceNode = nodeMap.get(sourceId);
+      const targetNode = nodeMap.get(targetId);
+
+      if (!sourceNode) {
+        console.warn(`Could not find source node with ID: ${sourceId}`);
+        continue;
+      }
+
+      if (!targetNode) {
+        console.warn(`Could not find target node with ID: ${targetId}`);
+        continue;
+      }
+
+      let points;
+      const arrowMeta = getPoints(processedElements, sourceId, targetId);
+
+      if (currentElement?.properties?.points != undefined) {
+        points = currentElement.properties.points;
+        let temp = points[0];
+        points = points.map((d) => [d[0] - temp[0], d[1] - temp[1]]);
+        console.log("Points: ", points);
+      } else {
+        points = arrowMeta.points;
+      }
+
+      const absoluteStart = arrowMeta.absoluteStart;
+      if (sourceId == "speech_signal" && targetId == "evaluation_metrics") {
+      }
+      let label;
+
+      if (!points || !absoluteStart) {
+        console.warn("Missing points or absoluteStart for connection:", currentElement.name);
+        continue;
+      }
+
+      try {
+        label = currentElement.properties.relation;
+      } catch {
+        console.log("Unable to process the arrow label.");
+        continue;
+      }
+
+      const connection = {
+        id: currentElement.name, // The connection's own ID
+        type: currentElement.properties.type ? currentElement.properties.type : "arrow",
+        x: absoluteStart.x,
+        y: absoluteStart.y,
+        strokeColor: currentElement.properties.arrowColor,
+        strokeWidth: currentElement.properties.arrowWidth,
+        strokeStyle: currentElement.properties.arrowStyle ? currentElement.properties.arrowStyle : "dotted",
+        startArrowhead: "dot",
+        endArrowhead: "dot",
+        points,
+        label: {
+          text: label,
+          fontSize: 12,
+        },
+        start: {
+          id: sourceId,
+        },
+        end: {
+          id: targetId,
+        },
+        customData: {
+          persistentId: currentElement.name,
+        }
+      };
+
+      excalidrawElements.push(connection);
+    } else if(currentElement.type == "Text") {
+      const text = {
+        id: currentElement.name,
+        type: "text",
+        x: currentElement.properties.x,
+        y: currentElement.properties.y,
+        text: currentElement.properties.text,
+        fontSize: currentElement.properties.fontSize,
+        strokeColor: currentElement.properties.color,
+        customData: {
+          persistentId: currentElement.name,
+        }
+      }
+
+      excalidrawElements.push(text);
+    }
+  }
+
+  return excalidrawElements;
+}

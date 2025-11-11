@@ -1,10 +1,10 @@
 // app/api/register/route.js
 import { NextResponse } from "next/server";
-import { db } from "@/../db/db.js";
+import { db } from "../../../../../db/db";
 import { eq } from "drizzle-orm";
-import { users } from "@/../db/schema.ts";
+import { users } from "../../../../../db/schema";
 import bcrypt from "bcryptjs"
-import { validateEmail, validatePasswordRules } from "@/utils/validators";
+import { validateEmail, validatePasswordRules } from "../../../../utils/validators";
 
 export async function POST(request) {
   try {
@@ -57,12 +57,13 @@ export async function POST(request) {
     const salt = 10;
     const passwordHash = await bcrypt.hash(password, salt);
 
+    
     const insertResult = await db.insert(users).values({
       name,
       username,
       email,
       hashedPassword: passwordHash,
-      emailVerified: false,
+      emailVerified: null,
     }).returning();
 
     return NextResponse.json({ ok: true, user: { id: insertResult[0].id, email } }, { status: 201 });

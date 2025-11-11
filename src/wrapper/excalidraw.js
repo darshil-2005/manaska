@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
 import "@excalidraw/excalidraw/index.css";
 import dynamic from 'next/dynamic';
+
+const initData = {
+    "type":"excalidraw","version":2,"elements":[{"id":"4311l601053l6","type":"ellipse","x":400,"y":300,"width":150,"height":150,"strokeColor":"#e6c419","backgroundColor":"#fffbe6","fillStyle":"solid","strokeWidth":2,"roughness":0,"opacity":100,"angle":0,"seed":906141386,"version":1,"versionNonce":654321098,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"2136e05391l24"}],"updated":1709403399080,"link":null,"locked":false},{"id":"2136e05391l24","type":"text","x":475,"y":375,"width":50,"height":30,"text":"Sun","fontSize":24,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"4311l601053l6","originalText":"Sun","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":123456789,"version":1,"versionNonce":987654321,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"1421g483756l1","type":"ellipse","x":150,"y":100,"width":90,"height":50,"strokeColor":"#757575","backgroundColor":"#e0e0e0","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":654321987,"version":1,"versionNonce":123456789,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"3567o123457l3"}],"updated":1709403399080,"link":null,"locked":false},{"id":"3567o123457l3","type":"text","x":195,"y":125,"width":60,"height":20,"text":"Mercury","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"1421g483756l1","originalText":"Mercury","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":234567890,"version":1,"versionNonce":876543210,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"2109c789012l5","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":345678901,"version":1,"versionNonce":765432109,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"1421g483756l1","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null},{"id":"7890f123456l7","type":"ellipse","x":700,"y":100,"width":90,"height":50,"strokeColor":"#ff9800","backgroundColor":"#ffe0b2","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":456789012,"version":1,"versionNonce":654321987,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"9012a345678l9"}],"updated":1709403399080,"link":null,"locked":false},{"id":"9012a345678l9","type":"text","x":745,"y":125,"width":60,"height":20,"text":"Venus","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"7890f123456l7","originalText":"Venus","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":567890123,"version":1,"versionNonce":543210987,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"1234b567890l11","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":678901234,"version":1,"versionNonce":432109876,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"7890f123456l7","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null},{"id":"3456c789012l13","type":"ellipse","x":850,"y":300,"width":90,"height":50,"strokeColor":"#2196f3","backgroundColor":"#bbdefb","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":789012345,"version":1,"versionNonce":321098765,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"5678d901234l15"}],"updated":1709403399080,"link":null,"locked":false},{"id":"5678d901234l15","type":"text","x":895,"y":325,"width":60,"height":20,"text":"Earth","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"3456c789012l13","originalText":"Earth","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":890123456,"version":1,"versionNonce":210987654,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"7890e123456l17","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":901234567,"version":1,"versionNonce":109876543,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"3456c789012l13","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null},{"id":"9012f345678l19","type":"ellipse","x":700,"y":550,"width":90,"height":50,"strokeColor":"#f44336","backgroundColor":"#ffcdd2","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":123456789,"version":1,"versionNonce":987654321,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"2345g678901l21"}],"updated":1709403399080,"link":null,"locked":false},{"id":"2345g678901l21","type":"text","x":745,"y":575,"width":60,"height":20,"text":"Mars","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"9012f345678l19","originalText":"Mars","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":234567890,"version":1,"versionNonce":876543210,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"4567h890123l23","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":345678901,"version":1,"versionNonce":765432109,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"9012f345678l19","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null},{"id":"6789i012345l25","type":"ellipse","x":400,"y":650,"width":100,"height":60,"strokeColor":"#e6a701","backgroundColor":"#f8ecc2","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":456789012,"version":1,"versionNonce":654321987,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"8901j234567l27"}],"updated":1709403399080,"link":null,"locked":false},{"id":"8901j234567l27","type":"text","x":450,"y":680,"width":70,"height":20,"text":"Jupiter","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"6789i012345l25","originalText":"Jupiter","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":567890123,"version":1,"versionNonce":543210987,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"0123k456789l29","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":678901234,"version":1,"versionNonce":432109876,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"6789i012345l25","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null},{"id":"2345l678901l31","type":"ellipse","x":150,"y":550,"width":100,"height":60,"strokeColor":"#D32F2F","backgroundColor":"#FFFDE7","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":789012345,"version":1,"versionNonce":321098765,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"4567m890123l33"}],"updated":1709403399080,"link":null,"locked":false},{"id":"4567m890123l33","type":"text","x":200,"y":580,"width":70,"height":20,"text":"Saturn","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"2345l678901l31","originalText":"Saturn","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":890123456,"version":1,"versionNonce":210987654,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"6789n012345l35","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":901234567,"version":1,"versionNonce":109876543,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"2345l678901l31","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null},{"id":"8901o234567l37","type":"ellipse","x":0,"y":300,"width":100,"height":60,"strokeColor":"#00BCD4","backgroundColor":"#E0F7FA","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":123456789,"version":1,"versionNonce":987654321,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"0123p456789l39"}],"updated":1709403399080,"link":null,"locked":false},{"id":"0123p456789l39","type":"text","x":50,"y":330,"width":70,"height":20,"text":"Uranus","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"8901o234567l37","originalText":"Uranus","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":234567890,"version":1,"versionNonce":876543210,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"2345q678901l41","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":345678901,"version":1,"versionNonce":765432109,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"8901o234567l37","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null},{"id":"4567r890123l43","type":"ellipse","x":150,"y":0,"width":100,"height":60,"strokeColor":"#2196F3","backgroundColor":"#BBDEFB","fillStyle":"solid","strokeWidth":1,"roughness":1,"opacity":100,"angle":0,"seed":456789012,"version":1,"versionNonce":654321987,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[{"type":"text","id":"6789s012345l45"}],"updated":1709403399080,"link":null,"locked":false},{"id":"6789s012345l45","type":"text","x":200,"y":30,"width":70,"height":20,"text":"Neptune","fontSize":18,"fontFamily":1,"textAlign":"center","verticalAlign":"middle","containerId":"4567r890123l43","originalText":"Neptune","strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":567890123,"version":1,"versionNonce":543210987,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false},{"id":"8901t234567l47","type":"arrow","x":0,"y":0,"width":0,"height":0,"strokeColor":"#000000","backgroundColor":"transparent","fillStyle":"hachure","strokeWidth":1,"strokeStyle":"solid","roughness":1,"opacity":100,"angle":0,"seed":678901234,"version":1,"versionNonce":432109876,"isDeleted":false,"groupIds":[],"frameId":null,"boundElements":[],"updated":1709403399080,"link":null,"locked":false,"startBinding":{"elementId":"4311l601053l6","focus":0.5,"gap":1},"endBinding":{"elementId":"4567r890123l43","focus":0.5,"gap":1},"points":[[0,0],[0,0]],"endArrowhead":"arrow","startArrowhead":null}],"appState":{"viewBackgroundColor":"#ffffff","currentItemStrokeColor":"#000000","currentItemBackgroundColor":"transparent","currentItemFillStyle":"hachure","currentItemStrokeWidth":1,"currentItemStrokeStyle":"solid","currentItemRoughness":1,"currentItemOpacity":100,"currentItemFontFamily":1,"currentItemFontSize":20,"currentItemTextAlign":"left","currentItemVerticalAlign":"top","currentItemStartArrowhead":null,"currentItemEndArrowhead":"arrow","scrollX":-200,"scrollY":-100,"zoom":{"value":1},"gridSize":null,"viewModeEnabled":true},"files":{}}
+
 
 // Dynamically import Excalidraw to avoid SSR issues
 const Excalidraw = dynamic(
@@ -21,225 +24,25 @@ const ExcalidrawWrapper = ({
     initialData = null,
     onChange = () => { },
     className = "",
-    theme = "light"
+    theme,
+    excalidrawAPI,
+    onPointerUpdate
 }) => {
-    const [isClient, setIsClient] = useState(false);
-    const [excalidrawAPI, setExcalidrawAPI] = useState(null);
-
-    // Ensure we're on the client side
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    // Reset canvas size if it gets too large
-    useEffect(() => {
-        if (excalidrawAPI) {
-            const handleCanvasError = () => {
-                try {
-                    // Reset zoom to prevent canvas size issues
-                    excalidrawAPI.updateScene({
-                        appState: {
-                            zoom: { value: 1 },
-                            scrollX: 0,
-                            scrollY: 0
-                        }
-                    });
-                } catch (error) {
-                    console.warn('Canvas size reset failed:', error);
-                }
-            };
-
-            // Listen for canvas errors
-            window.addEventListener('error', handleCanvasError);
-            return () => window.removeEventListener('error', handleCanvasError);
-        }
-    }, [excalidrawAPI]);
-
-    // Default initial data with sample mind map nodes
-    const defaultInitialData = {
-        elements: [
-            {
-                id: "node1",
-                type: "rectangle",
-                x: 200,
-                y: 100,
-                width: 120,
-                height: 40,
-                backgroundColor: "#e0e7ff",
-                strokeColor: "#3b82f6",
-                strokeWidth: 1,
-                fillStyle: "solid",
-                roughness: 1,
-                opacity: 100,
-                angle: 0,
-                strokeSharpness: "sharp",
-                seed: 1234567890,
-                versionNonce: 123456789,
-                isDeleted: false,
-                link: null,
-                locked: false
-            },
-            {
-                id: "text1",
-                type: "text",
-                x: 215,
-                y: 112,
-                width: 90,
-                height: 16,
-                text: "Target Audience",
-                fontSize: 12,
-                fontFamily: 1,
-                textAlign: "left",
-                verticalAlign: "top",
-                opacity: 100,
-                angle: 0,
-                strokeColor: "#1e1e1e",
-                backgroundColor: "transparent",
-                fillStyle: "hachure",
-                strokeWidth: 1,
-                strokeSharpness: "sharp",
-                roughness: 1,
-                seed: 987654321,
-                versionNonce: 987654321,
-                isDeleted: false,
-                link: null,
-                locked: false
-            },
-            {
-                id: "node2",
-                type: "rectangle",
-                x: 400,
-                y: 80,
-                width: 130,
-                height: 40,
-                backgroundColor: "#dcfce7",
-                strokeColor: "#22c55e",
-                strokeWidth: 1,
-                fillStyle: "solid",
-                roughness: 1,
-                opacity: 100,
-                angle: 0,
-                strokeSharpness: "sharp",
-                seed: 1111111111,
-                versionNonce: 111111111,
-                isDeleted: false,
-                link: null,
-                locked: false
-            },
-            {
-                id: "text2",
-                type: "text",
-                x: 415,
-                y: 92,
-                width: 100,
-                height: 16,
-                text: "Marketing Campaign",
-                fontSize: 12,
-                fontFamily: 1,
-                textAlign: "left",
-                verticalAlign: "top",
-                opacity: 100,
-                angle: 0,
-                strokeColor: "#1e1e1e",
-                backgroundColor: "transparent",
-                fillStyle: "hachure",
-                strokeWidth: 1,
-                strokeSharpness: "sharp",
-                roughness: 1,
-                seed: 222222222,
-                versionNonce: 222222222,
-                isDeleted: false,
-                link: null,
-                locked: false
-            },
-            {
-                id: "node3",
-                type: "rectangle",
-                x: 300,
-                y: 200,
-                width: 120,
-                height: 40,
-                backgroundColor: "#fef3c7",
-                strokeColor: "#f59e0b",
-                strokeWidth: 1,
-                fillStyle: "solid",
-                roughness: 1,
-                opacity: 100,
-                angle: 0,
-                strokeSharpness: "sharp",
-                seed: 333333333,
-                versionNonce: 333333333,
-                isDeleted: false,
-                link: null,
-                locked: false
-            },
-            {
-                id: "text3",
-                type: "text",
-                x: 315,
-                y: 212,
-                width: 90,
-                height: 16,
-                text: "Product Launch",
-                fontSize: 12,
-                fontFamily: 1,
-                textAlign: "left",
-                verticalAlign: "top",
-                opacity: 100,
-                angle: 0,
-                strokeColor: "#1e1e1e",
-                backgroundColor: "transparent",
-                fillStyle: "hachure",
-                strokeWidth: 1,
-                strokeSharpness: "sharp",
-                roughness: 1,
-                seed: 444444444,
-                versionNonce: 444444444,
-                isDeleted: false,
-                link: null,
-                locked: false
-            }
-        ],
-        appState: {
-            theme: "light",
-            viewBackgroundColor: "#ffffff",
-            currentItemFillStyle: "solid",
-            currentItemStrokeWidth: 1,
-            currentItemRoughness: 1,
-            currentItemOpacity: 100,
-            currentItemFontFamily: 1,
-            currentItemFontSize: 12,
-            currentItemTextAlign: "left",
-            currentItemStrokeColor: "#1e1e1e",
-            currentItemBackgroundColor: "transparent",
-            gridSize: null,
-            colorPalette: {},
-            // Prevent canvas from getting too large
-            zoom: { value: 1 },
-            scrollX: 0,
-            scrollY: 0,
-            // Limit canvas bounds
-            width: 1200,
-            height: 800
-        }
-    };
-
-    // Render only on client side
-    if (!isClient) {
-        return (
-            <div className={`w-full h-full flex items-center justify-center bg-white ${className}`}>
-                <div className="text-gray-500 text-sm">Loading canvas...</div>
-            </div>
-        );
-    }
-
-    return (
+ 
+     return (
         <>
             <Excalidraw
-                initialData={defaultInitialData}
+                initialData={initialData}
+                onPointerUpdate={onPointerUpdate}
                 onChange={onChange}
-                theme="light"
+                theme={theme}
                 className={`text-black border border-gray-200 rounded-lg ${className}`}
+                zenModeEnabled={true}
+                excalidrawAPI={(api) => {
+                  if (excalidrawAPI) {
+                    excalidrawAPI(api);
+                  }
+                }}
             />
         </>
     );
