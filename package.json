@@ -25,6 +25,7 @@
     "dotenv": "^17.2.2",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.5",
+    "framer-motion": "^12.23.24",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.544.0",
     "next": "^15.5.2",
@@ -34,7 +35,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
