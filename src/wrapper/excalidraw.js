@@ -37,7 +37,6 @@ const ExcalidrawWrapper = ({
                 onChange={onChange}
                 theme={theme}
                 className={`text-black border border-gray-200 rounded-lg ${className}`}
-                zenModeEnabled={true}
                 excalidrawAPI={(api) => {
                   if (excalidrawAPI) {
                     excalidrawAPI(api);

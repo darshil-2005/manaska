@@ -107,5 +107,6 @@ export function elementsToDSL(elements) {
   };
 
   const script = scriptElements.join("\n");
+  console.log(script);
   return script;
 };

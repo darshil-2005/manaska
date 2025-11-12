@@ -21,6 +21,8 @@ import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
 import {elementsToDSL} from '../../utils/elementsToDSL.js'
 import {Textarea} from "../../components/ui/textarea.tsx"
 import {Button} from "../../components/ui/button.tsx"
+import { ModeToggle } from '../../components/themeToggle.jsx';
+import { useTheme } from "next-themes"
 
 const ExcalidrawWrapper = dynamic(
   () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
@@ -56,6 +58,8 @@ textColor: "#000000",
     const [excalidrawAPI, setExcalidrawAPI] = useState(null);
     const [debounceIndicator, setDebounceIndicator] = useState(true);  
     const [coordinates, setCoordinates] = useState([0, 0]);
+    
+  const {theme, systemTheme} = useTheme();
 
   useEffect(() => {
 
@@ -100,20 +104,23 @@ async function handleElementsToDSL() {
 
 
     return (
-        <div className="h-screen bg-gray-50 flex flex-col">
+        <div className="h-screen bg-backgorund flex flex-col">
             {/* Header */}
-            <header className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+            <header className="bg-backgorund px-4 py-2 flex border items-center justify-between">
                 <div className="flex items-center space-x-4">
                               {/* Project Info */}
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                         <span>Project:</span>
                         <span className="font-medium">Untitled Mind Map</span>
-                        <span className="bg-gray-100 px-2 py-1 rounded text-xs">Unsaved</span>
+                        <span className="bg-muted-foreground text-primary px-2 py-1 rounded text-xs">Unsaved</span>
                     </div>
                 </div>
 
                 {/* Header Actions */}
                 <div className="flex items-center space-x-2">
+                    
+                    <ModeToggle />
+                    
                     <Button variant={"outline"}>
                         <Undo size={20}  />
                     </Button>
@@ -133,20 +140,20 @@ async function handleElementsToDSL() {
 
             <div className="flex flex-1 overflow-hidden">
                 {/* Left Sidebar */}
-                <div className="w-96 bg-white border-r border-gray-200 flex flex-col">
+                <div className="w-96 bg-backgorund flex flex-col">
                           {/* Content Area */}
-                    <div className="flex-1 p-4 overflow-y-auto">
+                    <div className="flex-1 px-2 py-3 overflow-y-auto">
                             <div className="space-y-4">
                                 {/* Script Section */}
                                 <div>
-                                    <h3 className="text-lg text-primary mb-2">
+                                    <h3 className="text-xl text-primary font-bold mb-2">
                                         Script
                                     </h3>
                                     <Textarea
                                         value={scriptCode}
                                         onChange={(e) => setScriptCode(e.target.value)}
-                                        className="w-full text-black rounded-md p-3 text-xs font-mono h-[64vh] overflow-y-auto border resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Enter your JavaScript code here..."
+                                        className="w-full h-[75vh]"
+                                        placeholder="Enter your Script code here..."
                                         style={{
                                             fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
                                         }}
@@ -154,7 +161,7 @@ async function handleElementsToDSL() {
                                 </div>
                                 {/* Execute Button */}
                                 <Button
-                                    className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 flex items-center justify-center space-x-2"
+                                    className="w-full"
                                     onClick={handleElementsToDSL}
                                 >
                                     <Play size={16} />
@@ -166,13 +173,13 @@ async function handleElementsToDSL() {
       </div>
 
                 {/* Main Canvas Area */}
-                <div className="flex-1 relative">
+                <div className="flex-1 relative border">
                     <ExcalidrawWrapper
                         onChange={handleCanvasChange}
                         onPointerUpdate={(event) => {
                           setCoordinates([event.pointer.x, event.pointer.y]);
                         }}
-                        theme="light"
+                        theme={theme != "system" ? theme : systemTheme}
                         initialData={null}
                         excalidrawAPI={setExcalidrawAPI}
                         className="text-black border border-gray-200 rounded-lg"

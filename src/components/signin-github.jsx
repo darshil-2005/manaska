@@ -2,10 +2,11 @@
 
 import { signIn } from "next-auth/react"
 import { FaGithub } from "react-icons/fa"
+import { Button } from "../components/ui/button.tsx"
  
 export default function SignInGitHub() {
-  return <button onClick={() => signIn("github")} className="text-black w-full flex items-center justify-center h-11 sm:h-12 border border-gray-300 rounded-lg hover:bg-gray-100 text-xs sm:text-sm font-medium transition">
+  return <Button onClick={() => signIn("github")} className="w-full">
     <FaGithub size={18} className="mr-2" />
     Continue with GitHub
-  </button>
+  </Button>
 }
