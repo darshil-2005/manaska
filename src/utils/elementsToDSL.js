@@ -1,3 +1,5 @@
+import {randomId} from "./randomId.js"
+ 
 export function elementsToDSL(elements) {
 
   const scriptElements = [];
@@ -5,6 +7,10 @@ export function elementsToDSL(elements) {
   for (let i=0; i < elements.length; i++) {
 
     const element = elements[i];
+
+    if (element.customData?.persistentId == undefined) {
+      element.customData= {persistentId: randomId()};
+    }
 
     if (element.type == "rectangle" || element.type == "diamond" || element.type == "ellipse") {
       
@@ -52,11 +58,26 @@ export function elementsToDSL(elements) {
         console.log("Error parsing connection element.");
         continue;
       }
+      const sourceNode = elements.find((d) => d.id == sourceId);
+
+      if (sourceNode == undefined) {
+        console.log("Cannot find source node\n Source Id: ${sourceId}");
+        continue;
+      }
+
       const targetId = element.endBinding.elementId;
       if (targetId == null) {
         console.log("Error parsing connection element.");
         continue;
       }
+
+      const targetNode = elements.find((d) => d.id == targetId);
+
+      if (targetNode == undefined) {
+        console.log("Cannot find target node\n Target Id: ${targetId}");
+        continue;
+      }
+
       
       let labelId = element.boundElements.find(d => d.type == "text")?.id;
 
@@ -70,16 +91,15 @@ export function elementsToDSL(elements) {
 
       const connection = 
         `Connection "${element.customData.persistentId}" {\n` +
-        `  source: "${sourceId}",\n` +
-        `  target: "${targetId}",\n` +
+        `  source: "${sourceNode.customData.persistentId}",\n` +
+        `  target: "${targetNode.customData.persistentId}",\n` +
         `  relation: "${labelElement.originalText}",\n` +
         `  arrowColor: "${element.strokeColor}",\n` +
-        `  arrowWidth: "${element.strokeWidth}",\n` +
         `  arrowStyle: "${element.strokeStyle}",\n` +
         `  startArrowhead: "${element.startArrowhead}",\n` +
         `  endArrowhead: "${element.endArrowhead}",\n` +
         `  fontSize: ${labelElement.fontSize},\n` +
-        `  points: ${JSON.stringify(elements.points)},\n` +
+        `  points: ${JSON.stringify(element.points)},\n` +
         `};\n`;
 
       scriptElements.push(connection);
@@ -87,6 +107,5 @@ export function elementsToDSL(elements) {
   };
 
   const script = scriptElements.join("\n");
-  console.log(script);
   return script;
 };

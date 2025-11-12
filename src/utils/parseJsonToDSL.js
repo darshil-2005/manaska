@@ -1,4 +1,4 @@
-import { randomId } from "./randomIdGenerator.js";
+import { randomId } from "./randomId.js";
 import { layoutMindmap } from "./getDimensions.js"; // Corrected typo "Diminsions"
 
 // Defaults

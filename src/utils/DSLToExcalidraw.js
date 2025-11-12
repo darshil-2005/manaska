@@ -1,8 +1,6 @@
-import { randomId } from "./randomIdGenerator.js";
+import { randomId } from "./randomId.js";
 import {getPoints} from "./getPoints.js"
-//import {parseMindmapToDSL} from './parseJsonToDSL.js';
 import { unquote } from "./removeQuotes.js";
-// Removed unused imports: getBaseCoordinates, getPointsArrayForArrows
 
 /**
  * Processes a string element to extract its type, name, and properties object.
@@ -108,19 +106,6 @@ function processElement(element) {
   }
   return { type, name, properties };
 }
-
-console.log(
-  processElement(` Node "welcomeNode" {
-label: "Welcome To: Manaska!!",
-height: 50,
-width: 200,
-x: 400,
-y: 300,
-backgroundColor: "#fff3bf",
-borderColor: "#000000",
-textColor: "#000000",
-}`)
-);
 
 export function DSLToExcalidraw(DSLSrcipt) {
   const elements = DSLSrcipt.split(";").filter(Boolean).filter((d) => d != "\n");
@@ -246,7 +231,6 @@ export function DSLToExcalidraw(DSLSrcipt) {
         x: absoluteStart.x,
         y: absoluteStart.y,
         strokeColor: currentElement.properties.arrowColor,
-        strokeWidth: currentElement.properties.arrowWidth,
         strokeStyle: currentElement.properties.arrowStyle ? currentElement.properties.arrowStyle : "dotted",
         startArrowhead: currentElement.properties.startArrowhead ? currentElement.properties.startArrowhead : "dot",
         endArrowhead: currentElement.properties.endArrowhead ? currentElement.properties.endArrowhead : "dot",
