@@ -30,6 +30,7 @@ export function elementsToDSL(elements) {
                     `  width: ${element.width},\n` +
                     `  x: ${element.x},\n` +
                     `  y: ${element.y},\n` +
+                    `  roundness: ${element.roundness.type},\n` +
                     `  backgroundColor: "${element.backgroundColor}",\n` +
                     `  borderColor: "${element.strokeColor}",\n` +
                     `  borderStyle: "${element.strokeStyle}",\n` +
@@ -94,6 +95,8 @@ export function elementsToDSL(elements) {
         `  source: "${sourceNode.customData.persistentId}",\n` +
         `  target: "${targetNode.customData.persistentId}",\n` +
         `  relation: "${labelElement.originalText}",\n` +
+        `  x: ${element.x},\n` +
+        `  y: ${element.y},\n` +
         `  arrowColor: "${element.strokeColor}",\n` +
         `  arrowStyle: "${element.strokeStyle}",\n` +
         `  startArrowhead: "${element.startArrowhead}",\n` +
