@@ -21,6 +21,7 @@ import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
 import {elementsToDSL} from '../../utils/elementsToDSL.js'
 import {Textarea} from "../../components/ui/textarea.tsx"
 import {Button} from "../../components/ui/button.tsx"
+import { ModeToggle } from '../../components/themeToggle.jsx';
 
 const ExcalidrawWrapper = dynamic(
   () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
@@ -114,6 +115,9 @@ async function handleElementsToDSL() {
 
                 {/* Header Actions */}
                 <div className="flex items-center space-x-2">
+                    
+                    <ModeToggle />
+                    
                     <Button variant={"outline"}>
                         <Undo size={20}  />
                     </Button>
