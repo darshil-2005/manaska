@@ -2,34 +2,40 @@ import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request) {
-  // const { pathname } = request.nextUrl;
-  // const token = request.cookies.get("token")?.value;
+  console.log(process.env.NODE_ENV)
+  // if in development
+  if (process.env.NODE_ENV === "development") {
+    return NextResponse.next();
+  }
 
-  // const session = await getToken({req: request, secret: process.env.AUTH_SECRET});
-  // console.log("Session: ", session);
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get("token")?.value;
 
-  // // Block all /api/* routes except /api/auth/*
-  // if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
-  //   if (!token) {
-  //     return new NextResponse(
-  //       JSON.stringify({ error: "Unauthorized: No token provided" }),
-  //       { status: 401, headers: { "Content-Type": "application/json" } }
-  //     );
-  //   }
-  //   return NextResponse.next();
-  // }
+  const session = await getToken({req: request, secret: process.env.AUTH_SECRET});
+  console.log("Session: ", session);
 
-  // //  Block /canvas and /dashboard pages if no token
-  // if (
-  //   pathname.startsWith("/dashboard") ||
-  //   pathname.startsWith("/canvas")
-  // ) {
-  //   if (!token) {
-  //     // Redirect to login page (or send a 401 JSON response)
-  //     return NextResponse.redirect(new URL("/login", request.url));
-  //   }
-  //   return NextResponse.next();
-  // }
+  // Block all /api/* routes except /api/auth/*
+  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
+    if (!token) {
+      return new NextResponse(
+        JSON.stringify({ error: "Unauthorized: No token provided" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    return NextResponse.next();
+  }
+
+  //  Block /canvas and /dashboard pages if no token
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/canvas")
+  ) {
+    if (!token) {
+      // Redirect to login page (or send a 401 JSON response)
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return NextResponse.next();
+  }
 
   // Allow all other routes
   return NextResponse.next();
