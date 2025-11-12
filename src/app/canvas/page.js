@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import dynamic from "next/dynamic"; 
 import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
+import {elementsToDSL} from '../../utils/elementsToDSL.js'
 
 const ExcalidrawWrapper = dynamic(
   () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
@@ -30,6 +31,7 @@ const ExcalidrawWrapper = dynamic(
     )
   }
 );
+
 
 export default function MindMapDesigner() {
     const handleCanvasChange = (elements, appState, files) => {
@@ -62,23 +64,17 @@ textColor: "#000000",
   }, [scriptCode, excalidrawAPI]);
 
    useEffect(() => {
-        // Don't run if the API isn't ready
         if (!excalidrawAPI) return;
 
         const newElementSkeletons = DSLToExcalidraw(scriptCode);
-     console.log(scriptCode, newElementSkeletons);
         setElements(newElementSkeletons);
-
-        // Pass the new elements directly to updateScene
         updateScene(newElementSkeletons);
 
     }, [debounceIndicator]);   
     
  const updateScene = async (elementSkeletons) => {
-        // Safety check
         if (!excalidrawAPI || !elementSkeletons) return;
 
-        // Dynamically import the function *inside* here
         const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
             
         const sceneData = {
@@ -86,10 +82,21 @@ textColor: "#000000",
             appState:{
 
             },
-            // "CaptureUpdateAction" was not defined, so I removed it.
         };
         excalidrawAPI.updateScene(sceneData);
     };
+
+async function handleElementsToDSL() {
+  if (!excalidrawAPI) {
+   
+    return -1;
+  }
+  const elements = excalidrawAPI.getSceneElements();
+  const script = elementsToDSL(elements);
+
+  //console.log("Script: ", script);
+};
+
 
 
     return (
@@ -195,10 +202,10 @@ textColor: "#000000",
                                 {/* Execute Button */}
                                 <button
                                     className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 flex items-center justify-center space-x-2"
-                                    onClick={() => { }}
+                                    onClick={handleElementsToDSL}
                                 >
                                     <Play size={16} />
-                                    <span>Execute Script</span>
+                                    <span>Generate Script</span>
                                 </button>
 
                             </div>
@@ -306,7 +313,6 @@ textColor: "#000000",
                         onChange={handleCanvasChange}
                         onPointerUpdate={(event) => {
                           setCoordinates([event.pointer.x, event.pointer.y]);
-                          console.log(coordinates);
                         }}
                         theme="light"
                         initialData={null}
