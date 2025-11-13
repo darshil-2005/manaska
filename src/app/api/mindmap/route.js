@@ -1,7 +1,35 @@
 import { ChatGroq } from "@langchain/groq";
+import { db } from "../../../../db/db";
+import { map } from "../../../../db/schema";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(req) {
   try {
+    // Get user from cookie
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+
+    if (!token) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - No token provided" }),
+        { status: 401 }
+      );
+    }
+
+    // Decode JWT to get user info
+    let userData;
+    try {
+      userData = jwt.verify(token.value, JWT_SECRET);
+    } catch (error) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - Invalid token" }),
+        { status: 401 }
+      );
+    }
+
     const { prompt } = await req.json();
 
     if (!prompt || !prompt.trim()) {
@@ -76,8 +104,28 @@ Topic: ${prompt}
 
     console.log("Parsed mindmap JSON generated successfully!");
 
+    // Convert mindmap to DSL for storage
+    const { parseMindmapToDSL } = await import("../../../utils/parseJsonToDSL.js");
+    const dslCode = parseMindmapToDSL(parsed);
+
+    // Create map entry in database
+    const [newMap] = await db
+      .insert(map)
+      .values({
+        id: crypto.randomUUID(),
+        title: parsed.label || "Mindmap",
+        description: prompt,
+        userId: userData.id,
+        url: dslCode, // Storing DSL code in url field
+        pinned: false,
+      })
+      .returning();
+
+    // Return map without sensitive fields
+    const { userId, createdAt, updatedAt, ...mapData } = newMap;
+
     return new Response(
-      JSON.stringify({ mindmap: parsed }),
+      JSON.stringify({ mindmap: parsed, map: mapData }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
 
