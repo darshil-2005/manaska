@@ -21,6 +21,11 @@ import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
 import {elementsToDSL} from '../../utils/elementsToDSL.js'
 import {Textarea} from "../../components/ui/textarea.tsx"
 import {Button} from "../../components/ui/button.tsx"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "../../components/ui/resizable"
 import { ModeToggle } from '../../components/themeToggle.jsx';
 import { useTheme } from "next-themes"
 import Editor from"../../components/editor.jsx"
@@ -45,14 +50,14 @@ export default function MindMapDesigner() {
 
 
   const defaultValue = `Node "welcomeNode" {
-label: "Welcome To Manaska!!",
-height: 100,
-width: 390,
-x: 400,
-y: 300,
-backgroundColor: "#fff3bf",
-borderColor: "#000000",
-textColor: "#000000",
+  label: "Welcome To Manaska!!",
+  height: 100,
+  width: 390,
+  x: 400,
+  y: 300,
+  backgroundColor: "#fff3bf",
+  borderColor: "#000000",
+  textColor: "#000000",
 };`
 
 
@@ -88,11 +93,11 @@ textColor: "#000000",
 
     const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
 
+    console.log("Elements: ", elementSkeletons);
+
     const sceneData = {
       elements: convertToExcalidrawElements(elementSkeletons),
-      appState:{
-
-      },
+      appState: {},
     };
     excalidrawAPI.updateScene(sceneData);
   };
@@ -149,17 +154,16 @@ textColor: "#000000",
     </div>
     </header>
 
-    <div className="flex flex-1 overflow-hidden">
-    <div className="w-[30vw] bg-backgorund flex flex-col">
-    <div className="flex-1 py-3 overflow-y-auto">
-    <div className="space-y-4">
-    <Editor scriptCode={scriptCode} setScriptCode={setScriptCode}/>
-    </div>
-    </div>
-    </div>
+    <ResizablePanelGroup direction="horizontal">
+
+    <ResizablePanel className="bg-backgorund" defaultSize={25}>
+      <Editor scriptCode={scriptCode} setScriptCode={setScriptCode}/>
+    </ResizablePanel>
+
+    <ResizableHandle className="w-1"/>
 
     {/* Main Canvas Area */}
-    <div className="flex-1 relative border">
+    <ResizablePanel defaultSize={75}>
     <ExcalidrawWrapper
     onChange={handleCanvasChange}
     onPointerUpdate={(event) => {
@@ -170,8 +174,10 @@ textColor: "#000000",
     excalidrawAPI={setExcalidrawAPI}
     className="text-black border border-gray-200 rounded-lg"
     />
-    </div>
-    </div>
+    </ResizablePanel>
+
+    </ResizablePanelGroup>
+
     </div>
   );
 }

@@ -15,9 +15,9 @@ const manaskaDSLLanguage = {
   root: [
     [/^\s*(Node|Connection|Text)\s+(?=")/, 'keyword'],
     [/"([^"\\]|\\.)*"/, 'string'],
-    [/\d*\.\d+([eE][+\-]?\d+)?/, 'number.float'],
+    [/-?\d*\.\d+([eE][+\-]?\d+)?/, 'number.float'],
     [/0[xX][0-9a-fA-F]+/, 'number.hex'],
-    [/\d+/, 'number'],
+    [/-?\d+/, 'number'],
     [/\b([a-zA-Z_]\w*)(?=\s*:)/, 'attribute.name'],
     [/@symbols/, 'operator'],
     [/[{}\[\](),;]/, 'delimiter'],

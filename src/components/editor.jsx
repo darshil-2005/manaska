@@ -48,6 +48,9 @@ export default function Editor({scriptCode, setScriptCode}) {
         overviewRulerLanes: 0,
         overviewRulerBorder: false,
         renderLineHighlight: "none",
+        lineNumbersMinChars: 3,
+        glyphMargin: false,
+        lineDecorationsWidth: 4,
     }}
     />
   );
