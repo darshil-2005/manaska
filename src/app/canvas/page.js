@@ -16,19 +16,19 @@ import {
     Upload,
     Download
 } from 'lucide-react';
-import dynamic from "next/dynamic"; 
-import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
+import dynamic from "next/dynamic";
+import { DSLToExcalidraw } from '../../utils/DSLToExcalidraw.js';
 
 const ExcalidrawWrapper = dynamic(
-  () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
-  {
-    ssr: false, // This is the most important part
-    loading: () => (
-        <div className="w-full h-screen flex items-center justify-center bg-white">
-            <div className="text-gray-500 text-sm">Loading canvas...</div>
-        </div>
-    )
-  }
+    () => import('../../wrapper/excalidraw.js'),
+    {
+        ssr: false, 
+        loading: () => (
+            <div className="w-full h-screen flex items-center justify-center bg-white">
+                <div className="text-gray-500 text-sm">Loading canvas...</div>
+            </div>
+        )
+    }
 );
 
 export default function MindMapDesigner() {
@@ -50,47 +50,80 @@ textColor: "#000000",
     const [aiPrompt, setAiPrompt] = useState('');
     const [elements, setElements] = useState(null);
     const [excalidrawAPI, setExcalidrawAPI] = useState(null);
-    const [debounceIndicator, setDebounceIndicator] = useState(true);  
+    const [debounceIndicator, setDebounceIndicator] = useState(true);
     const [coordinates, setCoordinates] = useState([0, 0]);
 
-  useEffect(() => {
+    useEffect(() => {
 
-    const time = setTimeout(() => {
-      setDebounceIndicator(!debounceIndicator);
-    }, 700);
-    return () => clearTimeout(time);
-  }, [scriptCode, excalidrawAPI]);
+        const time = setTimeout(() => {
+            setDebounceIndicator(!debounceIndicator);
+        }, 700);
+        return () => clearTimeout(time);
+    }, [scriptCode, excalidrawAPI]);
 
-   useEffect(() => {
-        // Don't run if the API isn't ready
+    useEffect(() => {
+        
         if (!excalidrawAPI) return;
 
         const newElementSkeletons = DSLToExcalidraw(scriptCode);
-     console.log(scriptCode, newElementSkeletons);
+        console.log(scriptCode, newElementSkeletons);
         setElements(newElementSkeletons);
 
-        // Pass the new elements directly to updateScene
+       
         updateScene(newElementSkeletons);
 
-    }, [debounceIndicator]);   
-    
- const updateScene = async (elementSkeletons) => {
-        // Safety check
+    }, [debounceIndicator]);
+
+    const updateScene = async (elementSkeletons) => {
+        
         if (!excalidrawAPI || !elementSkeletons) return;
 
-        // Dynamically import the function *inside* here
+        
         const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
-            
+
         const sceneData = {
-          elements: convertToExcalidrawElements(elementSkeletons),
-            appState:{
+            elements: convertToExcalidrawElements(elementSkeletons),
+            appState: {
 
             },
-            // "CaptureUpdateAction" was not defined, so I removed it.
+            
         };
         excalidrawAPI.updateScene(sceneData);
     };
 
+    const handleGenerateAI = async () => {
+        if (!aiPrompt.trim()) {
+            alert("Please enter a prompt!");
+            return;
+        }
+
+        try {
+            console.log("Sending prompt to backend:", aiPrompt);
+
+            const response = await fetch("/api/canvas/prompt", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_input: aiPrompt }),
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || "Failed to generate mind map");
+            }
+
+            const data = await response.json();
+            console.log("Mind Map Response:", data);
+
+            const newScript = data.map?.url || "";
+
+            setScriptCode(newScript);
+            setActiveTab("script");
+
+        } catch (err) {
+            console.error("AI Generation Error:", err);
+            alert("Failed to generate mind map.");
+        }
+    };
 
     return (
         <div className="h-screen bg-gray-50 flex flex-col">
@@ -220,10 +253,92 @@ textColor: "#000000",
                                 {/* Generate Button */}
                                 <button
                                     className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 flex items-center justify-center space-x-2"
-                                    onClick={() => { }}
+                                    onClick={async () => {
+                                        if (!aiPrompt.trim()) {
+                                            alert("Please enter a topic or prompt first!");
+                                            return;
+                                        }
+
+                                        try {
+                                            console.log("Sending prompt to /api/canvas/mindmap...");
+                                            const res = await fetch("/api/mindmap", {
+                                                method: "POST",
+                                                headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({ prompt: aiPrompt }),
+                                            });
+
+                                            const data = await res.json();
+                                            console.log("Mindmap API response:", data);
+
+                                            if (!res.ok || !data.mindmap) {
+                                                alert("Failed to generate mindmap. Check console for details.");
+                                                return;
+                                            }
+
+                                            // Convert the JSON mindmap to DSL
+                                            const { parseMindmapToDSL } = await import("../../utils/parseJsonToDSL.js");
+                                            const dslCode = parseMindmapToDSL(data.mindmap);
+
+                                            setScriptCode(dslCode);
+                                            setActiveTab("script");
+                                            alert("Mindmap generated successfully!");
+                                        } catch (error) {
+                                            console.error("Error generating mindmap:", error);
+                                            alert("Something went wrong while generating the mindmap.");
+                                        }
+                                    }}
+
                                 >
                                     <Zap size={16} />
                                     <span>Generate</span>
+                                </button>
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    id="pdf-upload"
+                                    className="hidden"
+                                    onChange={async (e) => {
+                                        const file = e.target.files[0];
+                                        if (!file) return;
+
+                                        const formData = new FormData();
+                                        formData.append("file", file);
+
+                                        try {
+                                            console.log("Uploading PDF for mindmap generation...");
+                                            const res = await fetch("/api/mindmap/pdf", {
+                                                method: "POST",
+                                                body: formData,
+                                            });
+
+                                            const data = await res.json();
+                                            console.log("Mindmap from PDF:", data);
+
+                                            if (!res.ok || !data.mindmap) {
+                                                alert("Failed to generate mindmap from PDF.");
+                                                return;
+                                            }
+
+                                            // Convert to DSL and display
+                                            const { parseMindmapToDSL } = await import("../../utils/parseJsonToDSL.js");
+                                            const dslCode = parseMindmapToDSL(data.mindmap);
+
+                                            setScriptCode(dslCode);
+                                            setActiveTab("script");
+                                            alert("Mindmap generated from PDF!");
+                                        } catch (err) {
+                                            console.error("Error uploading PDF:", err);
+                                            alert("Something went wrong while generating from PDF.");
+                                        }
+                                    }}
+                                />
+
+                                <button
+                                    onClick={() => document.getElementById("pdf-upload").click()}
+                                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 flex items-center justify-center space-x-2"
+                                >
+                                    <Upload size={16} />
+                                    <span>Upload PDF for Mindmap</span>
                                 </button>
 
                                 {/* Quick Actions */}
@@ -305,8 +420,8 @@ textColor: "#000000",
                     <ExcalidrawWrapper
                         onChange={handleCanvasChange}
                         onPointerUpdate={(event) => {
-                          setCoordinates([event.pointer.x, event.pointer.y]);
-                          console.log(coordinates);
+                            setCoordinates([event.pointer.x, event.pointer.y]);
+                            console.log(coordinates);
                         }}
                         theme="light"
                         initialData={null}
