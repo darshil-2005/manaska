@@ -1,9 +1,7 @@
-import { randomId } from "./randomIdGenerator.js";
+import { randomId } from "./randomId.js";
 import {getPoints} from "./getPoints.js"
-//import {parseMindmapToDSL} from './parseJsonToDSL.js';
 import { unquote } from "./removeQuotes.js";
-// Removed unused imports: getBaseCoordinates, getPointsArrayForArrows
-
+import { removeCommentsFromDSL } from "./removeCommentsFromDSL.js"
 /**
  * Processes a string element to extract its type, name, and properties object.
  * This version uses robust regex parsing for the properties block.
@@ -109,21 +107,10 @@ function processElement(element) {
   return { type, name, properties };
 }
 
-console.log(
-  processElement(` Node "welcomeNode" {
-label: "Welcome To: Manaska!!",
-height: 50,
-width: 200,
-x: 400,
-y: 300,
-backgroundColor: "#fff3bf",
-borderColor: "#000000",
-textColor: "#000000",
-}`)
-);
-
 export function DSLToExcalidraw(DSLSrcipt) {
-  const elements = DSLSrcipt.split(";").filter(Boolean).filter((d) => d != "\n");
+  
+  let scriptWithoutComments = removeCommentsFromDSL(DSLSrcipt); 
+  const elements = scriptWithoutComments.split(";").filter(Boolean).filter((d) => d != "\n");
   const processedElements = [];
 
   for (let i = 0; i < elements.length; i++) {
@@ -163,6 +150,14 @@ export function DSLToExcalidraw(DSLSrcipt) {
         backgroundColor = "#fff3bf";
       }
 
+      let roundness;
+      try {
+        roundness = parseInt(currentElement.properties.roundness);
+      } catch(error) {
+        console.warn("Cannot capture roundness of element Id: ", currentElement.name, "\nError: ", error);
+      }
+
+
       const node = {
         id: currentElement.name,
         type: currentElement.properties.type ? currentElement.properties.type : "rectangle",
@@ -177,6 +172,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
         strokeStyle: currentElement.properties.borderStyle,
         fillStyle: currentElement.properties.backgroundStyle,
         strokeWidth: currentElement.properties.borderWidth,
+        roundness: {type: roundness},
         label: {
           text: label,
           fontSize: currentElement.properties.fontSize ? currentElement.properties.fontSize : 20,
@@ -212,23 +208,27 @@ export function DSLToExcalidraw(DSLSrcipt) {
       }
 
       let points;
+      let x;
+      let y;
       const arrowMeta = getPoints(processedElements, sourceId, targetId);
 
-      if (currentElement?.properties?.points != undefined) {
-        points = currentElement.properties.points;
+      if (currentElement?.properties?.points != undefined && currentElement?.properties?.x != undefined && currentElement?.properties?.y != undefined) {
+        points = currentElement?.properties?.points;
         let temp = points[0];
         points = points.map((d) => [d[0] - temp[0], d[1] - temp[1]]);
-        console.log("Points: ", points);
+        x = parseFloat(currentElement.properties.x);
+        y = parseFloat(currentElement.properties.y);
       } else {
         points = arrowMeta.points;
+        x = arrowMeta.absoluteStart.x;
+        y = arrowMeta.absoluteStart.y;
       }
 
-      const absoluteStart = arrowMeta.absoluteStart;
       if (sourceId == "speech_signal" && targetId == "evaluation_metrics") {
       }
       let label;
 
-      if (!points || !absoluteStart) {
+      if (!points || !x || !y) {
         console.warn("Missing points or absoluteStart for connection:", currentElement.name);
         continue;
       }
@@ -243,17 +243,16 @@ export function DSLToExcalidraw(DSLSrcipt) {
       const connection = {
         id: currentElement.name, // The connection's own ID
         type: currentElement.properties.type ? currentElement.properties.type : "arrow",
-        x: absoluteStart.x,
-        y: absoluteStart.y,
+        x: x,
+        y: y,
         strokeColor: currentElement.properties.arrowColor,
-        strokeWidth: currentElement.properties.arrowWidth,
         strokeStyle: currentElement.properties.arrowStyle ? currentElement.properties.arrowStyle : "dotted",
-        startArrowhead: "dot",
-        endArrowhead: "dot",
+        startArrowhead: currentElement.properties.startArrowhead ? currentElement.properties.startArrowhead : "dot",
+        endArrowhead: currentElement.properties.endArrowhead ? currentElement.properties.endArrowhead : "dot",
         points,
         label: {
           text: label,
-          fontSize: 12,
+          fontSize: currentElement.properties.fontSize,
         },
         start: {
           id: sourceId,
@@ -265,7 +264,8 @@ export function DSLToExcalidraw(DSLSrcipt) {
           persistentId: currentElement.name,
         }
       };
-
+      
+      console.log("Connection: ", connection)
       excalidrawElements.push(connection);
     } else if(currentElement.type == "Text") {
       const text = {

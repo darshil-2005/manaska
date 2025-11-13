@@ -1,4 +1,4 @@
-import { randomId } from "./randomIdGenerator.js";
+import { randomId } from "./randomId.js";
 import { layoutMindmap } from "./getDimensions.js"; // Corrected typo "Diminsions"
 
 // Defaults
@@ -154,49 +154,193 @@ export function parseMindmapToDSL(mindmap) {
 
 
 const mindmap = 
-{
-  "id": "discrete_speech_processing",
-  "label": "Discrete Speech Processing",
+ {
+  "id": "quantum_computing_overview",
+  "label": "Quantum Computing",
   "relation": "root",
   "children": [
     {
-      "id": "speech_signal",
-      "label": "Speech Signal",
+      "id": "qubits_and_superposition",
+      "label": "Qubits & Superposition",
       "relation": "subtopic",
       "children": [
-        { "id": "digitization", "label": "Digitization", "relation": "subtopic", "children": [] }
+        {
+          "id": "qubit_definition",
+          "label": "Qubit Definition",
+          "relation": "subtopic",
+          "children": [
+            {
+              "id": "qubit_states",
+              "label": "Qubit States",
+              "relation": "subtopic",
+              "children": [
+                {
+                  "id": "qubit_states_0",
+                  "label": "0 State",
+                  "relation": "subtopic",
+                  "children": []
+                },
+                {
+                  "id": "qubit_states_1",
+                  "label": "1 State",
+                  "relation": "subtopic",
+                  "children": []
+                },
+                {
+                  "id": "qubit_states_superposition",
+                  "label": "Superposition",
+                  "relation": "subtopic",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "qubit_states_measurement",
+              "label": "Measurement",
+              "relation": "subtopic",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "superposition_explanation",
+          "label": "Superposition Explanation",
+          "relation": "subtopic",
+          "children": [
+            {
+              "id": "superposition_vs_classical",
+              "label": "Vs Classical",
+              "relation": "subtopic",
+              "children": []
+            },
+            {
+              "id": "superposition_advantages",
+              "label": "Advantages",
+              "relation": "subtopic",
+              "children": []
+            }
+          ]
+        }
       ]
     },
     {
-      "id": "feature_extraction",
-      "label": "Feature Extraction",
+      "id": "quantum_gates",
+      "label": "Quantum Gates",
       "relation": "subtopic",
       "children": [
-        { "id": "spectral", "label": "Spectral Features", "relation": "subtopic", "children": [] }
+        {
+          "id": "quantum_gate_types",
+          "label": "Gate Types",
+          "relation": "subtopic",
+          "children": [
+            {
+              "id": "quantum_gate_types_single",
+              "label": "Single-Qubit Gates",
+              "relation": "subtopic",
+              "children": []
+            },
+            {
+              "id": "quantum_gate_types_multi",
+              "label": "Multi-Qubit Gates",
+              "relation": "subtopic",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "quantum_gate_applications",
+          "label": "Gate Applications",
+          "relation": "subtopic",
+          "children": [
+            {
+              "id": "quantum_gate_applications_quantum_algorithm",
+              "label": "Quantum Algorithm",
+              "relation": "subtopic",
+              "children": []
+            },
+            {
+              "id": "quantum_gate_applications_quantum_simulation",
+              "label": "Quantum Simulation",
+              "relation": "subtopic",
+              "children": []
+            }
+          ]
+        }
       ]
     },
     {
-      "id": "speech_modeling",
-      "label": "Speech Modeling",
+      "id": "quantum_algorithms",
+      "label": "Quantum Algorithms",
       "relation": "subtopic",
       "children": [
-        { "id": "source_filter", "label": "Source-Filter Model", "relation": "subtopic", "children": [] }
+        {
+          "id": "shor_algorithm",
+          "label": "Shor's Algorithm",
+          "relation": "subtopic",
+          "children": []
+        },
+        {
+          "id": "grover_algorithm",
+          "label": "Grover's Algorithm",
+          "relation": "subtopic",
+          "children": []
+        },
+        {
+          "id": "simons_algorithm",
+          "label": "Simons Algorithm",
+          "relation": "subtopic",
+          "children": []
+        }
       ]
     },
     {
-      "id": "applications",
-      "label": "Applications",
+      "id": "quantum_computing_applications",
+      "label": "Quantum Computing Applications",
       "relation": "subtopic",
       "children": [
-        { "id": "speech_recognition", "label": "Speech Recognition", "relation": "subtopic", "children": [] }
+        {
+          "id": "cryptography",
+          "label": "Cryptography",
+          "relation": "subtopic",
+          "children": []
+        },
+        {
+          "id": "optimization",
+          "label": "Optimization",
+          "relation": "subtopic",
+          "children": []
+        },
+        {
+          "id": "machine_learning",
+          "label": "Machine Learning",
+          "relation": "subtopic",
+          "children": []
+        }
       ]
     },
     {
-      "id": "evaluation_metrics",
-      "label": "Evaluation Metrics",
+      "id": "quantum_computing_challenges",
+      "label": "Quantum Computing Challenges",
       "relation": "subtopic",
       "children": [
-        { "id": "objective_metrics", "label": "Objective Metrics", "relation": "subtopic", "children": [] }
+        {
+          "id": "quantum_noise",
+          "label": "Quantum Noise",
+          "relation": "subtopic",
+          "children": []
+        },
+        {
+          "id": "quantum_error_correction",
+          "label": "Quantum Error Correction",
+          "relation": "subtopic",
+          "children": []
+        },
+        {
+          "id": "scalability",
+          "label": "Scalability",
+          "relation": "subtopic",
+          "children": []
+        }
       ]
     }
   ]
