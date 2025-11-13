@@ -14,10 +14,10 @@ export function elementsToDSL(elements) {
 
     if (element.type == "rectangle" || element.type == "diamond" || element.type == "ellipse") {
       
-      const labelElementId = element.boundElements.find(d => d.type == "text")?.id;
+      const labelElementId = element.boundElements?.find(d => d.type == "text")?.id;
       let label;
       if (labelElementId == undefined) {
-        label: "Unnamed";
+        label = {originalText: ""};
       } else {
         label = elements.find(d => d.id == labelElementId);        
       }
@@ -80,15 +80,18 @@ export function elementsToDSL(elements) {
       }
 
       
-      let labelId = element.boundElements.find(d => d.type == "text")?.id;
+      let labelId = element.boundElements?.find(d => d.type == "text")?.id;
+
+      let labelElement;
 
       if (labelId == null) {
-        console.log("Error parsing label of connection.");
-        continue;
+        console.log("No label for connection.");
+        labelElement = {originalText: "", fontSize: 20};
+      } else {
+        labelElement = elements.find(d => {
+          return (labelId == d.id) && (d.type == "text");
+        });
       }
-      const labelElement = elements.find(d => {
-        return (labelId == d.id) && (d.type == "text");
-      });
 
       const connection = 
         `Connection "${element.customData.persistentId}" {\n` +

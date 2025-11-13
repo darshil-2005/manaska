@@ -157,6 +157,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
         console.warn("Cannot capture roundness of element Id: ", currentElement.name, "\nError: ", error);
       }
 
+
       const node = {
         id: currentElement.name,
         type: currentElement.properties.type ? currentElement.properties.type : "rectangle",
@@ -217,13 +218,10 @@ export function DSLToExcalidraw(DSLSrcipt) {
         points = points.map((d) => [d[0] - temp[0], d[1] - temp[1]]);
         x = parseFloat(currentElement.properties.x);
         y = parseFloat(currentElement.properties.y);
-
-        console.log("I was triggered", typeof x, typeof y)
       } else {
         points = arrowMeta.points;
         x = arrowMeta.absoluteStart.x;
         y = arrowMeta.absoluteStart.y;
-        console.log("No i was:")
       }
 
       if (sourceId == "speech_signal" && targetId == "evaluation_metrics") {
@@ -266,7 +264,8 @@ export function DSLToExcalidraw(DSLSrcipt) {
           persistentId: currentElement.name,
         }
       };
-
+      
+      console.log("Connection: ", connection)
       excalidrawElements.push(connection);
     } else if(currentElement.type == "Text") {
       const text = {
