@@ -16,6 +16,18 @@ const Excalidraw = dynamic(
     }
 );
 
+const MainMenu = dynamic(
+    async () => (await import("@excalidraw/excalidraw")).Excalidraw,
+    {
+        ssr: false,
+        loading: () => (
+            <div className="w-full h-full flex items-center justify-center bg-white">
+                <div className="text-gray-500 text-sm">Loading canvas...</div>
+            </div>
+        )
+    }
+);
+
 const ExcalidrawWrapper = ({
     initialData = null,
     onChange = () => { },
@@ -33,6 +45,11 @@ const ExcalidrawWrapper = ({
                 onPointerUpdate={onPointerUpdate}
                 onChange={onChange}
                 theme={theme}
+                UIOptions={{
+                  canvasActions: {
+                    toggleMainMenu: false,
+                  }
+                }}
                 gridModeEnabled={gridModeEnabled}
                 className={`text-black border border-gray-200 rounded-lg ${className}`}
                 excalidrawAPI={(api) => {
@@ -40,7 +57,8 @@ const ExcalidrawWrapper = ({
                     excalidrawAPI(api);
                   }
                 }}
-            />
+            >
+            </Excalidraw>
         </>
     );
 };
