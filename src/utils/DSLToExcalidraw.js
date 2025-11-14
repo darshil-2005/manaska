@@ -130,6 +130,8 @@ export function DSLToExcalidraw(DSLSrcipt) {
     }
   }
 
+  let last;
+
   for (let i = 0; i < processedElements.length; i++) {
     const currentElement = processedElements[i];
 
@@ -181,7 +183,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
           persistentId: currentElement.name,
         }
       };
-      excalidrawElements.push(node);
+      excalidrawElements.push(node)
     } else if (currentElement.type == "Connection") {
       let sourceId;
       let targetId;
@@ -210,25 +212,23 @@ export function DSLToExcalidraw(DSLSrcipt) {
       let points;
       let x;
       let y;
-      const arrowMeta = getPoints(processedElements, sourceId, targetId);
+      const arrowMeta = structuredClone(getPoints(processedElements, sourceId, targetId));
 
       if (currentElement?.properties?.points != undefined && currentElement?.properties?.x != undefined && currentElement?.properties?.y != undefined) {
-        points = currentElement?.properties?.points;
+        points = structuredClone(currentElement?.properties?.points);
         let temp = points[0];
         points = points.map((d) => [d[0] - temp[0], d[1] - temp[1]]);
         x = parseFloat(currentElement.properties.x);
         y = parseFloat(currentElement.properties.y);
       } else {
-        points = arrowMeta.points;
+        points = structuredClone(arrowMeta.points);
         x = arrowMeta.absoluteStart.x;
         y = arrowMeta.absoluteStart.y;
       }
 
-      if (sourceId == "speech_signal" && targetId == "evaluation_metrics") {
-      }
       let label;
 
-      if (!points || !x || !y) {
+      if (points == undefined || x == undefined || y == undefined) {
         console.warn("Missing points or absoluteStart for connection:", currentElement.name);
         continue;
       }
@@ -249,7 +249,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
         strokeStyle: currentElement.properties.arrowStyle ? currentElement.properties.arrowStyle : "dotted",
         startArrowhead: currentElement.properties.startArrowhead ? currentElement.properties.startArrowhead : "dot",
         endArrowhead: currentElement.properties.endArrowhead ? currentElement.properties.endArrowhead : "dot",
-        points,
+        points: structuredClone(points),
         label: {
           text: label,
           fontSize: currentElement.properties.fontSize,
@@ -264,8 +264,8 @@ export function DSLToExcalidraw(DSLSrcipt) {
           persistentId: currentElement.name,
         }
       };
-      
-      console.log("Connection: ", connection)
+
+      last = connection;
       excalidrawElements.push(connection);
     } else if(currentElement.type == "Text") {
       const text = {
