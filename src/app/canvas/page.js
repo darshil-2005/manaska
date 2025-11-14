@@ -59,16 +59,17 @@ const Editor = dynamic(
 ) 
 
 const ExcalidrawWrapper = dynamic(
-    () => import('../../wrapper/excalidraw.js'),
-    {
-        ssr: false, 
-        loading: () => (
-            <div className="w-full h-screen flex items-center justify-center bg-white">
-                <div className="text-gray-500 text-sm">Loading canvas...</div>
-            </div>
-        )
-    }
+  () => import('../../wrapper/excalidraw.js'), // Adjust your path as needed
+  {
+    ssr: false, // This is the most important part
+    loading: () => (
+      <div className="w-full h-screen flex items-center justify-center bg-white">
+      <div className="text-gray-500 text-sm">Loading canvas...</div>
+      </div>
+    )
+  }
 );
+
 
 export default function MindMapDesigner() {
   const handleCanvasChange = (elements, appState, files) => {
@@ -115,19 +116,14 @@ export default function MindMapDesigner() {
   useEffect(() => {
     if (!excalidrawAPI) return;
 
-            const response = await fetch("/api/canvas/prompt", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_input: aiPrompt }),
-            });
+    const newElementSkeletons = DSLToExcalidraw(scriptCode);
+    setElements(newElementSkeletons);
+    updateScene(newElementSkeletons);
 
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error || "Failed to generate mind map");
-            }
+  }, [debounceIndicator]);   
 
-            const data = await response.json();
-            console.log("Mind Map Response:", data);
+  const updateScene = async (elementSkeletons) => {
+    if (!excalidrawAPI || !elementSkeletons) return;
 
     const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
     const { restoreElements } = await import("@excalidraw/excalidraw");
