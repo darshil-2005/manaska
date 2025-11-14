@@ -20,6 +20,7 @@ const ExcalidrawWrapper = ({
     initialData = null,
     onChange = () => { },
     className = "",
+    gridModeEnabled,
     theme,
     excalidrawAPI,
     onPointerUpdate
@@ -32,6 +33,7 @@ const ExcalidrawWrapper = ({
                 onPointerUpdate={onPointerUpdate}
                 onChange={onChange}
                 theme={theme}
+                gridModeEnabled={gridModeEnabled}
                 className={`text-black border border-gray-200 rounded-lg ${className}`}
                 excalidrawAPI={(api) => {
                   if (excalidrawAPI) {

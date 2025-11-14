@@ -23,6 +23,8 @@ import dynamic from "next/dynamic";
 import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
 import {elementsToDSL} from '../../utils/elementsToDSL.js'
 import {Button} from "../../components/ui/button.tsx"
+import {Label} from "../../components/ui/label.tsx"
+import {Switch} from "../../components/ui/switch.tsx"
 import {Separator} from "../../components/ui/separator.tsx"
 import {
   Select,
@@ -97,6 +99,7 @@ export default function MindMapDesigner() {
   const [coordinatesDebounce, setCoordinatesDebounce] = useState(true);
   const [coordinates, setCoordinates] = useState([0, 0]);
   const [exportType, setExportType] = useState('png');
+  const [gridModeEnabled, setGridModeEnabled] = useState(true);
   const {theme, systemTheme} = useTheme();
 
   useEffect(() => {
@@ -167,13 +170,19 @@ export default function MindMapDesigner() {
     <div className="flex items-center space-x-2">
 
     <CoordinatesDisplay coordinates={coordinates}/>
-
+    
+    <div className="flex tracking-wider gap-x-2 h-10 font-semibold border items-center px-3 rounded-lg">
+      <Label>Grid</Label>
+      <Switch value={gridModeEnabled} onCheckedChange={() => setGridModeEnabled(!gridModeEnabled)}/>
+    </div>
+    {/*
     <Button variant={"outline"}>
     <Undo size={20}  />
     </Button>
     <Button variant={"outline"}>
     <Redo size={20}  />
     </Button>
+    */}
     <ModeToggle />
     <Button
     onClick={handleElementsToDSL}
@@ -251,6 +260,7 @@ export default function MindMapDesigner() {
     theme={theme != "system" ? theme : systemTheme}
     initialData={null}
     excalidrawAPI={setExcalidrawAPI}
+    gridModeEnabled={gridModeEnabled}
     className="text-black border border-gray-200 rounded-lg"
     />
     </ResizablePanel>
