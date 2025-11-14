@@ -19,7 +19,7 @@ export function getPoints(elements, sourceId, targetId) {
   const absoluteTargetX = parseFloat(targetNode.properties.x) + parseFloat(targetNode.properties.width) / 2;
   const absoluteTargetY = parseFloat(targetNode.properties.y);
 
-  const result = {absoluteStart: {x: absoluteX, y: absoluteY}, points: [[0, 0], [0, 50], [absoluteTargetX - absoluteX, absoluteTargetY - absoluteY - 50], [absoluteTargetX - absoluteX, absoluteTargetY - absoluteY]]};
+  const result = {absoluteStart: {x: absoluteX, y: absoluteY}, points: [[0, 0], [absoluteTargetX - absoluteX, absoluteTargetY - absoluteY]]};
 
   return result;
 };
