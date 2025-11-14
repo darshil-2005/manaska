@@ -99,7 +99,7 @@ export default function MindMapDesigner() {
   const [coordinatesDebounce, setCoordinatesDebounce] = useState(true);
   const [coordinates, setCoordinates] = useState([0, 0]);
   const [exportType, setExportType] = useState('png');
-  const [gridModeEnabled, setGridModeEnabled] = useState(true);
+  const [gridModeEnabled, setGridModeEnabled] = useState(false);
   const {theme, systemTheme} = useTheme();
 
   useEffect(() => {

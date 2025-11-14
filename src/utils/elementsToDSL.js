@@ -54,34 +54,34 @@ export function elementsToDSL(elements) {
       scriptElements.push(text);
     } else if (element.type == "arrow") {
       
-      const sourceId = element.startBinding.elementId;
+      let sourceNode;
+      let targetNode;
+
+      const sourceId = element.startBinding?.elementId;
       if (sourceId == null) {
-        console.log("Error parsing connection element.");
+        console.log("No source element bound to connection: ", element.customData.persistentId);
         continue;
+      } else {
+        sourceNode = elements.find((d) => d.id == sourceId);
+        if (sourceNode == undefined) {
+          console.log("Cannot find source node\n Source Id: ${sourceId}");
+          continue;
+        }
       }
-      const sourceNode = elements.find((d) => d.id == sourceId);
 
-      if (sourceNode == undefined) {
-        console.log("Cannot find source node\n Source Id: ${sourceId}");
-        continue;
-      }
-
-      const targetId = element.endBinding.elementId;
+      const targetId = element.endBinding?.elementId;
       if (targetId == null) {
-        console.log("Error parsing connection element.");
+        console.log("No target element bound to connection: ", element.customData.persistentId);
         continue;
+      } else {
+        const targetNode = elements.find((d) => d.id == targetId);
+        if (targetNode == undefined) {
+          console.log("Cannot find target node\n Target Id: ${targetId}");
+          continue;
+        }
       }
-
-      const targetNode = elements.find((d) => d.id == targetId);
-
-      if (targetNode == undefined) {
-        console.log("Cannot find target node\n Target Id: ${targetId}");
-        continue;
-      }
-
       
       let labelId = element.boundElements?.find(d => d.type == "text")?.id;
-
       let labelElement;
 
       if (labelId == null) {
