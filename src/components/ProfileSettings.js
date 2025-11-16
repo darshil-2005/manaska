@@ -1,6 +1,6 @@
 "use client"; // Required for Button, Input components, and useRef
 
-import { useRef } from 'react'; // Import useRef
+import { useRef, useState } from 'react'; // Import useState
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,8 +9,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react'; // Import the User icon
 
 export default function ProfileSettings() {
-  // Create a ref for the hidden file input
+ // Ref for the hidden file input
   const fileInputRef = useRef(null);
+
+   // --- New State for Edit Mode ---
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState("Manaska User"); // Mock data
+  const [username, setUsername] = useState("manaska_ai"); // Mock data
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -20,6 +25,16 @@ export default function ProfileSettings() {
       // For example, you could upload it or display a preview.
     }
   };
+
+   // --- New Toggle Function ---
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      // Logic to save data would go here
+      console.log("Saving data:", { name, username });
+    }
+    setIsEditing(!isEditing); // Toggle edit mode
+  };
+
 
   return (
     <section id="profile" className="space-y-6">
@@ -60,9 +75,7 @@ export default function ProfileSettings() {
                 >
                   Upload New
                 </Button>
-                <Button 
-                  // variant="secondary" Removed this line, default is implied
-                >
+                <Button>
                   Remove
                 </Button>
               </div>
@@ -70,22 +83,36 @@ export default function ProfileSettings() {
             <p className="text-sm text-gray-500 dark:text-gray-400">Update your profile picture. (Max 5MB: JPG, PNG, WEBP)</p>
           </div>
 
+           {/* --- PROFILE INFORMATION (UPDATED) --- */}  
+
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Profile Information</h3>
             <div className="grid gap-2">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" defaultValue="" />
+               <Input 
+                id="name" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={!isEditing} // <-- Toggle disabled
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="username">Username</Label>
-              <Input id="username" defaultValue="" />
+                  <Input 
+                id="username" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={!isEditing} // <-- Toggle disabled
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" defaultValue="" disabled />
+               <Input id="email" defaultValue="user@example.com" disabled />
               <p className="text-sm text-gray-500 dark:text-gray-400">Email address cannot be changed.</p>
             </div>
-            <Button className="float-right">Edit Profile</Button>
+            <Button className="float-right" onClick={handleToggleEdit}>
+              {isEditing ? "Save Changes" : "Edit Profile"} {/* <-- Toggle text */}
+            </Button>
           </div>
         </CardContent>
       </Card>

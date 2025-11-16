@@ -3,7 +3,8 @@ import ProfileSettings from '@/components/ProfileSettings';
 import AccountSecuritySettings from '@/components/AccountSecuritySettings';
 import AppearanceSettings from '@/components/AppearanceSettings';
 import APIKeysSettings from '@/components/APIKeysSettings';
-import { User, KeyRound, Palette, ShieldCheck, Bot } from 'lucide-react';
+import { User, KeyRound, Palette, ShieldCheck, Bot, LogOut } from 'lucide-react'; // <-- 2. Import LogOut icon
+import LogoutSettings from '@/components/LogoutSettings'; // <-- 1. Import new component
 
 // === HELPER COMPONENT (Simple) ===
 function SettingsNavLink({ href, icon: Icon, children }) {
@@ -42,6 +43,10 @@ export default function SettingsPage() {
             <SettingsNavLink href="#appearance" icon={Palette}>Appearance</SettingsNavLink>
             <SettingsNavLink href="#api-keys" icon={KeyRound}>API Keys</SettingsNavLink>
           </ul>
+            {/* --- 3. Add new nav link --- */}
+          <ul className="space-y-1 mt-4 border-t pt-4 dark:border-gray-700">
+             <SettingsNavLink href="#log-out" icon={LogOut}>Log out</SettingsNavLink>
+          </ul>
         </nav>
       </aside>
 
@@ -53,6 +58,7 @@ export default function SettingsPage() {
         <AccountSecuritySettings />
         <AppearanceSettings />
         <APIKeysSettings />
+         <LogoutSettings /> {/* <-- 4. Render new component */}
       </main>
     </div>
   );
