@@ -1,5 +1,5 @@
-import { db } from '@/lib/db';
-import { map } from '@/lib/schema';
+import { db } from '../../../../../db/db';
+import { map } from '../../../../../db/schema';
 import { eq, and } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
