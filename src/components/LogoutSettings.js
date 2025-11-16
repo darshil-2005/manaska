@@ -1,0 +1,71 @@
+"use client"; // Required for Button component
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LogOut } from 'lucide-react'; // Import icon
+
+export default function LogoutSettings() {
+
+  // These are just frontend placeholders.
+  // You would replace these with your actual auth logic (e.g., from Firebase, NextAuth, etc.)
+  const handleLogout = () => {
+    console.log("Logging out of this device...");
+    alert("Logging out..."); // Replace with your auth logic
+  };
+
+  const handleLogoutAll = () => {
+    console.log("Logging out of all devices...");
+    alert("Logging out of all devices..."); // Replace with your auth logic
+  };
+
+  return (
+    <section id="log-out" className="space-y-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
+            <LogOut className="h-6 w-6 text-gray-500 dark:text-gray-400" />
+            <CardTitle className="text-2xl font-semibold tracking-tight">
+              Log out
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6 divide-y divide-gray-200 dark:divide-gray-700">
+
+          {/* --- Log out of this device --- */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
+            <div>
+              <h3 className="text-lg font-medium">Log out of this device</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                You will be returned to the login screen.
+              </p>
+            </div>
+            <Button 
+              onClick={handleLogout}
+              className="mt-3 md:mt-0 md:ml-4"
+            >
+              Log out
+            </Button>
+          </div>
+
+          {/* --- Log out of all devices --- */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
+            <div>
+              <h3 className="text-lg font-medium">Log out of all devices</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
+                Log out of all active sessions across all devices, including your current session.
+              </p>
+            </div>
+            <Button 
+              variant="destructive" 
+              onClick={handleLogoutAll}
+              className="mt-3 md:mt-0 md:ml-4"
+            >
+              Log out all
+            </Button>
+          </div>
+
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
