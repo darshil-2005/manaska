@@ -2,20 +2,62 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut } from 'lucide-react'; // Import icon
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { LogOut } from 'lucide-react';
 
 export default function LogoutSettings() {
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // These are just frontend placeholders.
-  // You would replace these with your actual auth logic (e.g., from Firebase, NextAuth, etc.)
-  const handleLogout = () => {
-    console.log("Logging out of this device...");
-    alert("Logging out..."); // Replace with your auth logic
+  const performLogout = async () => {
+    const res = await fetch('/api/auth/logout', { method: 'POST' });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data?.error || 'Failed to log out');
+    }
+    router.push('/login');
+    router.refresh();
   };
 
-  const handleLogoutAll = () => {
-    console.log("Logging out of all devices...");
-    alert("Logging out of all devices..."); // Replace with your auth logic
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await performLogout();
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const handleLogoutAll = async () => {
+    // If a separate endpoint is added later, call it here. For now reuse logout.
+    await handleLogout();
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch('/api/user/delete', { method: 'DELETE' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to delete account');
+      }
+      alert(data?.message || 'Account deleted successfully.');
+      await performLogout();
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -42,8 +84,9 @@ export default function LogoutSettings() {
             <Button 
               onClick={handleLogout}
               className="mt-3 md:mt-0 md:ml-4"
+              disabled={isLoggingOut || isDeleting}
             >
-              Log out
+              {isLoggingOut ? 'Logging out...' : 'Log out'}
             </Button>
           </div>
 
@@ -59,8 +102,26 @@ export default function LogoutSettings() {
               variant="destructive" 
               onClick={handleLogoutAll}
               className="mt-3 md:mt-0 md:ml-4"
+              disabled={isLoggingOut || isDeleting}
             >
-              Log out all
+              {isLoggingOut ? 'Logging out...' : 'Log out all'}
+            </Button>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
+            <div>
+              <h3 className="text-lg font-medium text-red-600 dark:text-red-400">Delete account</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
+                Permanently remove your data. This action cannot be undone.
+              </p>
+            </div>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteAccount}
+              className="mt-3 md:mt-0 md:ml-4"
+              disabled={isDeleting || isLoggingOut}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete account'}
             </Button>
           </div>
 

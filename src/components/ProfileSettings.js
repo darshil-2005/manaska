@@ -1,6 +1,6 @@
-"use client"; // Required for Button, Input components, and useRef
+"use client";
 
-import { useRef, useState } from 'react'; // Import useState
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,10 +12,13 @@ export default function ProfileSettings() {
  // Ref for the hidden file input
   const fileInputRef = useRef(null);
 
-   // --- New State for Edit Mode ---
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("Manaska User"); // Mock data
-  const [username, setUsername] = useState("manaska_ai"); // Mock data
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState({ type: '', content: '' });
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -26,13 +29,71 @@ export default function ProfileSettings() {
     }
   };
 
-   // --- New Toggle Function ---
+   useEffect(() => {
+    let isMounted = true;
+
+    async function fetchProfile() {
+      setIsLoading(true);
+      try {
+        const res = await fetch('/api/user/profile');
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data?.error || 'Failed to load profile');
+        }
+
+        if (isMounted && data?.profile) {
+          setName(data.profile.name || '');
+          setUsername(data.profile.username || '');
+          setEmail(data.profile.email || '');
+        }
+      } catch (error) {
+        if (isMounted) {
+          setMessage({ type: 'error', content: error.message });
+        }
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    fetchProfile();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setMessage({ type: '', content: '' });
+
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, username }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to update profile');
+      }
+
+      setMessage({ type: 'success', content: 'Profile updated successfully.' });
+      setIsEditing(false);
+    } catch (error) {
+      setMessage({ type: 'error', content: error.message });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleToggleEdit = () => {
     if (isEditing) {
-      // Logic to save data would go here
-      console.log("Saving data:", { name, username });
+      handleSave();
+    } else {
+      setIsEditing(true);
+      setMessage({ type: '', content: '' });
     }
-    setIsEditing(!isEditing); // Toggle edit mode
   };
 
 
@@ -50,6 +111,11 @@ export default function ProfileSettings() {
           {/* "No token found" message has been removed */}
         </CardHeader>
         <CardContent className="space-y-6">
+          {message.content && (
+            <p className={`text-sm ${message.type === 'error' ? 'text-red-500' : 'text-green-500'}`}>
+              {message.content}
+            </p>
+          )}
           <div className="space-y-2">
             <Label>Profile Picture</Label>
             <div className="flex items-center space-x-4">
@@ -93,7 +159,7 @@ export default function ProfileSettings() {
                 id="name" 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={!isEditing} // <-- Toggle disabled
+                disabled={!isEditing || isLoading}
               />
             </div>
             <div className="grid gap-2">
@@ -102,16 +168,20 @@ export default function ProfileSettings() {
                 id="username" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                disabled={!isEditing} // <-- Toggle disabled
+                disabled={!isEditing || isLoading}
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-               <Input id="email" defaultValue="user@example.com" disabled />
+              <Input id="email" value={email} disabled readOnly />
               <p className="text-sm text-gray-500 dark:text-gray-400">Email address cannot be changed.</p>
             </div>
-            <Button className="float-right" onClick={handleToggleEdit}>
-              {isEditing ? "Save Changes" : "Edit Profile"} {/* <-- Toggle text */}
+            <Button
+              className="float-right"
+              onClick={handleToggleEdit}
+              disabled={isLoading || (isEditing && isSaving)}
+            >
+              {isEditing ? (isSaving ? 'Saving...' : 'Save Changes') : 'Edit Profile'}
             </Button>
           </div>
         </CardContent>

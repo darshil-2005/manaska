@@ -1,73 +1,92 @@
 "use client"; // Required for Input, Button components, and useState
 
-import { useState } from 'react'; // Import useState
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, ShieldCheck, AlertTriangle } from 'lucide-react'; // Import icons
+import { Eye, EyeOff, ShieldCheck, AlertTriangle } from 'lucide-react';
 
 export default function AccountSecuritySettings() {
+  const router = useRouter();
   // State to manage password visibility
   const [showExistingPassword, setShowExistingPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Mock data for the current password
-  const currentPassword = "mySecretPassword1234";
-   // State for Change Password form
+  // State for Change Password form
   const [currentPasswordInput, setCurrentPasswordInput] = useState("");
   const [newPasswordInput, setNewPasswordInput] = useState("");
   const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
 
   // --- State for validation messages ---
   const [message, setMessage] = useState({ type: '', content: '' }); // type can be 'error' or 'success'
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleUpdatePassword = () => {
-    // --- Validation Logic ---
-
-    // 1. Check for empty fields
+  const handleUpdatePassword = async () => {
     if (!currentPasswordInput || !newPasswordInput || !confirmPasswordInput) {
       setMessage({ type: 'error', content: 'Please fill out all password fields.' });
-      return; // Stop execution
+      return;
     }
 
-    // --- NEW CHECK 1: Verify Current Password ---
-    // In a real app, this check would be done on a server
-    if (currentPasswordInput !== currentPassword) {
-      setMessage({ type: 'error', content: 'Your current password is not correct.' });
-      return; // Stop execution
-    }
-
-    // --- NEW CHECK 2: Check if new password is same as old ---
-    if (newPasswordInput === currentPassword) {
-      setMessage({ type: 'error', content: 'New password cannot be the same as your old one.' });
-      return; // Stop execution
-    }
-
-    // 2. Check if new passwords match
     if (newPasswordInput !== confirmPasswordInput) {
       setMessage({ type: 'error', content: 'New passwords do not match.' });
-      return; // Stop execution
+      return;
     }
 
-    // --- If all checks pass ---
-    console.log("Updating password...");
-    console.log({
-      currentPassword: currentPasswordInput,
-      newPassword: newPasswordInput,
-    });
+    setMessage({ type: '', content: '' });
+    setIsSubmitting(true);
 
-    // Reset fields and show success message
-    setCurrentPasswordInput("");
-    setNewPasswordInput("");
-    setConfirmPasswordInput("");
-    setMessage({ type: 'success', content: 'Password updated successfully!' });
+    try {
+      const res = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: currentPasswordInput,
+          newPassword: newPasswordInput,
+          confirmNewPassword: confirmPasswordInput,
+        }),
+      });
 
-    // Clear the message after 3 seconds
-    setTimeout(() => {
-      setMessage({ type: '', content: '' });
-    }, 3000);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to update password');
+      }
+
+      setMessage({ type: 'success', content: data?.message || 'Password updated successfully.' });
+      setCurrentPasswordInput('');
+      setNewPasswordInput('');
+      setConfirmPasswordInput('');
+    } catch (error) {
+      setMessage({ type: 'error', content: error.message });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch('/api/user/delete', { method: 'DELETE' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to delete account');
+      }
+      alert(data?.message || 'Account deleted successfully.');
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -91,9 +110,9 @@ export default function AccountSecuritySettings() {
                 <Input
                   id="existing-password"
                   type={showExistingPassword ? "text" : "password"}
-                  value={currentPassword}
-                  disabled
-                  className="pr-10" 
+                  placeholder="Enter your current password"
+                  readOnly
+                  className="pr-10"
                 />
                 <Button
                   type="button"
@@ -101,6 +120,7 @@ export default function AccountSecuritySettings() {
                   size="icon"
                   className="absolute top-0 right-0 h-full px-3 text-gray-500 hover:text-gray-900 dark:hover:text-white"
                   onClick={() => setShowExistingPassword(!showExistingPassword)}
+                  disabled
                 >
                   {showExistingPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   <span className="sr-only">{showExistingPassword ? "Hide password" : "Show password"}</span>
@@ -134,7 +154,12 @@ export default function AccountSecuritySettings() {
                 <Input
                   id="new-password"
                   type={showNewPassword ? "text" : "password"}
-                  className="pr-10" 
+                  className="pr-10"
+                  value={newPasswordInput}
+                  onChange={(e) => {
+                    setNewPasswordInput(e.target.value);
+                    setMessage({ type: '', content: '' });
+                  }}
                 />
                 <Button
                   type="button"
@@ -155,11 +180,11 @@ export default function AccountSecuritySettings() {
                 <Input
                   id="confirm-new-password"
                   type={showConfirmPassword ? "text" : "password"}
-                  className="pr-10" 
-                  value={confirmPasswordInput} 
+                  className="pr-10"
+                  value={confirmPasswordInput}
                   onChange={(e) => {
                     setConfirmPasswordInput(e.target.value);
-                    setMessage({ type: '', content: '' }); // Clear message on new input
+                    setMessage({ type: '', content: '' });
                   }}
                 />
                 <Button
@@ -185,8 +210,8 @@ export default function AccountSecuritySettings() {
                   </p>
                 )}
               </div>
-              <Button className="float-right" onClick={handleUpdatePassword}> 
-                Update Password
+              <Button className="float-right" onClick={handleUpdatePassword} disabled={isSubmitting}> 
+                {isSubmitting ? 'Updating...' : 'Update Password'}
               </Button>
             </div>
 
@@ -202,8 +227,8 @@ export default function AccountSecuritySettings() {
                 <p className="text-sm text-red-600 dark:text-red-400 mt-2">
                   Permanently delete your account and all associated data. This action cannot be undone.
                 </p>
-                <Button variant="destructive" className="mt-4">
-                  Delete Account
+                <Button variant="destructive" className="mt-4" onClick={handleDeleteAccount} disabled={isDeleting || isSubmitting}>
+                  {isDeleting ? 'Deleting...' : 'Delete Account'}
                 </Button>
               </CardContent>
             </Card>
