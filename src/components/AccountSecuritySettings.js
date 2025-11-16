@@ -217,22 +217,6 @@ export default function AccountSecuritySettings() {
 
           </div>
 
-          <div className="border-t pt-6 mt-6 dark:border-gray-700">
-            <Card className="border-red-500 bg-red-50 dark:bg-red-900/20">
-              <CardContent className="p-4">
-                <h3 className="flex items-center space-x-2 text-lg font-medium text-red-700 dark:text-red-300">
-                  <AlertTriangle className="h-5 w-5" />
-                  <span>Danger Zone</span>
-                </h3>
-                <p className="text-sm text-red-600 dark:text-red-400 mt-2">
-                  Permanently delete your account and all associated data. This action cannot be undone.
-                </p>
-                <Button variant="destructive" className="mt-4" onClick={handleDeleteAccount} disabled={isDeleting || isSubmitting}>
-                  {isDeleting ? 'Deleting...' : 'Delete Account'}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
         </CardContent>
       </Card>
     </section>
