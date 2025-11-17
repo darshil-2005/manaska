@@ -2,12 +2,7 @@ import { randomId } from "./randomId.js";
 import {getPoints} from "./getPoints.js"
 import { unquote } from "./removeQuotes.js";
 import { removeCommentsFromDSL } from "./removeCommentsFromDSL.js"
-/**
- * Processes a string element to extract its type, name, and properties object.
- * This version uses robust regex parsing for the properties block.
- * @param {string} element - The raw string representation of the element.
- * @returns {object | number} An object {type, name, properties} or -1 on failure.
- */
+
 function processElement(element) {
   let type;
   let name;
@@ -174,7 +169,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
         strokeStyle: currentElement.properties.borderStyle,
         fillStyle: currentElement.properties.backgroundStyle,
         strokeWidth: currentElement.properties.borderWidth,
-        roundness: {type: roundness},
+        roundness: roundness == undefined ? {type: roundness} : {type: 3},
         label: {
           text: label,
           fontSize: currentElement.properties.fontSize ? currentElement.properties.fontSize : 20,
@@ -212,16 +207,16 @@ export function DSLToExcalidraw(DSLSrcipt) {
       let points;
       let x;
       let y;
-      const arrowMeta = structuredClone(getPoints(processedElements, sourceId, targetId));
+      const arrowMeta = structuredClone(getPoints(processedElements, sourceId, targetId, "vertical"));
 
       if (currentElement?.properties?.points != undefined && currentElement?.properties?.x != undefined && currentElement?.properties?.y != undefined) {
-        points = structuredClone(currentElement?.properties?.points);
+        points = currentElement?.properties?.points;
         let temp = points[0];
         points = points.map((d) => [d[0] - temp[0], d[1] - temp[1]]);
         x = parseFloat(currentElement.properties.x);
         y = parseFloat(currentElement.properties.y);
       } else {
-        points = structuredClone(arrowMeta.points);
+        points = arrowMeta.points;
         x = arrowMeta.absoluteStart.x;
         y = arrowMeta.absoluteStart.y;
       }
