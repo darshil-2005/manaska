@@ -16,7 +16,7 @@ import type { AdapterAccountType } from "@auth/core/adapters"
 export const typeOfTokenEnum = pgEnum("typeOfToken", ["FORGOT_PASSWORD"])
 
 // ---------------- USERS ----------------
-export const users = pgTable("users", {
+export const users = pgTable("user", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),

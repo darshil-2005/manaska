@@ -12,7 +12,10 @@ import {
   Search,
   Settings,
   Star,
+  Trash2,
 } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +58,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pendingPinId, setPendingPinId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
 
@@ -63,10 +67,6 @@ export default function DashboardPage() {
     setError("");
     try {
       const res = await fetch("/api/canvas");
-      if (res.status === 401) {
-        router.push("/login");
-        return;
-      }
       const data = await res.json();
       const fetchedMaps = Array.isArray(data?.maps) ? data.maps : [];
       setMaps(fetchedMaps);
@@ -81,10 +81,6 @@ export default function DashboardPage() {
   const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch("/api/user/profile");
-      if (res.status === 401) {
-        router.push("/login");
-        return;
-      }
       if (!res.ok) return;
       const data = await res.json();
       setProfile(data?.profile ?? null);
@@ -164,6 +160,43 @@ export default function DashboardPage() {
     [fetchMaps, router]
   );
 
+  const handleDeleteMap = useCallback(
+    async (mapId: string) => {
+
+      setPendingDeleteId(mapId);
+      setError("");
+      try {
+        const res = await fetch(`/api/mindmap/${mapId}` , {
+          method: "DELETE",
+        });
+
+        if (res.status === 401) {
+          router.push("/login");
+          return;
+        }
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data?.error || "Failed to delete mind map.");
+        }
+
+        setMaps((prev) => prev.filter((map) => map.id !== mapId));
+        toast.success("Mind map deleted successfully");
+      } catch (err) {
+        console.error("Failed to delete mind map:", err);
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to delete mind map. Please try again.";
+        setError(message);
+        toast.error(message);
+      } finally {
+        setPendingDeleteId(null);
+      }
+    },
+    [router]
+  );
+
   const handleLogout = useCallback(async () => {
     setLoggingOut(true);
     try {
@@ -200,21 +233,36 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleTogglePin(map.id)}
-              disabled={pendingPinId === map.id}
-              aria-label={map.pinned ? "Unpin mind map" : "Pin mind map"}
-            >
-              {pendingPinId === map.id ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : map.pinned ? (
-                <PinOff className="h-4 w-4" />
-              ) : (
-                <Pin className="h-4 w-4" />
-              )}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleTogglePin(map.id)}
+                disabled={pendingPinId === map.id || pendingDeleteId === map.id}
+                aria-label={map.pinned ? "Unpin mind map" : "Pin mind map"}
+              >
+                {pendingPinId === map.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : map.pinned ? (
+                  <PinOff className="h-4 w-4" />
+                ) : (
+                  <Pin className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDeleteMap(map.id)}
+                disabled={pendingDeleteId === map.id}
+                aria-label="Delete mind map"
+              >
+                {pendingDeleteId === map.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="mt-auto flex items-center justify-between text-xs text-muted-foreground">
@@ -235,6 +283,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <ToastContainer position="top-center" autoClose={4000} theme="dark" />
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center gap-10 px-6 py-10">
         <header className="flex w-full flex-col items-center gap-4 text-center">
           <div className="flex items-center gap-3">
