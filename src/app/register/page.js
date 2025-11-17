@@ -35,6 +35,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+<<<<<<< Updated upstream
       const response = await axios.post("http://localhost:3000/api/auth/register", {
         email: formData.email,
         username: formData.username,
@@ -43,6 +44,20 @@ export default function RegisterPage() {
         confirmPassword: formData.confirmPassword,
         acceptTerms: formData.agree,
       });
+=======
+      const response = await axios.post(
+        "http://10.200.4.89:3000/api/auth/register",
+        {
+          email: formData.email,
+          username: formData.username,
+          name: formData.name,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          acceptTerms: formData.agree,
+        }
+      );
+      
+>>>>>>> Stashed changes
       console.log("Registration successful:", response.data);
     } catch (error) {
       console.error("Registration error:", error);

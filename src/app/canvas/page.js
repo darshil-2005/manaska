@@ -226,6 +226,7 @@ textColor: "#000000",
                                     <span>Generate</span>
                                 </button>
 
+<<<<<<< Updated upstream
                                 {/* Quick Actions */}
                                 <div>
                                     <h3 className="text-xs font-semibold text-gray-800 mb-3 uppercase tracking-wide">Quick Actions</h3>
@@ -318,3 +319,8 @@ textColor: "#000000",
         </div>
     );
 }
+=======
+    </div>
+  );
+}
+>>>>>>> Stashed changes
