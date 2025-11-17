@@ -23,7 +23,8 @@ export async function middleware(request) {
   //  Block /canvas and /dashboard pages if no token
   if (
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/canvas")
+    pathname.startsWith("/canvas") || 
+    pathname.startsWith("/settings") 
   ) {
     if (!token) {
       // Redirect to login page (or send a 401 JSON response)
@@ -41,5 +42,6 @@ export const config = {
     "/api/:path*",
     "/dashboard/:path*",
     "/canvas/:path*",
+    "/settings/:path*",
   ],
 };
