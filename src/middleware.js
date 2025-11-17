@@ -3,6 +3,7 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(request) {
 
+  /*
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
 
@@ -34,6 +35,7 @@ export async function middleware(request) {
 
   // Allow all other routes
   return NextResponse.next();
+  */
 }
 
 export const config = {

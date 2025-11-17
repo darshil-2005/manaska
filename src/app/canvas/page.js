@@ -75,7 +75,7 @@ const ExcalidrawWrapper = dynamic(
 
 export default function MindMapDesigner() {
   const handleCanvasChange = (elements, appState, files) => {
-    //console.log('Canvas updated:', elements);
+    console.log('Canvas updated:', elements);
   };
 
 
@@ -139,7 +139,6 @@ export default function MindMapDesigner() {
       appState: {}
     };
     excalidrawAPI.updateScene(sceneData);
-    excalidrawAPI.refresh();
   };
 
   async function handleElementsToDSL() {
@@ -170,20 +169,12 @@ export default function MindMapDesigner() {
     <div className="flex items-center space-x-2">
 
     <CoordinatesDisplay coordinates={coordinates}/>
-    
+   
     <div className="flex tracking-wider gap-x-2 h-10 font-semibold border items-center px-3 rounded-lg">
       <Label>Grid</Label>
       <Switch value={gridModeEnabled} onCheckedChange={() => setGridModeEnabled(!gridModeEnabled)}/>
     </div>
-    {/*
-    <Button variant={"outline"}>
-    <Undo size={20}  />
-    </Button>
-    <Button variant={"outline"}>
-    <Redo size={20}  />
-    </Button>
-    */}
-    <ModeToggle />
+   <ModeToggle />
     <Button
     onClick={handleElementsToDSL}
     >

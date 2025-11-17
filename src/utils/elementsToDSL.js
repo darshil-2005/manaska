@@ -74,7 +74,7 @@ export function elementsToDSL(elements) {
         console.log("No target element bound to connection: ", element.customData.persistentId);
         continue;
       } else {
-        const targetNode = elements.find((d) => d.id == targetId);
+        targetNode = elements.find((d) => d.id == targetId);
         if (targetNode == undefined) {
           console.log("Cannot find target node\n Target Id: ${targetId}");
           continue;
@@ -92,6 +92,13 @@ export function elementsToDSL(elements) {
           return (labelId == d.id) && (d.type == "text");
         });
       }
+      
+      let points = element.points.map((d, i) => {
+        d[0] = d[0].toFixed(2);
+        d[1] = d[1].toFixed(2);
+        return [parseFloat(d[0]), parseFloat(d[1])]
+      })
+
 
       const connection = 
         `Connection "${element.customData.persistentId}" {\n` +
@@ -105,7 +112,7 @@ export function elementsToDSL(elements) {
         `  startArrowhead: "${element.startArrowhead}",\n` +
         `  endArrowhead: "${element.endArrowhead}",\n` +
         `  fontSize: ${labelElement.fontSize},\n` +
-        `  points: ${JSON.stringify(element.points)},\n` +
+        `  points: ${JSON.stringify(points)},\n` +
         `};\n`;
 
       scriptElements.push(connection);
