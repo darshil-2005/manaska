@@ -1,6 +1,7 @@
-"use client"; // Required for Select, Button, and useState
+"use client";
 
-import { useState } from 'react'; // Import useState
+
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { KeyRound, Eye, EyeOff } from 'lucide-react'; // Import icons
+import { KeyRound, Eye, EyeOff } from 'lucide-react';
+import { toast } from 'react-toastify';
+
 
 export default function APIKeysSettings() {
   // --- State Management ---
@@ -21,30 +24,49 @@ export default function APIKeysSettings() {
   ]);
   const [newKeyProvider, setNewKeyProvider] = useState('');
   const [newKeyValue, setNewKeyValue] = useState('');
-  const [showNewKeyValue, setShowNewKeyValue] = useState(false); // <-- State for toggle
+  const [showNewKeyValue, setShowNewKeyValue] = useState(false);
+
 
   // --- Event Handlers ---
 
+
   const handleAddKey = () => {
     if (!newKeyProvider || !newKeyValue) {
-      console.warn("Please select a provider and enter a key."); 
+      // --- 2. Added error toast ---
+      toast.error("Please select a provider and enter a key.");
       return;
     }
-    // Simple masking, takes last 4 digits
+   
     const maskedKey = `••••••••••••••••${newKeyValue.slice(-4)}`;
     setKeys([
       ...keys,
       { provider: newKeyProvider, value: maskedKey },
     ]);
+   
+   
+    toast.success(`${newKeyProvider} key added successfully.`);
+   
     // Reset inputs
     setNewKeyProvider('');
     setNewKeyValue('');
-    setShowNewKeyValue(false); // Hide password after adding
+    setShowNewKeyValue(false);
   };
 
-  const handleDeleteKey = (indexToDelete) => {
-    setKeys(keys.filter((_, index) => index !== indexToDelete));
+
+  const handleCancel = () => {
+    // Reset inputs and hide the key section
+    setNewKeyProvider('');
+    setNewKeyValue('');
+    setShowNewKeyValue(false);
   };
+
+
+  const handleDeleteKey = (indexToDelete) => {
+    const keyProvider = keys[indexToDelete].provider;
+    setKeys(keys.filter((_, index) => index !== indexToDelete));
+    toast.success(`${keyProvider} key deleted.`);
+  };
+
 
   return (
     <section id="api-keys" className="space-y-6">
@@ -72,7 +94,6 @@ export default function APIKeysSettings() {
                 <SelectTrigger id="llm-provider">
                   <SelectValue placeholder="Select a provider..." />
                 </SelectTrigger>
-                {/* --- UPDATED DROPDOWN OPTIONS --- */}
                 <SelectContent>
                   <SelectItem value="OpenAI">OpenAI</SelectItem>
                   <SelectItem value="Gemini">Gemini</SelectItem>
@@ -81,33 +102,51 @@ export default function APIKeysSettings() {
               </Select>
             </div>
 
-            {/* --- API KEY INPUT (UPDATED) --- */}
-            <div className="grid gap-2">
-              <Label htmlFor="api-key">API Key</Label>
-              <div className="relative">
-                <Input
-                  id="api-key"
-                  type={showNewKeyValue ? "text" : "password"} // <-- Toggle type
-                  value={newKeyValue}
-                  onChange={(e) => setNewKeyValue(e.target.value)}
-                  className="pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-0 right-0 h-full px-3 text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                  onClick={() => setShowNewKeyValue(!showNewKeyValue)} // <-- Toggle state
-                >
-                  {showNewKeyValue ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  <span className="sr-only">{showNewKeyValue ? "Hide password" : "Show password"}</span>
-                </Button>
+
+            {/* --- Conditional Rendering --- */}
+            {/* This section now only shows if a provider is selected */}
+            {newKeyProvider && (
+              <div className="space-y-4 pt-2 animate-in fade-in-0 slide-in-from-top-2 duration-300">
+                <div className="grid gap-2">
+                  <Label htmlFor="api-key">API Key for {newKeyProvider}</Label>
+                  <div className="relative">
+                    <Input
+                      id="api-key"
+                      type={showNewKeyValue ? "text" : "password"}
+                      value={newKeyValue}
+                      onChange={(e) => setNewKeyValue(e.target.value)}
+                      className="pr-10"
+                      placeholder="Enter your API key"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-0 right-0 h-full px-3 text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                      onClick={() => setShowNewKeyValue(!showNewKeyValue)}
+                    >
+                      {showNewKeyValue ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      <span className="sr-only">{showNewKeyValue ? "Hide password" : "Show password"}</span>
+                    </Button>
+                  </div>
+                </div>
+               
+                {/* --- Updated Button Group --- */}
+                <div className="flex items-center justify-end space-x-2 pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleAddKey}>
+                    Add Key
+                  </Button>
+                </div>
               </div>
-            </div>
-            <Button className="float-right" onClick={handleAddKey}>
-              Add Key
-            </Button>
+            )}
           </div>
+
 
           <div className="border-t pt-6 mt-6 dark:border-gray-700">
             <h3 className="text-lg font-medium">Current API Keys</h3>

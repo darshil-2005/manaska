@@ -1,15 +1,19 @@
-"use client"; // Required for Button component
+"use client";
+
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
+import { toast } from 'react-toastify';
+
 
 export default function LogoutSettings() {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
 
   const performLogout = async () => {
     const res = await fetch('/api/auth/logout', { method: 'POST' });
@@ -21,27 +25,38 @@ export default function LogoutSettings() {
     router.refresh();
   };
 
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
       await performLogout();
+      toast.success('Logged out successfully.');
     } catch (error) {
-      console.error(error);
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setIsLoggingOut(false);
     }
   };
 
+
   const handleLogoutAll = async () => {
-    // If a separate endpoint is added later, call it here. For now reuse logout.
-    await handleLogout();
+    setIsLoggingOut(true);
+    try {
+      await performLogout();
+      toast.success('Logged out from all devices.');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
+
 
   const handleDeleteAccount = async () => {
     if (!confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
       return;
     }
+
 
     setIsDeleting(true);
     try {
@@ -50,15 +65,18 @@ export default function LogoutSettings() {
       if (!res.ok) {
         throw new Error(data?.error || 'Failed to delete account');
       }
-      alert(data?.message || 'Account deleted successfully.');
+     
+      toast.success(data?.message || 'Account deleted successfully.');
       await performLogout();
+
+
     } catch (error) {
-      console.error(error);
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setIsDeleting(false);
     }
   };
+
 
   return (
     <section id="log-out" className="space-y-6">
@@ -73,6 +91,7 @@ export default function LogoutSettings() {
         </CardHeader>
         <CardContent className="space-y-6 divide-y divide-gray-200 dark:divide-gray-700">
 
+
           {/* --- Log out of this device --- */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
             <div>
@@ -81,7 +100,7 @@ export default function LogoutSettings() {
                 You will be returned to the login screen.
               </p>
             </div>
-            <Button 
+            <Button
               onClick={handleLogout}
               className="mt-3 md:mt-0 md:ml-4"
               disabled={isLoggingOut || isDeleting}
@@ -89,6 +108,7 @@ export default function LogoutSettings() {
               {isLoggingOut ? 'Logging out...' : 'Log out'}
             </Button>
           </div>
+
 
           {/* --- Log out of all devices --- */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
@@ -98,16 +118,18 @@ export default function LogoutSettings() {
                 Log out of all active sessions across all devices, including your current session.
               </p>
             </div>
-            <Button 
-              variant="destructive" 
+            <Button
+             
               onClick={handleLogoutAll}
               className="mt-3 md:mt-0 md:ml-4"
               disabled={isLoggingOut || isDeleting}
             >
               {isLoggingOut ? 'Logging out...' : 'Log out all'}
-            </Button>
+            </Button> {}
           </div>
 
+
+          {/* --- Delete Account --- */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
             <div>
               <h3 className="text-lg font-medium text-red-600 dark:text-red-400">Delete account</h3>
@@ -115,8 +137,8 @@ export default function LogoutSettings() {
                 Permanently remove your data. This action cannot be undone.
               </p>
             </div>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={handleDeleteAccount}
               className="mt-3 md:mt-0 md:ml-4"
               disabled={isDeleting || isLoggingOut}
@@ -124,6 +146,7 @@ export default function LogoutSettings() {
               {isDeleting ? 'Deleting...' : 'Delete account'}
             </Button>
           </div>
+
 
         </CardContent>
       </Card>
