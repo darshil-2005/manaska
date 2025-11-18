@@ -12,7 +12,7 @@ export default function LeftPanel() {
           className="object-contain rounded-lg"
         />
       </div>
-      <h1 className="text-2xl font-semibold text-foreground">ManaskaAI</h1>
+      <h1 className="text-2xl font-semibold text-foreground">Manaska</h1>
       <p className="text-muted-foreground mt-2 text-center text-sm sm:text-base max-w-xs leading-relaxed">
         AI-Powered Platform <br /> Transform ideas into intelligent visual maps
       </p>

@@ -15,7 +15,7 @@ export default function HomePage() {
           <div className="w-10 h-10 bg-black text-white rounded-lg font-bold shadow-md flex items-center justify-center">
             M
           </div>
-          <h1 className="font-semibold text-lg">ManaskaAI</h1>
+          <h1 className="font-semibold text-lg">Manaska</h1>
         </div>
 
         <nav className="hidden md:flex space-x-8 text-gray-600 font-medium">

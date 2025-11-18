@@ -251,7 +251,7 @@ export default function DashboardPage() {
 
 
             <div className="pt-1.5">
-              <h1 className="text-5xl font-semibold tracking-tight">Mind Maps</h1>
+              <h1 className="text-5xl font-semibold tracking-tight">Manaska</h1>
               <p className="text-lg text-muted-foreground mt-1">
                 Manage and organize all of your mind maps in one place.
               </p>
@@ -342,17 +342,16 @@ export default function DashboardPage() {
 
         {/* Stats */}
         <div className="grid md:grid-cols-2 gap-6 mb-12 max-w-3xl">
-          {pinnedMaps.length > 0 && (
-            <Card className="rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Pinned</CardTitle>
-                <Star className="w-5 h-5 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">{pinnedMaps.length}</div>
-              </CardContent>
-            </Card>
-          )}
+          <Card className="rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Pinned</CardTitle>
+              <Star className="w-5 h-5 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{pinnedMaps.length}</div>
+            </CardContent>
+          </Card>
+
 
           <Card className="rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">

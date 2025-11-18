@@ -175,7 +175,7 @@ export default function RegisterPage() {
               Create your account
             </h2>
             <p className="text-muted-foreground mb-8 text-sm text-center md:text-left">
-              Join ManaskaAI to start mapping your ideas
+              Join Manaska to start mapping your ideas
             </p>
           </div>
 

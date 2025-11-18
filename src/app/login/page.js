@@ -132,7 +132,7 @@ export default function LoginPage() {
               Welcome back
             </h2>
             <p className="text-muted-foreground mb-8 text-sm text-center md:text-left">
-              Log in to continue to ManaskaAI
+              Log in to continue to Manaska
             </p>
           </div>
 
