@@ -150,8 +150,82 @@ export default function MindMapDesigner() {
     const script = elementsToDSL(elements);
   };
 
-  function handleExport() {
-    console.log("Export Type: ", exportType);
+  async function handleExport() {
+
+    if (!excalidrawAPI) return -1;
+
+    const {exportToBlob, exportToSvg} = await import("@excalidraw/excalidraw");
+    const elements = excalidrawAPI.getSceneElements();
+    const appState = excalidrawAPI.getAppState?.() ?? {};
+    const files = excalidrawAPI.getFiles?.() ?? {};
+    let filename;
+    let blob;
+    appState.exportWithDarkMode = appState.theme == "dark" ? true : false;
+
+    if (exportType == "png") {
+
+    blob = await exportToBlob({
+      elements,
+      appState,
+      files,
+      mimeType: "image/png",
+      exportPadding: 10,
+    });
+    filename = "export.png"
+    } else if (exportType == "jpeg") {
+
+    blob = await exportToBlob({
+      elements,
+      appState,
+      files,
+      mimeType: "image/jpeg",
+      exportPadding: 10,
+      quality: 1,
+    });
+    filename = "export.jpeg"
+
+    } else if (exportType == "svg") {
+
+    const svgObj = await exportToSvg({
+      elements,
+      appState,
+      files,
+      exportPadding: 10,
+    })
+
+      const svgText = new XMLSerializer().serializeToString(svgObj);
+
+      blob = new Blob([svgText], {
+        type: "image/svg+xml",
+      });
+      console.log("Bloh: ", blob)
+      filename = "export.svg"
+    } else if ("json") {
+
+      const json = JSON.stringify(
+        {
+          type: "excalidraw",
+          version: 2,
+          source: "your-app-name",
+          elements,
+          appState,
+          files,
+        },
+        null,
+        2
+      );
+
+     blob = new Blob([json], { type: "application/json" });
+      filename = "export.json"
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
 
@@ -217,7 +291,6 @@ export default function MindMapDesigner() {
     <SelectItem value="jpeg">JPEG</SelectItem>
     <SelectItem value="svg">SVG</SelectItem>
     <SelectItem value="json">JSON</SelectItem>
-    <SelectItem value="webp">WEBP</SelectItem>
     </SelectContent>
     </Select>      
     </div>
