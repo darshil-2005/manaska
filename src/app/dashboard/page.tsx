@@ -251,7 +251,7 @@ export default function DashboardPage() {
 
 
             <div className="pt-1.5">
-              <h1 className="text-5xl font-semibold tracking-tight">Mind Maps</h1>
+              <h1 className="text-5xl font-semibold tracking-tight">Manaska</h1>
               <p className="text-lg text-muted-foreground mt-1">
                 Manage and organize all of your mind maps in one place.
               </p>

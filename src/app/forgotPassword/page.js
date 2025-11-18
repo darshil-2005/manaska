@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 
-// 🧩 shadcn/ui components
+//  shadcn/ui components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// 🧱 custom components
+//  custom components
 import LeftPanel from "@/components/LeftPanel";
 import StepForm from "@/components/StepForm";
 
