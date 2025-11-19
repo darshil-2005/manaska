@@ -3,31 +3,20 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { Check, X } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react"; 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// --- REDIRECT ---
-// 1. Import the useRouter hook
 import { useRouter } from "next/navigation";
-// --- END REDIRECT ---
-
-// shadcn/ui components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-
-// custom components
 import LeftPanel from "@/components/LeftPanel";
-import Social from "@/components/Social";
+import Social from "@/components/Social"; 
+import { validateEmail } from "@/utils/validators"; 
 
-// Your email validation function
-export function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 
-// Helper component to display a single validation rule.
+// --- HELPER COMPONENT  ---
 function PasswordRuleCheck({ text, isValid }) {
   const Icon = isValid ? Check : X;
   const colorClass = isValid ? "text-green-600" : "text-destructive";
@@ -51,23 +40,23 @@ export default function RegisterPage() {
   });
 
   const [termsError, setTermsError] = useState(false);
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
 
-  // --- REDIRECT ---
-  // 2. Initialize the router
+  const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
+
   const router = useRouter();
-  // --- END REDIRECT ---
 
-  // Memoized validation for email
   const emailIsValid = useMemo(() => {
     return validateEmail(formData.email);
   }, [formData.email]);
 
-  // Memoized validation for username length
   const usernameIsValid = useMemo(() => {
     return formData.username.length >= 6;
   }, [formData.username]);
 
-  // Memoized validation for password rules
   const passwordValidation = useMemo(() => {
     const password = formData.password;
     return {
@@ -77,7 +66,6 @@ export default function RegisterPage() {
     };
   }, [formData.password]);
 
-  // Memoized validation for password match
   const passwordsMatch = useMemo(() => {
     if (formData.password.length === 0 || formData.confirmPassword.length === 0) {
       return false;
@@ -93,12 +81,22 @@ export default function RegisterPage() {
     }));
   };
 
+  const handleSocialSignUp = (provider) => {
+    if (provider === 'google') {
+      setIsGoogleLoading(true);
+      setIsGithubLoading(false);
+    } else if (provider === 'github') {
+      setIsGithubLoading(true);
+      setIsGoogleLoading(false);
+    }
+    console.log(`Starting sign up with ${provider}...`);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setTermsError(false);
     const allRulesValid = Object.values(passwordValidation).every(Boolean);
 
-    // Frontend validation check
     if (
       !allRulesValid ||
       !passwordsMatch ||
@@ -107,12 +105,13 @@ export default function RegisterPage() {
       !formData.agree
     ) {
       toast.error("Please correct the errors in the form.");
-      console.error("Please ensure all fields are valid and terms are accepted.");
       if (!formData.agree) {
         setTermsError(true);
       }
-      return; // Stop the submission
+      return; 
     }
+
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
@@ -128,22 +127,17 @@ export default function RegisterPage() {
       );
       
       console.log("Registration successful:", response.data);
-
-      // --- REDIRECT ---
-      // 3. Show toast and redirect after a short delay
       toast.success("Account created! Redirecting to login...");
+      
       setTimeout(() => {
         router.push('/login');
-      }, 2000); // 2-second delay to let user see the toast
-      // --- END REDIRECT ---
+      }, 2000);
 
     } catch (error) {
       console.error("Registration error:", error);
-      
-      // This code is ALREADY correct. It will show your backend's
-      // specific error message (e.g., "User already exists") if you send it.
       const message = error.response?.data?.error || "Registration failed. Please try again.";
       toast.error(message);
+      setIsLoading(false);
     }
   };
 
@@ -151,8 +145,8 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/20 font-inter px-4 sm:px-6 py-6">
       
       <ToastContainer
-        position="top-center"     // <-- MOVED to top-center
-        autoClose={5000}           // <-- INCREASED time to 5 seconds
+        position="top-center"
+        autoClose={5000}
         hideProgressBar={false}
         newestOnTop={true}
         closeOnClick
@@ -169,13 +163,12 @@ export default function RegisterPage() {
 
         {/* RIGHT PANEL */}
         <div className="p-6 sm:p-10 md:p-12 flex flex-col justify-center">
-          {/* Header */}
           <div>
             <h2 className="text-3xl font-semibold mb-2 text-foreground text-center md:text-left">
               Create your account
             </h2>
             <p className="text-muted-foreground mb-8 text-sm text-center md:text-left">
-              Join Manaska to start mapping your ideas
+              Join ManaskaAI to start mapping your ideas
             </p>
           </div>
 
@@ -187,10 +180,11 @@ export default function RegisterPage() {
               <Input
                 id="name"
                 name="name"
-                placeholder="e.g., Dhruv patel;"
+                placeholder="Dhruv patel"
                 value={formData.name}
                 onChange={handleChange}
                 required
+                disabled={isAnyLoading}
               />
             </div>
 
@@ -200,13 +194,12 @@ export default function RegisterPage() {
               <Input
                 id="username"
                 name="username"
-                placeholder="e.g., Dhruv99"
+                placeholder="Dhruv99"
                 value={formData.username}
                 onChange={handleChange}
                 required
+                disabled={isAnyLoading}
               />
-              
-              {/* Username Validation Rule */}
               {formData.username.length > 0 && (
                 <div className="mt-2 pl-1">
                   <PasswordRuleCheck
@@ -224,13 +217,12 @@ export default function RegisterPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="e.g., Dhruv@example.com"
+                placeholder="dhruv@gmail.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={isAnyLoading}
               />
-              
-              {/* Email Validation Rule */}
               {formData.email.length > 0 && (
                 <div className="mt-2 pl-1">
                   <PasswordRuleCheck
@@ -252,9 +244,10 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={isAnyLoading}
               />
               
-              {/* Password Validation Rules */}
+              {/* Password Checklist */}
               {formData.password.length > 0 && (
                 <div className="space-y-1 mt-2 pl-1">
                   <PasswordRuleCheck
@@ -284,9 +277,8 @@ export default function RegisterPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                disabled={isAnyLoading}
               />
-
-              {/* Password Match Check */}
               {formData.confirmPassword.length > 0 && (
                 <div className="mt-2 pl-1">
                   <PasswordRuleCheck
@@ -310,29 +302,22 @@ export default function RegisterPage() {
                       setTermsError(false);
                     }
                   }}
+                  disabled={isAnyLoading}
                 />
                 <Label
                   htmlFor="agree"
                   className="text-muted-foreground text-xs sm:text-sm leading-snug"
                 >
                   I agree to the{" "}
-                  <a
-                    href="#"
-                    className="text-foreground font-medium hover:underline"
-                  >
+                  <a href="#" className="text-foreground font-medium hover:underline">
                     Terms of Service
                   </a>{" "}
                   and{" "}
-                  <a
-                    href="#"
-                    className="text-foreground font-medium hover:underline"
-                  >
+                  <a href="#" className="text-foreground font-medium hover:underline">
                     Privacy Policy
                   </a>
                 </Label>
               </div>
-              
-              {/* Terms Error Message */}
               {termsError && (
                 <p className="text-sm text-destructive pl-7">
                   You must agree to the terms to create an account.
@@ -340,23 +325,31 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Submit Button */}
-            <Button type="submit" className="w-full h-11 text-base pt-2">
-              Create account
+            <Button
+              type="submit"
+              className="w-full h-11 text-base pt-2"
+              disabled={isAnyLoading}
+            >
+              {isLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isLoading ? "Creating account..." : "Create account"}
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="my-6 flex items-center justify-center">
             <span className="text-muted-foreground text-sm">
               Or sign up with
             </span>
           </div>
 
-          {/* Social Login Buttons */}
-          <Social />
+          <Social
+            onSocialClick={handleSocialSignUp}
+            isGoogleLoading={isGoogleLoading}
+            isGithubLoading={isGithubLoading}
+            isAnyLoading={isAnyLoading}
+          />
 
-          {/* Login Redirect */}
           <div className="text-center text-muted-foreground text-sm mt-8">
             Already have an account?{" "}
             <Link

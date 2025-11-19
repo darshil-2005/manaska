@@ -1,6 +1,4 @@
 "use client";
-
-
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ProfileSettings from '@/components/ProfileSettings';
@@ -88,21 +86,21 @@ export default function SettingsPage() {
 
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-50">
+    <div className="flex min-h-screen **bg-background text-foreground**">
 
 
-      <aside className="w-64 border-r bg-white dark:bg-gray-900 dark:border-gray-800 p-4 sticky top-0 h-screen hidden md:block">
+      <aside className="w-64 bg-sidebar p-4 sticky top-0 h-screen hidden md:block shadow-xl dark:shadow-none dark:border-r dark:border-border">
 
 
         {/* ---  Wrap Logo/Title in Link component --- */}
         <Link
           href="/dashboard"
-          className="flex items-center space-x-2.5 mb-6 px-2 group" // Added group
+          className="flex items-center space-x-2.5 mb-6 px-2 group" 
         >
           {/* --- logo */}
           <Brain className="h-6 w-6 text-gray-800 dark:text-gray-200 transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
           <h2 className="text-xl font-semibold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-            ManaskaAI
+            Manaska
           </h2>
         </Link>
        
