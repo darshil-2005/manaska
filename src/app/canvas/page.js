@@ -200,7 +200,8 @@ export default function MindMapDesigner() {
       });
       console.log("Bloh: ", blob)
       filename = "export.svg"
-    } else if ("json") {
+
+    } else if (exportType == "json") {
 
       const json = JSON.stringify(
         {
@@ -217,6 +218,31 @@ export default function MindMapDesigner() {
 
      blob = new Blob([json], { type: "application/json" });
       filename = "export.json"
+
+    } else if (exportType == "markdown") {
+
+    const sceneData = {
+      type: "excalidraw",
+      version: 2,
+      source: "https://excalidraw.com",
+      elements,
+      appState,
+      files,
+    };
+    
+    const markdownContent = `---
+    type: excalidraw
+    version: 2
+    source: https://excalidraw.com
+    ---
+
+    \`\`\`excalidraw
+    ${JSON.stringify(sceneData, null, 2)}
+    \`\`\`
+    `;
+      blob = new Blob([markdownContent], { type: "text/markdown" });
+      filename = "export.excalidraw.md"
+
     }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -291,6 +317,7 @@ export default function MindMapDesigner() {
     <SelectItem value="jpeg">JPEG</SelectItem>
     <SelectItem value="svg">SVG</SelectItem>
     <SelectItem value="json">JSON</SelectItem>
+    <SelectItem value="markdown">Markdown</SelectItem>
     </SelectContent>
     </Select>      
     </div>
