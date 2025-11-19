@@ -1,0 +1,22 @@
+fastapi
+uvicorn[standard]
+python-multipart
+
+# PDF extraction
+PyMuPDF
+
+# Image OCR
+pillow
+easyocr
+numpy
+
+# LangChain core
+langchain
+
+# Providers for LLM invoke endpoint
+openai
+langchain-groq
+langchain-google-genai
+
+# Optional: for CORS if needed
+# fastapi[all]
