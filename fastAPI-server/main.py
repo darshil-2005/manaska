@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from typing import Dict, List
 import io
 import os
+from llm_endpoint import router as llm_router
 
 # PDF extraction
 import fitz  # PyMuPDF
@@ -75,3 +76,10 @@ async def extract_image(file: UploadFile = File(...)) -> Dict[str, str]:
 
     text = "\n".join(results).strip()
     return JSONResponse({"filename": file.filename, "text": text})
+
+# --- new LLM endpoint ---
+app.include_router(llm_router, prefix="/llm")
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "easyocr_langs": _LANGS, "easyocr_gpu": _use_gpu}
