@@ -25,6 +25,7 @@ import {elementsToDSL} from '../../utils/elementsToDSL.js'
 import {Button} from "../../components/ui/button.tsx"
 import {Label} from "../../components/ui/label.tsx"
 import {Switch} from "../../components/ui/switch.tsx"
+import { toast, ToastContainer, Zoom } from "react-toastify";
 import {Separator} from "../../components/ui/separator.tsx"
 import {
   Select,
@@ -155,6 +156,7 @@ export default function MindMapDesigner() {
 
     if (!excalidrawAPI) return -1;
 
+    toast.info("Export might take some time. Be patient!");
     setIsExporting(true);
 
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -265,6 +267,21 @@ export default function MindMapDesigner() {
 
   return (
     <div className="h-screen bg-backgorund flex flex-col">
+
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={theme}
+        transition={Zoom}
+      />
+
     {/* Header */}
     <header className="bg-backgorund px-4 py-2 flex border items-center justify-between">
     {/* Project Info */}

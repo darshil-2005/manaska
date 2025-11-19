@@ -1,5 +1,39 @@
+/*
+ * @file parseJsonToDSL.js
+ *
+ * @brief 
+ * Contains the central function parseJsonToDSL and a bunch of its helper functions.
+ *
+ * @details
+ * This file implements the central callable function parseJsonToDSL() and helper functions as listed below:
+ * - buildNodes()
+ * - buildConnections()
+ * - extractNodesAndConnections()
+ *
+ * The parseJsonToDSL() function takes in a mindmap in json format and processes it completely to convert it into
+ * custom DSL script as defined in the Manaska docs.
+ *
+ * The function can arrange mindmap in 3 ways:
+ * - Horizontal
+ * - Vertical
+ * - Radial
+ *
+ * The function first calls the function layoutMindmap() to get all nodes to have there x, y, height, width. Then the 
+ * function calls extractNodesAndConnections() and flatten the recursively arranged json mindmap into a flat array of
+ * mindmap elements which are of type either "Node" or "Connection".
+ *
+ * The function then passes the individual elements of the mindmap into either buildNodes() or buildConnections() function
+ * depending on there type. Both these functions return DSL script of that particular element. The script of individual
+ * elements is combined to form the DSL script of whole mindmap.
+ *
+ *
+ * @author
+ * Darshil Gandhi (202301056)
+ *
+ * */
+
 import { randomId } from "./randomId.js";
-import { layoutMindmap } from "./getDimensions.js"; // Corrected typo "Diminsions"
+import { layoutMindmap } from "./layoutMindmap.js";
 
 // Defaults
 const NODE_BACKGROUND_COLOR = `#3bc9db`;
@@ -108,9 +142,7 @@ function extractNodesAndConnections(
       connections.push({
         source: inputNode.id,
         target: child.id,
-        label: `${inputNode.label} → ${child.label}`,
-        absoluteStart: { x: parentBottomX, y: parentBottomY },
-        points: relPoints,
+        label: `${inputNode.label}`,
       });
     }
   }
@@ -118,17 +150,18 @@ function extractNodesAndConnections(
   return { nodes, connections };
 }
 
-export function parseMindmapToDSL(mindmap) {
+export function parseMindmapToDSL(mindmap, type="horizontal") {
+
   if (!mindmap) {
     return -1;
   }
-
-  const mapWithCoodinates = layoutMindmap(mindmap, {
+  
+  //TODO: Examine options for each case properly - (Darshil)
+  const mapWithCoodinates = layoutMindmap(mindmap, type, {
     dx: 400,
     dy: 400,
     marginX: 600,
     marginY: 80,
-    orientation: "horizontal",
     factor: 12,
     minWidth: 220,
   });
@@ -154,196 +187,52 @@ export function parseMindmapToDSL(mindmap) {
 
 
 const mindmap = 
- {
-  "id": "quantum_computing_overview",
-  "label": "Quantum Computing",
-  "relation": "root",
+{
+  "id": "root",
+  "label": "Artificial Intelligence",
   "children": [
     {
-      "id": "qubits_and_superposition",
-      "label": "Qubits & Superposition",
-      "relation": "subtopic",
+      "id": "c1",
+      "label": "Machine Learning",
       "children": [
-        {
-          "id": "qubit_definition",
-          "label": "Qubit Definition",
-          "relation": "subtopic",
-          "children": [
-            {
-              "id": "qubit_states",
-              "label": "Qubit States",
-              "relation": "subtopic",
-              "children": [
-                {
-                  "id": "qubit_states_0",
-                  "label": "0 State",
-                  "relation": "subtopic",
-                  "children": []
-                },
-                {
-                  "id": "qubit_states_1",
-                  "label": "1 State",
-                  "relation": "subtopic",
-                  "children": []
-                },
-                {
-                  "id": "qubit_states_superposition",
-                  "label": "Superposition",
-                  "relation": "subtopic",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "qubit_states_measurement",
-              "label": "Measurement",
-              "relation": "subtopic",
-              "children": []
-            }
-          ]
-        },
-        {
-          "id": "superposition_explanation",
-          "label": "Superposition Explanation",
-          "relation": "subtopic",
-          "children": [
-            {
-              "id": "superposition_vs_classical",
-              "label": "Vs Classical",
-              "relation": "subtopic",
-              "children": []
-            },
-            {
-              "id": "superposition_advantages",
-              "label": "Advantages",
-              "relation": "subtopic",
-              "children": []
-            }
-          ]
-        }
+        { "id": "c1a", "label": "Supervised", "children": [
+          { "id": "c1a1", "label": "Regression", "children": [] },
+          { "id": "c1a2", "label": "Classification", "children": [] }
+        ]},
+        { "id": "c1b", "label": "Unsupervised", "children": [
+          { "id": "c1b1", "label": "Clustering", "children": [] },
+          { "id": "c1b2", "label": "Dimensionality Reduction", "children": [] }
+        ]},
+        { "id": "c1c", "label": "Reinforcement", "children": [] }
       ]
     },
+
     {
-      "id": "quantum_gates",
-      "label": "Quantum Gates",
-      "relation": "subtopic",
+      "id": "c2",
+      "label": "Deep Learning",
       "children": [
-        {
-          "id": "quantum_gate_types",
-          "label": "Gate Types",
-          "relation": "subtopic",
-          "children": [
-            {
-              "id": "quantum_gate_types_single",
-              "label": "Single-Qubit Gates",
-              "relation": "subtopic",
-              "children": []
-            },
-            {
-              "id": "quantum_gate_types_multi",
-              "label": "Multi-Qubit Gates",
-              "relation": "subtopic",
-              "children": []
-            }
-          ]
-        },
-        {
-          "id": "quantum_gate_applications",
-          "label": "Gate Applications",
-          "relation": "subtopic",
-          "children": [
-            {
-              "id": "quantum_gate_applications_quantum_algorithm",
-              "label": "Quantum Algorithm",
-              "relation": "subtopic",
-              "children": []
-            },
-            {
-              "id": "quantum_gate_applications_quantum_simulation",
-              "label": "Quantum Simulation",
-              "relation": "subtopic",
-              "children": []
-            }
-          ]
-        }
+        { "id": "c2a", "label": "CNNs", "children": [] },
+        { "id": "c2b", "label": "RNNs", "children": [] },
+        { "id": "c2c", "label": "Transformers", "children": [
+          { "id": "c2c1", "label": "Attention", "children": [] },
+          { "id": "c2c2", "label": "Encoders", "children": [] },
+          { "id": "c2c3", "label": "Decoders", "children": [] }
+        ]}
       ]
     },
+
     {
-      "id": "quantum_algorithms",
-      "label": "Quantum Algorithms",
-      "relation": "subtopic",
+      "id": "c3",
+      "label": "Applications",
       "children": [
-        {
-          "id": "shor_algorithm",
-          "label": "Shor's Algorithm",
-          "relation": "subtopic",
-          "children": []
-        },
-        {
-          "id": "grover_algorithm",
-          "label": "Grover's Algorithm",
-          "relation": "subtopic",
-          "children": []
-        },
-        {
-          "id": "simons_algorithm",
-          "label": "Simons Algorithm",
-          "relation": "subtopic",
-          "children": []
-        }
-      ]
-    },
-    {
-      "id": "quantum_computing_applications",
-      "label": "Quantum Computing Applications",
-      "relation": "subtopic",
-      "children": [
-        {
-          "id": "cryptography",
-          "label": "Cryptography",
-          "relation": "subtopic",
-          "children": []
-        },
-        {
-          "id": "optimization",
-          "label": "Optimization",
-          "relation": "subtopic",
-          "children": []
-        },
-        {
-          "id": "machine_learning",
-          "label": "Machine Learning",
-          "relation": "subtopic",
-          "children": []
-        }
-      ]
-    },
-    {
-      "id": "quantum_computing_challenges",
-      "label": "Quantum Computing Challenges",
-      "relation": "subtopic",
-      "children": [
-        {
-          "id": "quantum_noise",
-          "label": "Quantum Noise",
-          "relation": "subtopic",
-          "children": []
-        },
-        {
-          "id": "quantum_error_correction",
-          "label": "Quantum Error Correction",
-          "relation": "subtopic",
-          "children": []
-        },
-        {
-          "id": "scalability",
-          "label": "Scalability",
-          "relation": "subtopic",
-          "children": []
-        }
+        { "id": "c3a", "label": "NLP", "children": [] },
+        { "id": "c3b", "label": "Vision", "children": [] },
+        { "id": "c3c", "label": "Robotics", "children": [] },
+        { "id": "c3d", "label": "Healthcare", "children": [] }
       ]
     }
   ]
-};
+}
 
-console.log(parseMindmapToDSL(mindmap));
+
+console.log(parseMindmapToDSL(mindmap, "radial"));

@@ -1,3 +1,10 @@
+/**
+ * @brief Defines a variable that declare tokenizer for syntax highlighting for monaco editor for a custom DSL language.
+ *
+ * @author Darshil Gandhi (202301056)
+ */
+
+
 const manaskaDSLLanguage = {
 
   defaultToken: 'invalid',

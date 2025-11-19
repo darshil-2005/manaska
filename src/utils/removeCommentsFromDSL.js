@@ -1,17 +1,21 @@
 /**
- * @brief Removes inline and full-line comments from a DSL script.
+ * @brief
+ * Removes inline and full-line comments from a DSL script.
  *
  * @details
  * This function processes the input DSL code and strips all comments that begin
  * with "//", including both whole-line and inline comments.
  *
- * @param code The DSL script to process.
- * @return The script with all "//" comments removed.
+ * @param code
+ * The DSL script to process.
+ * @return 
+ * The script with all "//" comments removed.
  *
- * @note Only inline and whole line comments that start with "//" are removed.
+ * @note
+ * Only inline and whole line comments that start with "//" are removed.
  *
  * @author
- * Darshil Gandhi
+ * Darshil Gandhi (202301056)
  */
 
 export function removeCommentsFromDSL(code) {
