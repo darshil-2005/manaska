@@ -100,6 +100,7 @@ export default function MindMapDesigner() {
   const [coordinates, setCoordinates] = useState([0, 0]);
   const [exportType, setExportType] = useState('png');
   const [gridModeEnabled, setGridModeEnabled] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const {theme, systemTheme} = useTheme();
 
   useEffect(() => {
@@ -153,6 +154,10 @@ export default function MindMapDesigner() {
   async function handleExport() {
 
     if (!excalidrawAPI) return -1;
+
+    setIsExporting(true);
+
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const {exportToBlob, exportToSvg} = await import("@excalidraw/excalidraw");
     const elements = excalidrawAPI.getSceneElements();
@@ -243,7 +248,9 @@ export default function MindMapDesigner() {
       blob = new Blob([markdownContent], { type: "text/markdown" });
       filename = "export.excalidraw.md"
 
+
     }
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -252,9 +259,9 @@ export default function MindMapDesigner() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    
+    setIsExporting(false);
   }
-
-
 
   return (
     <div className="h-screen bg-backgorund flex flex-col">
@@ -322,9 +329,12 @@ export default function MindMapDesigner() {
     </Select>      
     </div>
 
-    <Button onClick={handleExport}>
-      <Download size={16}/>
-      <span>Download</span>
+    <Button onClick={handleExport} disabled={isExporting}>
+      {!isExporting && <Download size={16}/>}
+      <span>
+        {isExporting && (<div className="animate-spin text-2xl">+</div>)}
+        {!isExporting && (<div className="">Download</div>)}
+      </span>
     </Button>
 
     </PopoverContent>
