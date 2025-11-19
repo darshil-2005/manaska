@@ -157,7 +157,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
 
       const node = {
         id: currentElement.name,
-        type: currentElement.properties.type ? currentElement.properties.type : "rectangle",
+        type: currentElement.properties.type ? currentElement.properties.type : "ellipse",
         x: parseFloat(currentElement.properties.x),
         y: parseFloat(currentElement.properties.y),
         height: parseFloat(currentElement.properties.height),
@@ -207,7 +207,7 @@ export function DSLToExcalidraw(DSLSrcipt) {
       let points;
       let x;
       let y;
-      const arrowMeta = structuredClone(getPoints(processedElements, sourceId, targetId, "vertical"));
+      const arrowMeta = structuredClone(getPoints(processedElements, sourceId, targetId, "radial"));
 
       if (currentElement?.properties?.points != undefined && currentElement?.properties?.x != undefined && currentElement?.properties?.y != undefined) {
         points = currentElement?.properties?.points;

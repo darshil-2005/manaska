@@ -25,6 +25,7 @@ import {elementsToDSL} from '../../utils/elementsToDSL.js'
 import {Button} from "../../components/ui/button.tsx"
 import {Label} from "../../components/ui/label.tsx"
 import {Switch} from "../../components/ui/switch.tsx"
+import { toast, ToastContainer, Zoom } from "react-toastify";
 import {Separator} from "../../components/ui/separator.tsx"
 import {
   Select,
@@ -100,6 +101,7 @@ export default function MindMapDesigner() {
   const [coordinates, setCoordinates] = useState([0, 0]);
   const [exportType, setExportType] = useState('png');
   const [gridModeEnabled, setGridModeEnabled] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const {theme, systemTheme} = useTheme();
 
   useEffect(() => {
@@ -154,6 +156,11 @@ export default function MindMapDesigner() {
 
     if (!excalidrawAPI) return -1;
 
+    toast.info("Export might take some time. Be patient!");
+    setIsExporting(true);
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     const {exportToBlob, exportToSvg} = await import("@excalidraw/excalidraw");
     const elements = excalidrawAPI.getSceneElements();
     const appState = excalidrawAPI.getAppState?.() ?? {};
@@ -200,7 +207,8 @@ export default function MindMapDesigner() {
       });
       console.log("Bloh: ", blob)
       filename = "export.svg"
-    } else if ("json") {
+
+    } else if (exportType == "json") {
 
       const json = JSON.stringify(
         {
@@ -217,7 +225,34 @@ export default function MindMapDesigner() {
 
      blob = new Blob([json], { type: "application/json" });
       filename = "export.json"
+
+    } else if (exportType == "markdown") {
+
+    const sceneData = {
+      type: "excalidraw",
+      version: 2,
+      source: "https://excalidraw.com",
+      elements,
+      appState,
+      files,
+    };
+    
+    const markdownContent = `---
+    type: excalidraw
+    version: 2
+    source: https://excalidraw.com
+    ---
+
+    \`\`\`excalidraw
+    ${JSON.stringify(sceneData, null, 2)}
+    \`\`\`
+    `;
+      blob = new Blob([markdownContent], { type: "text/markdown" });
+      filename = "export.excalidraw.md"
+
+
     }
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -226,12 +261,27 @@ export default function MindMapDesigner() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    
+    setIsExporting(false);
   }
-
-
 
   return (
     <div className="h-screen bg-backgorund flex flex-col">
+
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={theme}
+        transition={Zoom}
+      />
+
     {/* Header */}
     <header className="bg-backgorund px-4 py-2 flex border items-center justify-between">
     {/* Project Info */}
@@ -291,13 +341,17 @@ export default function MindMapDesigner() {
     <SelectItem value="jpeg">JPEG</SelectItem>
     <SelectItem value="svg">SVG</SelectItem>
     <SelectItem value="json">JSON</SelectItem>
+    <SelectItem value="markdown">Markdown</SelectItem>
     </SelectContent>
     </Select>      
     </div>
 
-    <Button onClick={handleExport}>
-      <Download size={16}/>
-      <span>Download</span>
+    <Button onClick={handleExport} disabled={isExporting}>
+      {!isExporting && <Download size={16}/>}
+      <span>
+        {isExporting && (<div className="animate-spin text-2xl">+</div>)}
+        {!isExporting && (<div className="">Download</div>)}
+      </span>
     </Button>
 
     </PopoverContent>
