@@ -62,6 +62,22 @@ export default function DashboardPage() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [navigatingToCanvas, setNavigatingToCanvas] = useState(false);
+
+  // Warm up heavy canvas chunks so navigation feels instant
+  useEffect(() => {
+    const warmUpCanvas = async () => {
+      try {
+        await Promise.all([
+          import("@/components/editor.jsx"),
+          import("@/wrapper/excalidraw.js"),
+        ]);
+      } catch (err) {
+        console.warn("Canvas preloading failed:", err);
+      }
+    };
+    warmUpCanvas();
+  }, []);
 
   const fetchMaps = useCallback(async () => {
     setLoading(true);
@@ -164,7 +180,10 @@ export default function DashboardPage() {
     }
   };
 
-  const handleCreate = () => router.push("/canvas");
+  const handleCreate = () => {
+    setNavigatingToCanvas(true);
+    router.push("/canvas");
+  };
 
   const renderCard = (map: MindMap) => {
     const timestamp = formatTimestamp(map.updatedAt ?? map.createdAt);
@@ -335,8 +354,20 @@ export default function DashboardPage() {
             )}
           </Button>
 
-          <Button className="h-14 px-8 rounded-full" onClick={handleCreate}>
-            <Plus className="w-5 h-5 mr-2" /> Create mind map
+          <Button
+            className="h-14 px-8 rounded-full"
+            onClick={handleCreate}
+            disabled={navigatingToCanvas}
+          >
+            {navigatingToCanvas ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Opening…
+              </>
+            ) : (
+              <>
+                <Plus className="w-5 h-5 mr-2" /> Create mind map
+              </>
+            )}
           </Button>
         </div>
 
