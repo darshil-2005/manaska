@@ -35,7 +35,7 @@ export function layoutMindmap(root, type, options = {}) {
     minWidth: 120,
 
     // Node Spacing (Radial)
-    ringSpacing: 400, 
+    ringSpacing: 800, 
     centerX: null,
     centerY: null,
 

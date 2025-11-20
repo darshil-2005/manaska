@@ -13,7 +13,7 @@ import {
 import type { AdapterAccountType } from "@auth/core/adapters"
 
 // Optional enum (you had this for verification tokens)
-export const typeOfTokenEnum = pgEnum("typeOfToken", ["FORGOT_PASSWORD"])
+export const typeOfTokenEnum = pgEnum("typeOfToken", ["FORGOT_PASSWORD", "VERIFY_TOKEN"])
 
 // ---------------- USERS ----------------
 export const users = pgTable("user", {
