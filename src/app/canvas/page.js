@@ -20,6 +20,7 @@ import {
   Download
 } from 'lucide-react';
 import dynamic from "next/dynamic"; 
+import Chat from "../../components/chat.jsx"
 import {DSLToExcalidraw} from '../../utils/DSLToExcalidraw.js';
 import {elementsToDSL} from '../../utils/elementsToDSL.js'
 import {Button} from "../../components/ui/button.tsx"
@@ -369,7 +370,7 @@ export default function MindMapDesigner() {
     <ResizableHandle className="w-1"/>
 
     {/* Main Canvas Area */}
-    <ResizablePanel defaultSize={75}>
+    <ResizablePanel defaultSize={45}>
     <ExcalidrawWrapper
     onChange={handleCanvasChange}
     onPointerUpdate={(event) => {
@@ -381,6 +382,12 @@ export default function MindMapDesigner() {
     gridModeEnabled={gridModeEnabled}
     className="text-black border border-gray-200 rounded-lg"
     />
+    </ResizablePanel>
+    
+    <ResizableHandle className="w-1"/>
+    
+    <ResizablePanel defaultSize={30}>
+      <Chat messages={[]}/>
     </ResizablePanel>
 
     </ResizablePanelGroup>

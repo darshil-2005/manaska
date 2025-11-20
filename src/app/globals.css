@@ -171,6 +171,6 @@
   display: none !important;
 }
 
-.sidebar-trigger, .default-sidebar-trigger {
+.sidebar-trigger, .default-sidebar-trigger, .main-menu-trigger {
   display: none !important;
 }

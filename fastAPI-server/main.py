@@ -1,6 +1,7 @@
 # main.py
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict, List
 import io
 import os
@@ -16,10 +17,21 @@ import easyocr
 
 app = FastAPI(title="PDF + Image OCR (EasyOCR)")
 
-# Configure languages via env var EASYOCR_LANGS (comma separated), default to english only.
+origins = [
+    "http://localhost:3000",      # Allow localhost to request in development.
+]
+
+app.add_middleware(
+    CORSMiddlware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 _LANGS = os.environ.get("EASYOCR_LANGS", "en").split(",")
-# Initialize single reader instance at startup (avoids reloading model per request)
-# Set gpu=False by default; if you deploy on GPU machines set EASYOCR_GPU=1
+
 _use_gpu = bool(int(os.environ.get("EASYOCR_GPU", "0")))
 reader = easyocr.Reader(_LANGS, gpu=_use_gpu)  # this loads model into memory
 
