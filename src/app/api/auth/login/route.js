@@ -12,11 +12,17 @@ export async function POST(req) {
         const { email, password } = await req.json();
 
         if (!email || !password) {
-            return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+            return NextResponse.json({ error: "Email or username and password are required" }, { status: 400 });
         }
 
-        // Find user by email
-        const [user] = await db.select().from(users).where(eq(users.email, email));
+        const identifier = email.trim();
+        const isEmail = identifier.includes("@");
+
+        // Find user by email or username
+        const [user] = await db
+            .select()
+            .from(users)
+            .where(isEmail ? eq(users.email, identifier) : eq(users.username, identifier));
 
         if (!user) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });

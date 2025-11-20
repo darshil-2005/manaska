@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Brain,
   Loader2,
@@ -15,6 +15,7 @@ import {
   Trash2,
   RefreshCw,
   User,
+  Edit3,
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -54,12 +55,14 @@ function formatTimestamp(value?: string | null) {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [maps, setMaps] = useState<MindMap[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [pendingPinId, setPendingPinId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
   const [navigatingToCanvas, setNavigatingToCanvas] = useState(false);
@@ -83,15 +86,31 @@ export default function DashboardPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/canvas");
+      const res = await fetch(`/api/canvas?ts=${Date.now()}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
+
+      if (res.status === 401) {
+        router.push("/login");
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch maps");
+      }
+
       const data = await res.json();
       setMaps(Array.isArray(data?.maps) ? data.maps : []);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("Unable to load your mind maps. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -106,6 +125,32 @@ export default function DashboardPage() {
     fetchMaps();
     fetchProfile();
   }, [fetchMaps, fetchProfile]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const handleVisibility = () => {
+      if (!document.hidden) {
+        fetchMaps();
+      }
+    };
+
+    window.addEventListener("focus", handleVisibility);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.removeEventListener("focus", handleVisibility);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [fetchMaps]);
+
+  const refreshParam = searchParams.get("refresh");
+  useEffect(() => {
+    if (refreshParam) {
+      fetchMaps();
+      router.replace("/dashboard");
+    }
+  }, [refreshParam, fetchMaps, router]);
 
   const filteredMaps = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -145,11 +190,64 @@ export default function DashboardPage() {
 
       if (!res.ok) throw new Error();
 
-      fetchMaps();
+      const data = await res.json();
+
+      setMaps((prev) => {
+        const pinState = data?.map?.pinned ?? false;
+        return prev.map((m) => {
+          if (m.id === id) {
+            return {
+              ...m,
+              pinned: pinState,
+              updatedAt: data?.map?.updatedAt ?? m.updatedAt,
+            };
+          }
+          if (pinState) {
+            return { ...m, pinned: false };
+          }
+          return m;
+        });
+      });
     } catch {
       toast.error("Failed to update pin.");
     } finally {
       setPendingPinId(null);
+    }
+  };
+  const handleRenameMap = async (mapItem: MindMap) => {
+    const currentTitle = mapItem.title || "Untitled mind map";
+    const nextTitle = window.prompt("Enter a new name for this mind map", currentTitle);
+    if (nextTitle === null) return;
+
+    const trimmed = nextTitle.trim();
+    if (!trimmed || trimmed === currentTitle.trim()) return;
+
+    setRenamingId(mapItem.id);
+    try {
+      const res = await fetch(`/api/mindmap/${mapItem.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: trimmed }),
+      });
+
+      if (res.status === 401) {
+        router.push("/login");
+        return;
+      }
+
+      if (!res.ok) throw new Error();
+
+      const data = await res.json();
+      setMaps((prev) =>
+        prev.map((m) =>
+          m.id === mapItem.id ? { ...m, title: data?.map?.title, updatedAt: data?.map?.updatedAt ?? m.updatedAt } : m
+        )
+      );
+      toast.success("Mind map renamed.");
+    } catch {
+      toast.error("Unable to rename mind map.");
+    } finally {
+      setRenamingId(null);
     }
   };
 
@@ -180,9 +278,37 @@ export default function DashboardPage() {
     }
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     setNavigatingToCanvas(true);
-    router.push("/canvas");
+    try {
+      const res = await fetch("/api/mindmap/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "Untitled mind map" }),
+      });
+
+      if (res.status === 401) {
+        router.push("/login");
+        setNavigatingToCanvas(false);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error("Failed to create mind map");
+      }
+
+      const data = await res.json();
+      if (!data?.map?.id) {
+        throw new Error("Invalid response from server");
+      }
+
+      setMaps((prev) => [data.map, ...prev]);
+      router.push(`/canvas/${data.map.id}`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Unable to create a new mind map. Please try again.");
+      setNavigatingToCanvas(false);
+    }
   };
 
   const renderCard = (map: MindMap) => {
@@ -206,6 +332,19 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex gap-1">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => handleRenameMap(map)}
+                disabled={renamingId === map.id}
+              >
+                {renamingId === map.id ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Edit3 className="w-4 h-4" />
+                )}
+              </Button>
+
               <Button
                 size="icon"
                 variant="ghost"

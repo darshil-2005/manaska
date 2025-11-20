@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
 
 // COMPONENTS
 import CoordinatesDisplay from "../../../components/coordinatesDisplay.jsx";
@@ -43,7 +44,7 @@ import { DSLToExcalidraw } from "../../../utils/DSLToExcalidraw.js";
 import { elementsToDSL } from "../../../utils/elementsToDSL.js";
 
 export default function CanvasPage({ params }) {
-
+  const router = useRouter();
   const { id } = use(params);
 
   const defaultValue = `Node "welcomeNode" {
@@ -96,6 +97,44 @@ export default function CanvasPage({ params }) {
     });
   };
 
+  const handleSave = async () => {
+    if (!excalidrawAPI || !id) {
+      console.warn("Unable to save: canvas not ready or id missing");
+      return;
+    }
+
+    try {
+      const elements = excalidrawAPI.getSceneElements
+        ? excalidrawAPI.getSceneElements()
+        : [];
+      const mapCode = elementsToDSL(elements);
+      setScriptCode(mapCode);
+
+      const response = await fetch("/api/canvas/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          map_code: mapCode,
+          mapId: id,
+        }),
+      });
+
+      if (response.status === 401) {
+        router.push("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        console.error("Failed to save mind map", await response.text());
+        return;
+      }
+
+      router.push(`/dashboard?refresh=${Date.now()}`);
+    } catch (error) {
+      console.error("Error while saving mind map:", error);
+    }
+  };
+
   return (
     <div className="h-screen bg-background flex flex-col">
 
@@ -122,7 +161,7 @@ export default function CanvasPage({ params }) {
 
           <Button>Generate Script</Button>
           <Button>Share</Button>
-          <Button>Save</Button>
+          <Button onClick={handleSave}>Save</Button>
 
           <Popover>
             <PopoverTrigger asChild>
