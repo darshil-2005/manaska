@@ -2,6 +2,7 @@
   "name": "manaska",
   "version": "0.1.0",
   "private": true,
+  "type":"module",
   "scripts": {
     "dev": "next dev",
     "build": "next build --turbopack",
@@ -44,6 +45,7 @@
     "next": "^15.5.2",
     "next-auth": "^5.0.0-beta.29",
     "next-themes": "^0.4.6",
+    "nodemailer": "^7.0.10",
     "npm": "^11.6.2",
     "pdf-parse-fixed": "^1.1.1",
     "pg": "^8.16.3",
