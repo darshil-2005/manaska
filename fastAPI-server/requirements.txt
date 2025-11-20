@@ -17,6 +17,4 @@ langchain
 openai
 langchain-groq
 langchain-google-genai
-
-# Optional: for CORS if needed
-# fastapi[all]
+langchain_openai
