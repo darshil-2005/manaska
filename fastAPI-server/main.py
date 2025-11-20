@@ -37,7 +37,7 @@ _use_gpu = bool(int(os.environ.get("EASYOCR_GPU", "0")))
 reader = easyocr.Reader(_LANGS, gpu=_use_gpu)  # this loads model into memory
 
 @app.post("/extract-pdf")
-async def extract_pdf(file: UploadFile = File(...)) -> Dict[str, str]:
+async def extract_pdf(request: Request, file: UploadFile = File(...)) -> Dict[str, str]:
     """
     Accepts a PDF upload and returns its extracted text (concatenated pages).
     """
@@ -72,7 +72,7 @@ async def extract_pdf(file: UploadFile = File(...)) -> Dict[str, str]:
 
 
 @app.post("/extract-image")
-async def extract_image(file: UploadFile = File(...)) -> Dict[str, str]:
+async def extract_image(request: Request, file: UploadFile = File(...)) -> Dict[str, str]:
     """
     Accepts an image upload and returns OCR text detected by EasyOCR.
     Supports common image types: jpeg, png, bmp, tiff, webp.
