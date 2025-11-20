@@ -7,6 +7,11 @@ import { db } from "../../../../../db/db";
 import { map } from "../../../../../db/schema";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import {
+  DEFAULT_KEY_NOT_CONFIGURED,
+  USER_KEY_NOT_FOUND,
+  resolveGroqApiKey,
+} from "../../../../utils/resolveGroqApiKey.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -37,6 +42,7 @@ export async function POST(req) {
     }
 
     const formData = await req.formData();
+    const useUserKey = formData.get("useUserApiKey") === "true";
     const file = formData.get("file");
 
     if (!file) {
@@ -68,8 +74,36 @@ export async function POST(req) {
 
     console.log("Extracted text from PDF:", extractedText.slice(0, 300), "...");
 
+    let apiKey;
+    try {
+      ({ apiKey } = await resolveGroqApiKey({
+        userId: userData.id,
+        useUserKey,
+      }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === USER_KEY_NOT_FOUND) {
+        return new Response(
+          JSON.stringify({ error: "No user API key configured" }),
+          { status: 400 }
+        );
+      }
+      if (message === DEFAULT_KEY_NOT_CONFIGURED) {
+        return new Response(
+          JSON.stringify({ error: "Server missing default Groq API key" }),
+          { status: 500 }
+        );
+      }
+
+      console.error("resolveGroqApiKey error (PDF):", error);
+      return new Response(
+        JSON.stringify({ error: "Failed to resolve API key" }),
+        { status: 500 }
+      );
+    }
+
     const llm = new ChatGroq({
-      apiKey: process.env.GROQ_API_KEY,
+      apiKey,
       model: "llama-3.1-8b-instant",
       temperature: 0.6,
     });
