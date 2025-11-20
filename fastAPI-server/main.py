@@ -15,6 +15,8 @@ import numpy as np
 from PIL import Image
 import easyocr
 
+MAX_FILE_SIZE = 5 * 1024 * 1024
+
 app = FastAPI(title="PDF + Image OCR (EasyOCR)")
 
 origins = [
@@ -29,18 +31,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 _LANGS = os.environ.get("EASYOCR_LANGS", "en").split(",")
 
 _use_gpu = bool(int(os.environ.get("EASYOCR_GPU", "0")))
 reader = easyocr.Reader(_LANGS, gpu=_use_gpu)  # this loads model into memory
-
 
 @app.post("/extract-pdf")
 async def extract_pdf(file: UploadFile = File(...)) -> Dict[str, str]:
     """
     Accepts a PDF upload and returns its extracted text (concatenated pages).
     """
+
+    cl = request.headers.get("content-length")
+    if cl and int(cl) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File too large")
+
     if file.content_type not in ("application/pdf", "application/octet-stream"):
         raise HTTPException(status_code=400, detail="File must be a PDF.")
 
@@ -59,6 +64,10 @@ async def extract_pdf(file: UploadFile = File(...)) -> Dict[str, str]:
         pages.append(text.strip())
 
     full_text = "\n\n".join(p for p in pages if p)
+    
+    if len(full_text) > 3000:
+        raise HTTPException(status_code=413, detail="File content too large.")
+
     return JSONResponse({"filename": file.filename, "text": full_text})
 
 
@@ -68,6 +77,11 @@ async def extract_image(file: UploadFile = File(...)) -> Dict[str, str]:
     Accepts an image upload and returns OCR text detected by EasyOCR.
     Supports common image types: jpeg, png, bmp, tiff, webp.
     """
+ 
+    cl = request.headers.get("content-length")
+    if cl and int(cl) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File too large")
+
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image.")
 
@@ -87,6 +101,10 @@ async def extract_image(file: UploadFile = File(...)) -> Dict[str, str]:
         raise HTTPException(status_code=500, detail=f"OCR failed: {e}")
 
     text = "\n".join(results).strip()
+ 
+    if len(text) > 1000:
+        raise HTTPException(status_code=413, detail="File content too large.")
+
     return JSONResponse({"filename": file.filename, "text": text})
 
 # --- new LLM endpoint ---
