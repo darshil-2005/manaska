@@ -1,90 +1,91 @@
-import { db } from '../../../../../db/db';
-import { map } from '../../../../../db/schema';
-import { eq, and } from 'drizzle-orm';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+
+import { db } from "../../../../../db/db";
+import { map } from "../../../../../db/schema";
+import { verifyAuth } from "../../../../utils/verifyAuth";
 
 export async function POST(request) {
   try {
-    // Get the request body
-    const body = await request.json();
+    const auth = await verifyAuth(request);
+    if (!auth.valid) {
+      return NextResponse.json(
+        { error: auth.error || "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json().catch(() => ({}));
     const { mapId } = body;
 
-    // Validate required field
     if (!mapId) {
       return NextResponse.json(
-        { error: 'mapId is required' },
+        { error: "mapId is required" },
         { status: 400 }
       );
     }
 
-    // Get the current map to check its pinned status
-    const currentMap = await db
+    const [currentMap] = await db
       .select()
       .from(map)
-      .where(eq(map.id, mapId))
-      .limit(1);
+      .where(eq(map.id, mapId));
 
-    if (currentMap.length === 0) {
+    if (!currentMap) {
       return NextResponse.json(
-        { error: 'Map not found' },
+        { error: "Map not found" },
         { status: 404 }
       );
     }
 
-    const isCurrentlyPinned = currentMap[0].pinned;
-
-    // If the map is currently pinned, unpin it
-    if (isCurrentlyPinned) {
-      await db
-        .update(map)
-        .set({ 
-          pinned: false,
-          updatedAt: new Date()
-        })
-        .where(eq(map.id, mapId));
-
+    if (currentMap.userId !== auth.user.id) {
       return NextResponse.json(
-        { 
-          success: true, 
-          message: 'Map unpinned successfully',
-          pinned: false
-        },
-        { status: 200 }
+        { error: "Forbidden" },
+        { status: 403 }
       );
-    } else {
-      // If the map is not pinned, pin it and unpin all other maps
-      // First, unpin all maps for this user
-      await db
-        .update(map)
-        .set({ 
-          pinned: false,
-          updatedAt: new Date()
-        })
-        .where(eq(map.userId, currentMap[0].userId));
+    }
 
-      // Then pin the current map
-      await db
+    const now = new Date();
+
+    if (currentMap.pinned) {
+      const [updated] = await db
         .update(map)
-        .set({ 
-          pinned: true,
-          updatedAt: new Date()
-        })
-        .where(eq(map.id, mapId));
+        .set({ pinned: false, updatedAt: now })
+        .where(eq(map.id, mapId))
+        .returning();
 
       return NextResponse.json(
-        { 
-          success: true, 
-          message: 'Map pinned successfully',
-          pinned: true
+        {
+          success: true,
+          message: "Map unpinned successfully",
+          map: updated,
         },
         { status: 200 }
       );
     }
 
-  } catch (error) {
-    console.error('Error pinning/unpinning map:', error);
+    await db
+      .update(map)
+      .set({ pinned: false, updatedAt: now })
+      .where(eq(map.userId, auth.user.id));
+
+    const [updated] = await db
+      .update(map)
+      .set({ pinned: true, updatedAt: new Date() })
+      .where(eq(map.id, mapId))
+      .returning();
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        success: true,
+        message: "Map pinned successfully",
+        map: updated,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error pinning/unpinning map:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
