@@ -40,7 +40,7 @@ export async function DELETE(req) {
 
     const response = NextResponse.json({ ok: true, message: "Account deleted successfully." });
     response.cookies.set("token", "", {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       path: "/",
       expires: new Date(0),
