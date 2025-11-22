@@ -1,8 +1,6 @@
 "use client";
 
-
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,33 +9,21 @@ import { Eye, EyeOff, ShieldCheck, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { validatePasswordRules } from '@/utils/validators';
 
-
-
-
-
-
 export default function AccountSecuritySettings() {
-  const router = useRouter();
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
 
   const [currentPasswordInput, setCurrentPasswordInput] = useState("");
   const [newPasswordInput, setNewPasswordInput] = useState("");
   const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
 
-
   const [message, setMessage] = useState({ type: '', content: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
 
   const [isChangePasswordSectionOpen, setIsChangePasswordSectionOpen] = useState(false);
 
-
   const [passwordRuleError, setPasswordRuleError] = useState(null);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-
 
   useEffect(() => {
     if (newPasswordInput) {
@@ -47,7 +33,6 @@ export default function AccountSecuritySettings() {
       setPasswordRuleError(null);
     }
 
-
     if (newPasswordInput && confirmPasswordInput) {
       setPasswordsMatch(newPasswordInput === confirmPasswordInput);
     } else {
@@ -55,11 +40,9 @@ export default function AccountSecuritySettings() {
     }
   }, [newPasswordInput, confirmPasswordInput]);
 
-
   const handleUpdatePassword = async () => {
     setMessage({ type: '', content: '' });
     toast.dismiss();
-
 
     if (!currentPasswordInput || !newPasswordInput || !confirmPasswordInput) {
       setMessage({ type: 'error', content: 'Please fill out all password fields.' });
@@ -77,7 +60,6 @@ export default function AccountSecuritySettings() {
       return;
     }
 
-
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/user/change-password', {
@@ -92,9 +74,10 @@ export default function AccountSecuritySettings() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Failed to update password');
 
-
       setMessage({ type: 'success', content: data?.message || 'Password updated successfully.' });
       toast.success(data?.message || 'Password updated successfully.');
+      
+      // Clear inputs on success
       setCurrentPasswordInput('');
       setNewPasswordInput('');
       setConfirmPasswordInput('');
@@ -107,29 +90,13 @@ export default function AccountSecuritySettings() {
     }
   };
 
-
-  const handleDeleteAccount = async () => {
-    if (!confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
-      return;
-    }
-    setIsDeleting(true);
-    try {
-      const res = await fetch('/api/user/delete', { method: 'DELETE' });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || 'Failed to delete account');
-      toast.success(data?.message || 'Account deleted successfully.');
-      router.push('/login');
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message);
-    } finally {
-      setIsDeleting(false);
-    }
+  const handleClose = () => {
+    setCurrentPasswordInput("");
+    setNewPasswordInput("");
+    setConfirmPasswordInput("");
+    setMessage({ type: '', content: '' });
+    setIsChangePasswordSectionOpen(false);
   };
-
-
-
 
   return (
     <section id="account-security" className="space-y-6">
@@ -144,7 +111,7 @@ export default function AccountSecuritySettings() {
         </CardHeader>
         <CardContent className="space-y-6">
 
-
+          {/* --- Password Section --- */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Password</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -159,12 +126,10 @@ export default function AccountSecuritySettings() {
             </Button>
           </div>
 
-
+          {/* --- Change Password Form --- */}
           {isChangePasswordSectionOpen && (
-            <div className="space-y-4 border-t pt-6 dark:border-gray-700">
-             
+            <div className="space-y-4 border-t pt-6 dark:border-gray-700 animate-in fade-in slide-in-from-top-2 duration-300">
               <h3 className="text-lg font-medium">Change Password</h3>
-
 
               <div className="grid gap-2">
                 <Label htmlFor="current-password">Current Password</Label>
@@ -172,13 +137,13 @@ export default function AccountSecuritySettings() {
                   id="current-password"
                   type="password"
                   value={currentPasswordInput}
+                  placeholder="Enter your current password"
                   onChange={(e) => {
                     setCurrentPasswordInput(e.target.value);
                     setMessage({ type: '', content: '' });
                   }}
                 />
               </div>
-
 
               <div className="grid gap-2">
                 <Label htmlFor="new-password">New Password</Label>
@@ -188,6 +153,7 @@ export default function AccountSecuritySettings() {
                     type={showNewPassword ? "text" : "password"}
                     className="pr-10"
                     value={newPasswordInput}
+                    placeholder="Enter a new secure password"
                     onChange={(e) => {
                       setNewPasswordInput(e.target.value);
                       setMessage({ type: '', content: '' });
@@ -203,7 +169,6 @@ export default function AccountSecuritySettings() {
                     {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </Button>
                 </div>
-                {/* Live validation feedback */}
                 {newPasswordInput && passwordRuleError && (
                   <p className="text-sm text-red-500 flex items-center gap-1">
                     <XCircle className="h-4 w-4" /> {passwordRuleError}
@@ -216,15 +181,15 @@ export default function AccountSecuritySettings() {
                 )}
               </div>
 
-
               <div className="grid gap-2">
                 <Label htmlFor="confirm-new-password">Confirm New Password</Label>
                 <div className="relative">
                   <Input
                     id="confirm-new-password"
                     type={showConfirmPassword ? "text" : "password"}
-                    className="pr-1img of a lock icon-10"
+                    className="pr-10"
                     value={confirmPasswordInput}
+                    placeholder="Re-enter your new password"
                     onChange={(e) => {
                       setConfirmPasswordInput(e.target.value);
                       setMessage({ type: '', content: '' });
@@ -240,7 +205,6 @@ export default function AccountSecuritySettings() {
                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </Button>
                 </div>
-                {/* Live matching feedback */}
                 {newPasswordInput && confirmPasswordInput && !passwordsMatch && (
                   <p className="text-sm text-red-500 flex items-center gap-1">
                     <XCircle className="h-4 w-4" /> Passwords do not match.
@@ -253,13 +217,8 @@ export default function AccountSecuritySettings() {
                 )}
               </div>
 
-
-              {/* --- Buttons wrapper --- */}
               <div className="flex items-center justify-end space-x-2 pt-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsChangePasswordSectionOpen(false)}
-                >
+                <Button onClick={handleClose}>
                   Close
                 </Button>
                 <Button
@@ -271,7 +230,6 @@ export default function AccountSecuritySettings() {
               </div>
             </div>
           )}
-
 
         </CardContent>
       </Card>

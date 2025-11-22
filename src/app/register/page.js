@@ -14,9 +14,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import LeftPanel from "@/components/LeftPanel";
 import Social from "@/components/Social"; 
 import { validateEmail } from "@/utils/validators"; 
+import { useTheme } from "next-themes";
 
 
-// --- HELPER COMPONENT  ---
+
 function PasswordRuleCheck({ text, isValid }) {
   const Icon = isValid ? Check : X;
   const colorClass = isValid ? "text-green-600" : "text-destructive";
@@ -30,6 +31,7 @@ function PasswordRuleCheck({ text, isValid }) {
 }
 
 export default function RegisterPage() {
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -146,15 +148,14 @@ export default function RegisterPage() {
       
       <ToastContainer
         position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
+        autoClose={8000}
+        hideProgressBar={true}
         newestOnTop={true}
         closeOnClick
-        rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme={theme}
       />
 
       <div className="w-full max-w-5xl bg-background shadow-lg rounded-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden border border-border">
