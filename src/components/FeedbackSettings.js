@@ -23,7 +23,7 @@ export default function FeedbackSettings() {
     setPrompt(prompts[Math.floor(Math.random() * prompts.length)]);
   }, [isExpanded]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
 
@@ -37,14 +37,32 @@ export default function FeedbackSettings() {
       "Noted! We'll get right on it. 📝",
       "Loud and clear. Thanks! 🔊"
     ];
-    const randomMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
-    
-    setTimeout(() => {
-        toast.success(randomMsg);
-        setIsExpanded(false);
-        setIsSent(false);
-        setText("");
-    }, 1200);
+    const payload = { response: text.trim() };
+
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to submit feedback");
+      }
+
+      const randomMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
+      toast.success(randomMsg);
+      setIsExpanded(false);
+      setText("");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to submit feedback";
+      toast.error(message);
+    } finally {
+      setIsSent(false);
+    }
   };
 
   return (
