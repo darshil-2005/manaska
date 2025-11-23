@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
-import { db } from "../../../../../db/db";
-import { map } from "../../../../../db/schema";
+// Check strict relative paths. If using Next.js aliases, '@/db/db' is safer.
+import { db } from "../../../../../db/db"; 
+// Alias 'map' to 'mapTable' to avoid conflict with JS Map or Array.map
+import { map as mapTable } from "../../../../../db/schema"; 
 import { verifyAuth } from "../../../../utils/verifyAuth";
 
 export async function POST(request) {
@@ -25,10 +27,11 @@ export async function POST(request) {
       );
     }
 
+    // Fetch the map to check ownership
     const [currentMap] = await db
       .select()
-      .from(map)
-      .where(eq(map.id, mapId));
+      .from(mapTable)
+      .where(eq(mapTable.id, mapId));
 
     if (!currentMap) {
       return NextResponse.json(
@@ -46,11 +49,12 @@ export async function POST(request) {
 
     const now = new Date();
 
+    // 1. If currently pinned, just unpin it.
     if (currentMap.pinned) {
       const [updated] = await db
-        .update(map)
+        .update(mapTable)
         .set({ pinned: false, updatedAt: now })
-        .where(eq(map.id, mapId))
+        .where(eq(mapTable.id, mapId))
         .returning();
 
       return NextResponse.json(
@@ -63,15 +67,18 @@ export async function POST(request) {
       );
     }
 
+    // 2. If pinning: First, unpin ALL other maps for this user (Single Pin Mode)
+    // This ensures only one map is pinned at a time.
     await db
-      .update(map)
+      .update(mapTable)
       .set({ pinned: false, updatedAt: now })
-      .where(eq(map.userId, auth.user.id));
+      .where(eq(mapTable.userId, auth.user.id));
 
+    // 3. Then, pin the requested map
     const [updated] = await db
-      .update(map)
-      .set({ pinned: true, updatedAt: new Date() })
-      .where(eq(map.id, mapId))
+      .update(mapTable)
+      .set({ pinned: true, updatedAt: now })
+      .where(eq(mapTable.id, mapId))
       .returning();
 
     return NextResponse.json(
@@ -84,8 +91,9 @@ export async function POST(request) {
     );
   } catch (error) {
     console.error("Error pinning/unpinning map:", error);
+    // Return the actual error message for debugging (remove in production)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: error.message || "Internal server error" },
       { status: 500 }
     );
   }

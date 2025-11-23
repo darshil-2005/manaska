@@ -32,22 +32,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/themeToggle.jsx";
 
-interface MindMap {
-  id: string;
-  title?: string | null;
-  description?: string | null;
-  pinned?: boolean | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-
-interface UserProfile {
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-}
-
-function formatTimestamp(value?: string | null) {
+function formatTimestamp(value) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date.toLocaleString();
@@ -56,18 +41,19 @@ function formatTimestamp(value?: string | null) {
 export default function DashboardPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [maps, setMaps] = useState<MindMap[]>([]);
+  const [maps, setMaps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [pendingPinId, setPendingPinId] = useState<string | null>(null);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [renamingId, setRenamingId] = useState<string | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [pendingPinId, setPendingPinId] = useState(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [renamingId, setRenamingId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  const [profile, setProfile] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
   const [navigatingToCanvas, setNavigatingToCanvas] = useState(false);
 
-  // Warm up heavy canvas chunks so navigation feels instant
   useEffect(() => {
     const warmUpCanvas = async () => {
       try {
@@ -103,7 +89,14 @@ export default function DashboardPage() {
       }
 
       const data = await res.json();
-      setMaps(Array.isArray(data?.maps) ? data.maps : []);
+      setMaps(
+        Array.isArray(data?.maps)
+          ? data.maps.map((m) => ({
+              ...m,
+              pinned: m.pinned === true || m.pinned === "true" || m.pinned === 1,
+            }))
+          : []
+      );
     } catch (err) {
       console.error(err);
       setError("Unable to load your mind maps. Please try again.");
@@ -118,7 +111,7 @@ export default function DashboardPage() {
       if (!res.ok) return;
       const data = await res.json();
       setProfile(data?.profile ?? null);
-    } catch { }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -164,17 +157,18 @@ export default function DashboardPage() {
     });
 
     return term
-      ? sorted.filter((m) =>
-        (m.title || "").toLowerCase().includes(term) ||
-        (m.description || "").toLowerCase().includes(term)
-      )
+      ? sorted.filter(
+          (m) =>
+            (m.title || "").toLowerCase().includes(term) ||
+            (m.description || "").toLowerCase().includes(term)
+        )
       : sorted;
   }, [maps, searchTerm]);
 
   const pinnedMaps = filteredMaps.filter((m) => m.pinned);
   const regularMaps = filteredMaps.filter((m) => !m.pinned);
 
-  const handleTogglePin = async (id: string) => {
+  const handleTogglePin = async (id) => {
     setPendingPinId(id);
     try {
       const res = await fetch("/api/user/pin", {
@@ -193,7 +187,11 @@ export default function DashboardPage() {
       const data = await res.json();
 
       setMaps((prev) => {
-        const pinState = data?.map?.pinned ?? false;
+        const pinState =
+          data?.map?.pinned === true ||
+          data?.map?.pinned === "true" ||
+          data?.map?.pinned === 1;
+
         return prev.map((m) => {
           if (m.id === id) {
             return {
@@ -202,10 +200,8 @@ export default function DashboardPage() {
               updatedAt: data?.map?.updatedAt ?? m.updatedAt,
             };
           }
-          if (pinState) {
-            return { ...m, pinned: false };
-          }
-          return m;
+
+          return pinState ? { ...m, pinned: false } : m;
         });
       });
     } catch {
@@ -214,33 +210,36 @@ export default function DashboardPage() {
       setPendingPinId(null);
     }
   };
-  const handleRenameMap = async (mapItem: MindMap) => {
-    const currentTitle = mapItem.title || "Untitled mind map";
-    const nextTitle = window.prompt("Enter a new name for this mind map", currentTitle);
-    if (nextTitle === null) return;
 
-    const trimmed = nextTitle.trim();
-    if (!trimmed || trimmed === currentTitle.trim()) return;
+  const handleRenameMap = async (map) => {
+    setEditingId(map.id);
+    setEditValue(map.title || "Untitled mind map");
+  };
 
-    setRenamingId(mapItem.id);
+  const saveRename = async (map) => {
+    const trimmed = editValue.trim();
+    if (!trimmed || trimmed === map.title) {
+      setEditingId(null);
+      return;
+    }
+
+    setRenamingId(map.id);
+
     try {
-      const res = await fetch(`/api/mindmap/${mapItem.id}`, {
+      const res = await fetch(`/api/mindmap/${map.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: trimmed }),
       });
-
-      if (res.status === 401) {
-        router.push("/login");
-        return;
-      }
 
       if (!res.ok) throw new Error();
 
       const data = await res.json();
       setMaps((prev) =>
         prev.map((m) =>
-          m.id === mapItem.id ? { ...m, title: data?.map?.title, updatedAt: data?.map?.updatedAt ?? m.updatedAt } : m
+          m.id === map.id
+            ? { ...m, title: data.map.title, updatedAt: data.map.updatedAt }
+            : m
         )
       );
       toast.success("Mind map renamed.");
@@ -248,10 +247,11 @@ export default function DashboardPage() {
       toast.error("Unable to rename mind map.");
     } finally {
       setRenamingId(null);
+      setEditingId(null);
     }
   };
 
-  const handleDeleteMap = async (id: string) => {
+  const handleDeleteMap = async (id) => {
     setPendingDeleteId(id);
     try {
       const res = await fetch(`/api/mindmap/${id}`, { method: "DELETE" });
@@ -311,7 +311,7 @@ export default function DashboardPage() {
     }
   };
 
-  const renderCard = (map: MindMap) => {
+  const renderCard = (map) => {
     const timestamp = formatTimestamp(map.updatedAt ?? map.createdAt);
     return (
       <Card
@@ -321,9 +321,24 @@ export default function DashboardPage() {
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-base font-semibold">
-                {map.title || "Untitled mind map"}
-              </CardTitle>
+              {editingId === map.id ? (
+                <input
+                  className="text-base font-semibold bg-transparent border-b border-muted-foreground focus:outline-none"
+                  value={editValue}
+                  autoFocus
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={() => saveRename(map)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveRename(map);
+                    if (e.key === "Escape") setEditingId(null);
+                  }}
+                />
+              ) : (
+                <CardTitle className="text-base font-semibold">
+                  {map.title || "Untitled mind map"}
+                </CardTitle>
+              )}
+
               {map.description && (
                 <p className="text-sm text-muted-foreground line-clamp-2">
                   {map.description}
@@ -392,21 +407,17 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background text-foreground">
       <ToastContainer theme="dark" />
 
-      {/* Ambient Glow */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-10%] right-[5%] w-[700px] h-[700px] rounded-full blur-[140px] bg-black/5 dark:bg-white/5" />
         <div className="absolute bottom-[-10%] left-[10%] w-[600px] h-[600px] rounded-full blur-[140px] bg-black/5 dark:bg-white/5" />
       </div>
 
       <div className="relative max-w-[1500px] mx-auto px-8 py-12">
-
-        {/* Header */}
         <div className="flex justify-between mb-16">
           <div className="flex gap-6 items-start">
             <div className="w-16 h-16 rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl mt-1.5">
               <Brain className="w-8 h-8 text-white dark:text-black" />
             </div>
-
 
             <div className="pt-1.5">
               <h1 className="text-5xl font-semibold tracking-tight">Manaska</h1>
@@ -414,27 +425,16 @@ export default function DashboardPage() {
                 Manage and organize all of your mind maps in one place.
               </p>
             </div>
-
           </div>
 
           <div className="flex items-center gap-5">
-
-            {/* Bigger Theme Toggle */}
             <div className="scale-125">
               <ModeToggle />
             </div>
 
-            {/* Bigger User Avatar Button */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="
-        relative rounded-full w-14 h-14 
-        flex items-center justify-center 
-        bg-black dark:bg-white 
-        text-white dark:text-black 
-        shadow-xl transition-transform 
-        hover:scale-105
-      ">
+                <button className="relative rounded-full w-14 h-14 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black shadow-xl transition-transform hover:scale-105">
                   {profile?.image ? (
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={profile.image} />
@@ -464,7 +464,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Search + Actions */}
         <div className="flex flex-wrap gap-4 mb-12 items-center">
           <div className="relative flex-1 min-w-[260px]">
             <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
@@ -510,7 +509,6 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Stats */}
         <div className="grid md:grid-cols-2 gap-6 mb-12 max-w-3xl">
           <Card className="rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">
@@ -521,7 +519,6 @@ export default function DashboardPage() {
               <div className="text-3xl font-bold">{pinnedMaps.length}</div>
             </CardContent>
           </Card>
-
 
           <Card className="rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">
@@ -536,7 +533,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Main list or empty state */}
         {loading ? (
           <div className="flex justify-center py-20 text-muted-foreground">
             <Loader2 className="w-6 h-6 animate-spin mr-2" />
