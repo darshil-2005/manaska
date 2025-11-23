@@ -101,6 +101,7 @@ export default function LogoutSettings() {
               </p>
             </div>
             <Button
+              id="logout-this-device"
               onClick={handleLogout}
               className="mt-3 md:mt-0 md:ml-4"
               disabled={isLoggingOut || isDeleting}
@@ -119,7 +120,7 @@ export default function LogoutSettings() {
               </p>
             </div>
             <Button
-             
+              id="logout-all-devices"
               onClick={handleLogoutAll}
               className="mt-3 md:mt-0 md:ml-4"
               disabled={isLoggingOut || isDeleting}
@@ -138,6 +139,7 @@ export default function LogoutSettings() {
               </p>
             </div>
             <Button
+              id="delete-account-button"
               variant="destructive"
               onClick={handleDeleteAccount}
               className="mt-3 md:mt-0 md:ml-4"

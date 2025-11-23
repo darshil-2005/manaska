@@ -145,11 +145,12 @@ export default function ProfileSettings() {
               />
               <div className="flex space-x-2">
                 <Button
+                  id="upload-profile-picture"
                   onClick={() => fileInputRef.current.click()}
                 >
                   Upload New
                 </Button>
-                <Button>
+                <Button id="remove-profile-picture">
                   Remove
                 </Button>
               </div>
@@ -184,6 +185,7 @@ export default function ProfileSettings() {
               <p className="text-sm text-gray-500 dark:text-gray-400">Email address cannot be changed.</p>
             </div>
             <Button
+              id="edit-profile-button"
               className="float-right"
               onClick={handleToggleEdit}
               disabled={isLoading || (isEditing && isSaving)}

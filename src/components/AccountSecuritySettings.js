@@ -151,6 +151,7 @@ export default function AccountSecuritySettings() {
               Click the button below to change your password.
             </p>
             <Button
+              id="change-password-button"
               onClick={() => setIsChangePasswordSectionOpen(true)}
               className="mt-2 w-fit"
               disabled={isChangePasswordSectionOpen}
@@ -194,6 +195,7 @@ export default function AccountSecuritySettings() {
                     }}
                   />
                   <Button
+                    id="toggle-new-password-visibility"
                     type="button"
                     variant="ghost"
                     size="icon"
@@ -231,6 +233,7 @@ export default function AccountSecuritySettings() {
                     }}
                   />
                   <Button
+                    id="toggle-confirm-password-visibility"
                     type="button"
                     variant="ghost"
                     size="icon"
@@ -257,12 +260,14 @@ export default function AccountSecuritySettings() {
               {/* --- Buttons wrapper --- */}
               <div className="flex items-center justify-end space-x-2 pt-2">
                 <Button
+                  id="close-password-form"
                   variant="outline"
                   onClick={() => setIsChangePasswordSectionOpen(false)}
                 >
                   Close
                 </Button>
                 <Button
+                  id="update-password-button"
                   onClick={handleUpdatePassword}
                   disabled={isSubmitting || !!passwordRuleError || !passwordsMatch || !newPasswordInput}
                 >

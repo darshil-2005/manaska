@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function LeftPanel() {
   return (
-    <div className="flex flex-col items-center justify-center bg-muted/40 p-8 sm:p-10 md:p-12">
+    <div data-cy="left-panel" className="flex flex-col items-center justify-center bg-muted/40 p-8 sm:p-10 md:p-12">
       <div className="shadow-sm mb-5 sm:mb-6">
         <Image
           src="/logo/logo.png"
