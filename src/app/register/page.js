@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { Check, X, Loader2 } from "lucide-react"; 
+import { Check, X, Loader2 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
@@ -100,7 +100,17 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setTermsError(false);
+
     const allRulesValid = Object.values(passwordValidation).every(Boolean);
+
+    console.log("VALIDATION DEBUG:", {
+      allRulesValid,
+      passwordsMatch,
+      emailIsValid,
+      usernameIsValid,
+      agree: formData.agree,
+      formData
+    });
 
     if (
       !allRulesValid ||
@@ -110,11 +120,10 @@ export default function RegisterPage() {
       !formData.agree
     ) {
       toast.error("Please correct the errors in the form.");
-      if (!formData.agree) {
-        setTermsError(true);
-      }
-      return; 
+      if (!formData.agree) setTermsError(true);
+      return;
     }
+
 
     setIsLoading(true);
 
@@ -130,10 +139,10 @@ export default function RegisterPage() {
           acceptTerms: formData.agree,
         }
       );
-      
+
       console.log("Registration successful:", response.data);
       toast.success("Account created! Redirecting to login...");
-      
+
       setTimeout(() => {
         router.push('/login');
       }, 2000);
@@ -148,7 +157,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/20 font-inter px-4 sm:px-6 py-6">
-      
+
       <ToastContainer
         position="top-center"
         autoClose={8000}
@@ -250,7 +259,7 @@ export default function RegisterPage() {
                 required
                 disabled={isAnyLoading}
               />
-              
+
               {/* Password Checklist */}
               {formData.password.length > 0 && (
                 <div className="space-y-1 mt-2 pl-1">
@@ -299,6 +308,7 @@ export default function RegisterPage() {
                 <Checkbox
                   id="agree"
                   name="agree"
+                  data-testid="agree-checkbox"
                   checked={formData.agree}
                   onCheckedChange={(checked) => {
                     setFormData((prev) => ({ ...prev, agree: checked }));
@@ -330,6 +340,7 @@ export default function RegisterPage() {
             </div>
 
             <Button
+              id="register-submit-button"
               type="submit"
               className="w-full h-11 text-base pt-2"
               disabled={isAnyLoading}
@@ -339,6 +350,7 @@ export default function RegisterPage() {
               )}
               {isLoading ? "Creating account..." : "Create account"}
             </Button>
+
           </form>
 
           <div className="my-6 flex items-center justify-center">

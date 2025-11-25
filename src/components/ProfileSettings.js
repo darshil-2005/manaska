@@ -150,11 +150,12 @@ export default function ProfileSettings() {
               />
               <div className="flex flex-wrap gap-2">
                 <Button
+                  id="upload-profile-picture"
                   onClick={() => fileInputRef.current.click()}
                 >
                   Upload New
                 </Button>
-                <Button >
+                <Button id="remove-profile-picture">
                   Remove
                 </Button>
               </div>
@@ -191,6 +192,14 @@ export default function ProfileSettings() {
               <Input id="email" value={email} disabled readOnly />
               <p className="text-sm text-gray-500 dark:text-gray-400">Email address cannot be changed.</p>
             </div>
+            <Button
+              id="edit-profile-button"
+              className="float-right"
+              onClick={handleToggleEdit}
+              disabled={isLoading || (isEditing && isSaving)}
+            >
+              {isEditing ? (isSaving ? 'Saving...' : 'Save Changes') : 'Edit Profile'}
+            </Button>
 
             <div className="flex justify-end gap-3 mt-4">
               {isEditing && (
