@@ -4,10 +4,12 @@ import { map } from "../../../../db/schema";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { eq, desc } from "drizzle-orm";
+import {auth} from "../../../../auth.ts"
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 export async function GET(request) {
+
     try {
         // Get user from cookie
         const cookieStore = await cookies();
@@ -52,4 +54,15 @@ export async function GET(request) {
             { status: 500 }
         );
     }
+}
+
+export async function POST(request) {
+  
+  const info = await auth(); 
+  console.log("Canvas Page: ", info);
+
+  return NextResponse.json({
+    error: "Lol",
+    status: 200,
+  })
 }

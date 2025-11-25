@@ -1,49 +1,67 @@
+// middleware.ts
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
 
 export async function middleware(request) {
-
-  /*
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("token")?.value;
 
-  const session = await getToken({req: request, secret: process.env.AUTH_SECRET});
-  console.log("Session: ", session);
+  // Helper: ask /api/auth/me if the user is authenticated
+  async function isAuthenticated() {
+    try {
+      const origin = request.nextUrl.origin;
 
-  // Block all /api/* routes except /api/auth/*
+      const res = await fetch(`${origin}/api/auth/me`, {
+        method: "GET",
+        headers: {
+          // forward cookies for:
+          // - credentials: cookie "token"
+          // - oauth: Auth.js cookies
+          cookie: request.headers.get("cookie") ?? "",
+        },
+      });
+
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      return Boolean(data?.ok);
+    } catch (err) {
+      console.error("Auth check failed in middleware:", err);
+      return false;
+    }
+  }
+
+  // 1) Protect all /api/* routes EXCEPT /api/auth/*
   if (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth")) {
-    if (!token) {
+    const ok = await isAuthenticated();
+    if (!ok) {
       return new NextResponse(
-        JSON.stringify({ error: "Unauthorized: No token provided" }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
       );
     }
     return NextResponse.next();
   }
 
-  //  Block /canvas and /dashboard pages if no token
+  // 2) Protect pages: /dashboard , /canvas , /settings
   if (
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/canvas") || 
-    pathname.startsWith("/settings") 
+    pathname.startsWith("/canvas") ||
+    pathname.startsWith("/settings")
   ) {
-    if (!token) {
-      // Redirect to login page (or send a 401 JSON response)
+    const ok = await isAuthenticated();
+    if (!ok) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
     return NextResponse.next();
   }
 
-  // Allow all other routes
+  // 3) Allow everything else
   return NextResponse.next();
-  */
 }
 
 export const config = {
-  matcher: [
-    "/api/:path*",
-    "/dashboard/:path*",
-    "/canvas/:path*",
-    "/settings/:path*",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

@@ -15,6 +15,7 @@ import LeftPanel from "@/components/LeftPanel";
 import Social from "@/components/Social"; 
 import { validateEmail } from "@/utils/validators"; 
 import { useTheme } from "next-themes";
+import {useSession} from "next-auth/react";
 
 
 
@@ -42,10 +43,12 @@ export default function RegisterPage() {
   });
 
   const [termsError, setTermsError] = useState(false);
-  
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
+
+  const {data} = useSession();
+  console.log("data: ", data);
 
   const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
 
