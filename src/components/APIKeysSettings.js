@@ -107,6 +107,7 @@ export default function APIKeysSettings() {
                       placeholder="Enter your API key"
                     />
                     <Button
+                      id="toggle-api-key-visibility"
                       type="button"
                       variant="ghost"
                       size="icon"
@@ -121,12 +122,14 @@ export default function APIKeysSettings() {
                 
                 <div className="flex items-center justify-end space-x-2 pt-2">
                   <Button
+                    id="cancel-add-key"
+                    variant="outline"
                     
                     onClick={handleCancel}
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleAddKey}>
+                  <Button id="add-api-key-button" onClick={handleAddKey}>
                     Add Key
                   </Button>
                 </div>
@@ -152,6 +155,7 @@ export default function APIKeysSettings() {
                       {key.provider} Key: {key.value}
                     </span>
                     <Button
+                      id={`delete-api-key-${index}`}
                       variant="destructive"
                       onClick={() => handleDeleteKey(index)}
                       className="shrink-0 sm:ml-4 w-full sm:w-auto"

@@ -45,6 +45,7 @@ export default function AppearanceSettings() {
           {mounted && (
             <div className="flex space-x-2">
               <Button
+                id="theme-light"
                 variant={theme === 'light' ? 'default' : 'outline'}
                 onClick={() => setTheme('light')}
                 className="w-20"
@@ -52,6 +53,7 @@ export default function AppearanceSettings() {
                 Light
               </Button>
               <Button
+                id="theme-dark"
                 variant={theme === 'dark' ? 'default' : 'outline'}
                 onClick={() => setTheme('dark')}
                 className="w-20"
@@ -59,6 +61,7 @@ export default function AppearanceSettings() {
                 Dark
               </Button>
               <Button
+                id="theme-system"
                 variant={theme === 'system' ? 'default' : 'outline'}
                 onClick={() => setTheme('system')}
                 className="w-20"

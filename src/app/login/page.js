@@ -118,19 +118,19 @@ export default function LoginPage() {
 
 
       toast.success("Login successful! Redirecting...");
-     
+
       // Keep isLoading=true until the redirect happens.
       // We rely on the navigation to change the page, which clears the state.
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
-     
+
     } catch (error) {
       console.error("Login error:", error);
       const message =
         error.response?.data?.message || "Invalid credentials. Please try again.";
       toast.error(message);
-     
+
       // Stop loading ONLY if the login failed and we remain on the page
       setIsLoading(false);
     }
@@ -193,26 +193,24 @@ export default function LoginPage() {
                 placeholder="Enter your email or username"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 disabled={isAnyLoading} // Disable input fields while any login is pending
               />
-             
+
               {/* Conditional Email Validation */}
-              {emailCheck.active && (
-                <div className="mt-2 pl-1">
-                  <PasswordRuleCheck
-                    text="Must be a valid email format"
-                    isValid={emailCheck.valid}
-                  />
-                </div>
+              {emailCheck.active && !emailCheck.valid && (
+                <PasswordRuleCheck
+                  text="Must be a valid email format"
+                  isValid={emailCheck.valid}
+                />
               )}
+
             </div>
 
 
             {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-             
+
               <div className="relative">
                 <Input
                   id="password"
@@ -221,10 +219,11 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
+      
                   disabled={isAnyLoading} // Disable input fields while any login is pending
                 />
                 <Button
+                  id="toggle-password-visibility"
                   type="button"
                   variant="ghost"
                   size="icon"
@@ -274,6 +273,7 @@ export default function LoginPage() {
 
             {/* Submit Button */}
             <Button
+              id="login-submit-button"
               type="submit"
               className="w-full h-11 text-base"
               disabled={isAnyLoading} // Disable if any login method is active

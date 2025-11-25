@@ -316,85 +316,102 @@ export default function DashboardPage() {
     return (
       <Card
         key={map.id}
-        className="flex flex-col border border-black/[0.05] dark:border-white/[0.05] shadow-sm rounded-2xl backdrop-blur-sm"
+        className="flex flex-col border border-black/5 dark:border-white/5 shadow-sm rounded-xl sm:rounded-2xl backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
+        onClick={() => router.push(`/canvas/${map.id}`)}
       >
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
+        <CardHeader className="pb-3 sm:pb-4">
+          <div className="flex justify-between items-start gap-2">
+            <div className="flex-1 min-w-0">
               {editingId === map.id ? (
                 <input
-                  className="text-base font-semibold bg-transparent border-b border-muted-foreground focus:outline-none"
+                  className="text-sm sm:text-base font-semibold bg-transparent border-b border-muted-foreground focus:outline-none w-full"
                   value={editValue}
                   autoFocus
                   onChange={(e) => setEditValue(e.target.value)}
                   onBlur={() => saveRename(map)}
+                  onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") saveRename(map);
                     if (e.key === "Escape") setEditingId(null);
                   }}
                 />
               ) : (
-                <CardTitle className="text-base font-semibold">
+                <CardTitle className="text-sm sm:text-base font-semibold truncate">
                   {map.title || "Untitled mind map"}
                 </CardTitle>
               )}
 
               {map.description && (
-                <p className="text-sm text-muted-foreground line-clamp-2">
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-1">
                   {map.description}
                 </p>
               )}
             </div>
 
-            <div className="flex gap-1">
+            <div className="flex gap-0.5 sm:gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
               <Button
+                id={`rename-map-${map.id}`}
                 size="icon"
                 variant="ghost"
-                onClick={() => handleRenameMap(map)}
+                className="h-8 w-8 sm:h-9 sm:w-9"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRenameMap(map);
+                }}
                 disabled={renamingId === map.id}
               >
                 {renamingId === map.id ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                 ) : (
-                  <Edit3 className="w-4 h-4" />
+                  <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 )}
               </Button>
 
               <Button
+                id={`toggle-pin-${map.id}`}
                 size="icon"
                 variant="ghost"
-                onClick={() => handleTogglePin(map.id)}
+                className="h-8 w-8 sm:h-9 sm:w-9"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTogglePin(map.id);
+                }}
                 disabled={pendingPinId === map.id}
               >
                 {pendingPinId === map.id ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                 ) : map.pinned ? (
-                  <PinOff className="w-4 h-4" />
+                  <PinOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 ) : (
-                  <Pin className="w-4 h-4" />
+                  <Pin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 )}
               </Button>
 
               <Button
+                id={`delete-map-${map.id}`}
                 size="icon"
                 variant="ghost"
-                onClick={() => handleDeleteMap(map.id)}
+                className="h-8 w-8 sm:h-9 sm:w-9"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteMap(map.id);
+                }}
                 disabled={pendingDeleteId === map.id}
               >
                 {pendingDeleteId === map.id ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                 ) : (
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 )}
               </Button>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="mt-auto text-xs text-muted-foreground flex justify-between">
-          <span>{timestamp ? `Updated ${timestamp}` : "No activity"}</span>
+        <CardContent className="mt-auto pt-0 text-xs text-muted-foreground flex justify-between items-center">
+          <span className="truncate">{timestamp ? `Updated ${timestamp}` : "No activity"}</span>
           {map.pinned && (
-            <Badge variant="secondary" className="bg-primary/10 text-primary">
+            <Badge variant="secondary" className="bg-primary/10 text-primary text-xs shrink-0 ml-2">
               Pinned
             </Badge>
           )}
@@ -412,42 +429,50 @@ export default function DashboardPage() {
         <div className="absolute bottom-[-10%] left-[10%] w-[600px] h-[600px] rounded-full blur-[140px] bg-black/5 dark:bg-white/5" />
       </div>
 
-      <div className="relative max-w-[1500px] mx-auto px-8 py-12">
-        <div className="flex justify-between mb-16">
-          <div className="flex gap-6 items-start">
-            <div className="w-16 h-16 rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl mt-1.5">
-              <Brain className="w-8 h-8 text-white dark:text-black" />
+      <div className="relative max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        {/* Header Section - Responsive */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 lg:mb-16">
+          {/* Logo and Title */}
+          <div className="flex gap-4 sm:gap-6 items-center sm:items-start w-full sm:w-auto">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl shrink-0">
+              <Brain className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white dark:text-black" />
             </div>
 
-            <div className="pt-1.5">
-              <h1 className="text-5xl font-semibold tracking-tight">Manaska</h1>
-              <p className="text-lg text-muted-foreground mt-1">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight truncate">
+                Manaska
+              </h1>
+              <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">
                 Manage and organize all of your mind maps in one place.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-5">
-            <div className="scale-125">
+          {/* Actions - Theme Toggle and User Menu */}
+          <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 self-end sm:self-auto">
+            <div className="scale-110 sm:scale-125">
               <ModeToggle />
             </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="relative rounded-full w-14 h-14 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black shadow-xl transition-transform hover:scale-105">
+                <button 
+                  id="user-menu-button" 
+                  className="relative rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black shadow-xl transition-transform hover:scale-105 active:scale-95"
+                >
                   {profile?.image ? (
-                    <Avatar className="w-12 h-12">
+                    <Avatar className="w-10 h-10 sm:w-12 sm:h-12">
                       <AvatarImage src={profile.image} />
-                      <AvatarFallback className="text-lg">
+                      <AvatarFallback className="text-base sm:text-lg">
                         {(profile?.name || "U").slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                   ) : (
-                    <User className="w-7 h-7" />
+                    <User className="w-6 h-6 sm:w-7 sm:h-7" />
                   )}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={() => router.push("/settings")}>
                   <Settings className="w-5 h-5 mr-2" /> Settings
                 </DropdownMenuItem>
@@ -464,93 +489,107 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 mb-12 items-center">
-          <div className="relative flex-1 min-w-[260px]">
-            <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
+        {/* Search and Actions Bar - Responsive */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 lg:mb-12">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <SearchIcon className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5" />
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search mind maps…"
-              className="w-full h-14 pl-14 rounded-full border bg-white dark:bg-black/20 shadow-md"
+              className="w-full h-12 sm:h-14 pl-12 sm:pl-14 pr-4 rounded-full border bg-white dark:bg-black/20 shadow-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
-          <Button
-            variant="outline"
-            className="h-14 px-7 rounded-full"
-            onClick={fetchMaps}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Loading...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-              </>
-            )}
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex gap-3 sm:gap-4">
+            <Button
+              id="refresh-maps-button"
+              variant="outline"
+              className="h-12 sm:h-14 px-5 sm:px-7 rounded-full flex-1 sm:flex-none"
+              onClick={fetchMaps}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 sm:mr-2 animate-spin" />
+                  <span className="hidden sm:inline">Loading...</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Refresh</span>
+                </>
+              )}
+            </Button>
 
-          <Button
-            className="h-14 px-8 rounded-full"
-            onClick={handleCreate}
-            disabled={navigatingToCanvas}
-          >
-            {navigatingToCanvas ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Opening…
-              </>
-            ) : (
-              <>
-                <Plus className="w-5 h-5 mr-2" /> Create mind map
-              </>
-            )}
-          </Button>
+            <Button
+              id="create-map-button"
+              className="h-12 sm:h-14 px-5 sm:px-8 rounded-full flex-1 sm:flex-none"
+              onClick={handleCreate}
+              disabled={navigatingToCanvas}
+            >
+              {navigatingToCanvas ? (
+                <>
+                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2 animate-spin" />
+                  <span className="hidden sm:inline">Opening…</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+                  <span className="sm:hidden">Create</span>
+                  <span className="hidden sm:inline">Create mind map</span>
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-12 max-w-3xl">
-          <Card className="rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Pinned</CardTitle>
-              <Star className="w-5 h-5 text-muted-foreground" />
+        {/* Stats Cards - Responsive */}
+        <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12 max-w-3xl">
+          <Card className="rounded-xl sm:rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 sm:pb-4">
+              <CardTitle className="text-sm sm:text-base">Pinned</CardTitle>
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{pinnedMaps.length}</div>
+              <div className="text-2xl sm:text-3xl font-bold">{pinnedMaps.length}</div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Total Mind Maps</CardTitle>
-              <Brain className="w-5 h-5 text-muted-foreground" />
+          <Card className="rounded-xl sm:rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 sm:pb-4">
+              <CardTitle className="text-sm sm:text-base">Total Maps</CardTitle>
+              <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">
+              <div className="text-2xl sm:text-3xl font-bold">
                 {pinnedMaps.length + regularMaps.length}
               </div>
             </CardContent>
           </Card>
         </div>
 
+        {/* Mind Maps Grid - Responsive */}
         {loading ? (
-          <div className="flex justify-center py-20 text-muted-foreground">
-            <Loader2 className="w-6 h-6 animate-spin mr-2" />
-            Loading mind maps…
+          <div className="flex justify-center py-16 sm:py-20 text-muted-foreground">
+            <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mr-2" />
+            <span className="text-sm sm:text-base">Loading mind maps…</span>
           </div>
         ) : filteredMaps.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <div className="p-12 rounded-3xl bg-white dark:bg-black/20 border shadow-sm mb-8">
-              <Brain className="w-20 h-20 text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center px-4">
+            <div className="p-8 sm:p-12 rounded-2xl sm:rounded-3xl bg-white dark:bg-black/20 border shadow-sm mb-6 sm:mb-8">
+              <Brain className="w-16 h-16 sm:w-20 sm:h-20 text-muted-foreground" />
             </div>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-md">
               {searchTerm
                 ? "No mind maps match your search."
                 : "You have not created any mind maps yet."}
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:gap-5 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
             {pinnedMaps.map(renderCard)}
             {regularMaps.map(renderCard)}
           </div>
