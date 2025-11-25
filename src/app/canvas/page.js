@@ -49,6 +49,7 @@ import {
 } from "../../components/ui/resizable"
 import { ModeToggle } from '../../components/themeToggle.jsx';
 import { useTheme } from "next-themes"
+import axios from 'axios'
 
 const Editor = dynamic(
   () => import('../../components/editor.jsx'),
@@ -104,6 +105,7 @@ export default function MindMapDesigner() {
   const [gridModeEnabled, setGridModeEnabled] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const {theme, systemTheme} = useTheme();
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const time = setTimeout(() => {
@@ -134,8 +136,8 @@ export default function MindMapDesigner() {
     const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
     const { restoreElements } = await import("@excalidraw/excalidraw");
 
-    let elements = restoreElements(elementSkeletons, null, {normalizeIndices: true, repairBindings: true, refreshDimensions: true})
-    elements = convertToExcalidrawElements(elementSkeletons);
+    let elements = convertToExcalidrawElements(elementSkeletons);
+    elements = restoreElements(elements, null, {normalizeIndices: true, repairBindings: true, refreshDimensions: true})
 
     const sceneData = {
       elements: elements,
@@ -151,6 +153,7 @@ export default function MindMapDesigner() {
     }
     const elements = excalidrawAPI.getSceneElements();
     const script = elementsToDSL(elements);
+    setScriptCode(script);
   };
 
   async function handleExport() {
@@ -215,7 +218,7 @@ export default function MindMapDesigner() {
         {
           type: "excalidraw",
           version: 2,
-          source: "your-app-name",
+          source: "manaska",
           elements,
           appState,
           files,
@@ -304,11 +307,7 @@ export default function MindMapDesigner() {
     onClick={handleElementsToDSL}
     >
     <CodeXml size={16} />
-    <span>Generate Script</span>
-    </Button>
-    <Button>
-    <Share size={16} />
-    <span>Share</span>
+    <span>Sync Script</span>
     </Button>
     <Button>
     <Save size={16} />
@@ -387,7 +386,7 @@ export default function MindMapDesigner() {
     <ResizableHandle className="w-1"/>
     
     <ResizablePanel defaultSize={30}>
-      <Chat messages={[]}/>
+      <Chat messages={messages} setMessages={setMessages} scriptCode={scriptCode} setScriptCode={setScriptCode} />
     </ResizablePanel>
 
     </ResizablePanelGroup>

@@ -96,7 +96,6 @@ async def invoke(request: Request):
     if not callable(invoke_fn):
         raise HTTPException(500, "LLM has no invoke() method")
 
-    # run async or sync invoke properly
     try:
         if inspect.iscoroutinefunction(invoke_fn):
             resp = await invoke_fn(messages)
