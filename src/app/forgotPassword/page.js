@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 //  shadcn/ui components
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import LeftPanel from "@/components/LeftPanel";
 import StepForm from "@/components/StepForm";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -26,7 +28,7 @@ export default function ForgotPasswordPage() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/send-otp", {
+      const res = await fetch("/api/auth/forgot-password/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -35,25 +37,6 @@ export default function ForgotPasswordPage() {
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
       setMessage("OTP sent successfully! Please check your email.");
       setStep(2);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setMessage("");
-
-    try {
-      const res = await fetch("/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Invalid OTP");
-      setMessage("OTP verified! Please enter your new password.");
-      setStep(3);
     } catch (error) {
       setMessage(error.message);
     }
@@ -69,12 +52,14 @@ export default function ForgotPasswordPage() {
     }
 
     try {
-      const res = await fetch("/api/reset-password", {
+      const res = await fetch("/api/auth/forgot-password/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
+          otp,
           newPassword: passwords.newPassword,
+          confirmPassword: passwords.confirmPassword,
         }),
       });
       const data = await res.json();
@@ -85,6 +70,8 @@ export default function ForgotPasswordPage() {
       setEmail("");
       setOtp("");
       setPasswords({ newPassword: "", confirmPassword: "" });
+
+      router.push("/login");
     } catch (error) {
       setMessage(error.message);
     }
@@ -115,7 +102,6 @@ export default function ForgotPasswordPage() {
             setOtp={setOtp}
             setPasswords={setPasswords}
             handleSendEmail={handleSendEmail}
-            handleVerifyOtp={handleVerifyOtp}
             handleResetPassword={handleResetPassword}
           />
 

@@ -162,7 +162,7 @@ export function parseMindmapToDSL(mindmap, type="horizontal") {
     dy: 400,
     marginX: 600,
     marginY: 80,
-    factor: 12,
+    factor: 8,
     minWidth: 220,
   });
 
@@ -189,50 +189,156 @@ export function parseMindmapToDSL(mindmap, type="horizontal") {
 const mindmap = 
 {
   "id": "root",
-  "label": "Artificial Intelligence",
+  "label": "Line Codes",
   "children": [
     {
-      "id": "c1",
-      "label": "Machine Learning",
+      "id": "lc1",
+      "label": "Definition",
       "children": [
-        { "id": "c1a", "label": "Supervised", "children": [
-          { "id": "c1a1", "label": "Regression", "children": [] },
-          { "id": "c1a2", "label": "Classification", "children": [] }
-        ]},
-        { "id": "c1b", "label": "Unsupervised", "children": [
-          { "id": "c1b1", "label": "Clustering", "children": [] },
-          { "id": "c1b2", "label": "Dimensionality Reduction", "children": [] }
-        ]},
-        { "id": "c1c", "label": "Reinforcement", "children": [] }
+        {
+          "id": "lc1a",
+          "label": "Binary 1s and 0s → electrical pulses (waveforms)",
+          "children": []
+        },
+        {
+          "id": "lc1b",
+          "label": "Used for transmission over channels",
+          "children": []
+        },
+        {
+          "id": "lc1c",
+          "label": "Also called: Line Coding / Transmission Coding",
+          "children": []
+        }
       ]
     },
 
     {
-      "id": "c2",
-      "label": "Deep Learning",
+      "id": "lc2",
+      "label": "Major Categories",
       "children": [
-        { "id": "c2a", "label": "CNNs", "children": [] },
-        { "id": "c2b", "label": "RNNs", "children": [] },
-        { "id": "c2c", "label": "Transformers", "children": [
-          { "id": "c2c1", "label": "Attention", "children": [] },
-          { "id": "c2c2", "label": "Encoders", "children": [] },
-          { "id": "c2c3", "label": "Decoders", "children": [] }
-        ]}
+        {
+          "id": "lc2a",
+          "label": "RZ (Return-to-Zero)",
+          "children": [
+            { "id": "lc2a1", "label": "Waveform returns to zero within Tb", "children": [] },
+            { "id": "lc2a2", "label": "Typically returns after half-bit interval", "children": [] }
+          ]
+        },
+        {
+          "id": "lc2b",
+          "label": "NRZ (Non-Return-to-Zero)",
+          "children": [
+            { "id": "lc2b1", "label": "Signal does NOT return to zero in Tb", "children": [] }
+          ]
+        }
       ]
     },
 
     {
-      "id": "c3",
-      "label": "Applications",
+      "id": "lc3",
+      "label": "Voltage-Level Classification",
       "children": [
-        { "id": "c3a", "label": "NLP", "children": [] },
-        { "id": "c3b", "label": "Vision", "children": [] },
-        { "id": "c3c", "label": "Robotics", "children": [] },
-        { "id": "c3d", "label": "Healthcare", "children": [] }
+        {
+          "id": "lc3a",
+          "label": "Unipolar",
+          "children": [
+            { "id": "lc3a1", "label": "1 = +A volts", "children": [] },
+            { "id": "lc3a2", "label": "0 = 0 volts (ground)", "children": [] },
+            { "id": "lc3a3", "label": "Also called On-Off Keying", "children": [] }
+          ]
+        },
+
+        {
+          "id": "lc3b",
+          "label": "Polar",
+          "children": [
+            { "id": "lc3b1", "label": "1 and 0 use equal +ve and -ve levels", "children": [] }
+          ]
+        },
+
+        {
+          "id": "lc3c",
+          "label": "Bipolar (Pseudoternary / AMI)",
+          "children": [
+            { "id": "lc3c1", "label": "Three levels used: +A, 0, -A", "children": [] },
+            { "id": "lc3c2", "label": "1 = alternates +A and -A", "children": [] },
+            { "id": "lc3c3", "label": "0 = 0 volts", "children": [] }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "lc4",
+      "label": "Manchester Coding",
+      "children": [
+        {
+          "id": "lc4a",
+          "label": "1 → +ve half-bit then -ve half-bit",
+          "children": []
+        },
+        {
+          "id": "lc4b",
+          "label": "0 → -ve half-bit then +ve half-bit",
+          "children": []
+        },
+        {
+          "id": "lc4c",
+          "label": "Self-clocking, no DC component",
+          "children": []
+        },
+        {
+          "id": "lc4d",
+          "label": "Terminology follows telephone industry",
+          "children": []
+        }
+      ]
+    },
+
+    {
+      "id": "lc5",
+      "label": "Spectrum Considerations",
+      "children": [
+        {
+          "id": "lc5a",
+          "label": "Spectrum usage is important for PCM",
+          "children": []
+        },
+        {
+          "id": "lc5b",
+          "label": "PCM requires minimum NB Hz",
+          "children": []
+        },
+        {
+          "id": "lc5c",
+          "label": "Exact bandwidth depends on line code used",
+          "children": []
+        },
+        {
+          "id": "lc5d",
+          "label": "For spectrum calculations → refer to Couch’s book",
+          "children": []
+        }
+      ]
+    },
+
+    {
+      "id": "lc6",
+      "label": "Benefits & Issues",
+      "children": [
+        {
+          "id": "lc6a",
+          "label": "Different line codes have different advantages",
+          "children": []
+        },
+        {
+          "id": "lc6b",
+          "label": "Refer to Lathi or Couch for detailed comparisons",
+          "children": []
+        }
       ]
     }
   ]
 }
-
-
 console.log(parseMindmapToDSL(mindmap, "radial"));

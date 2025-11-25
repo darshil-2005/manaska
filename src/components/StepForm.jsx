@@ -11,7 +11,6 @@ export default function StepForm({
   setOtp,
   setPasswords,
   handleSendEmail,
-  handleVerifyOtp,
   handleResetPassword,
 }) {
   return (
@@ -35,7 +34,7 @@ export default function StepForm({
       )}
 
       {step === 2 && (
-        <form onSubmit={handleVerifyOtp} className="space-y-4">
+        <form onSubmit={handleResetPassword} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="otp">Enter OTP</Label>
             <Input
@@ -46,14 +45,6 @@ export default function StepForm({
               onChange={(e) => setOtp(e.target.value)}
             />
           </div>
-          <Button type="submit" className="w-full">
-            Verify OTP
-          </Button>
-        </form>
-      )}
-
-      {step === 3 && (
-        <form onSubmit={handleResetPassword} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="newPassword">New Password</Label>
             <Input

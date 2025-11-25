@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,9 +15,7 @@ import {
 import { KeyRound, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-
 export default function APIKeysSettings() {
-  // --- State Management ---
   const [keys, setKeys] = useState([
     { provider: 'OpenAI', value: '••••••••••••••••8k-1234' },
   ]);
@@ -27,46 +24,38 @@ export default function APIKeysSettings() {
   const [showNewKeyValue, setShowNewKeyValue] = useState(false);
 
 
-  // --- Event Handlers ---
-
-
   const handleAddKey = () => {
     if (!newKeyProvider || !newKeyValue) {
-      // --- 2. Added error toast ---
       toast.error("Please select a provider and enter a key.");
       return;
     }
-   
+    
     const maskedKey = `••••••••••••••••${newKeyValue.slice(-4)}`;
     setKeys([
       ...keys,
       { provider: newKeyProvider, value: maskedKey },
     ]);
-   
-   
+    
     toast.success(`${newKeyProvider} key added successfully.`);
-   
-    // Reset inputs
+    
+    // reset inputs
     setNewKeyProvider('');
     setNewKeyValue('');
     setShowNewKeyValue(false);
   };
-
 
   const handleCancel = () => {
-    // Reset inputs and hide the key section
+    // reset inputs and hide the key section
     setNewKeyProvider('');
     setNewKeyValue('');
     setShowNewKeyValue(false);
   };
-
 
   const handleDeleteKey = (indexToDelete) => {
     const keyProvider = keys[indexToDelete].provider;
     setKeys(keys.filter((_, index) => index !== indexToDelete));
     toast.success(`${keyProvider} key deleted.`);
   };
-
 
   return (
     <section id="api-keys" className="space-y-6">
@@ -96,15 +85,14 @@ export default function APIKeysSettings() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="OpenAI">OpenAI</SelectItem>
+                  <SelectItem value="Deepseek">Deepseek</SelectItem>
                   <SelectItem value="Gemini">Gemini</SelectItem>
                   <SelectItem value="Grok">Grok</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-
             {/* --- Conditional Rendering --- */}
-            {/* This section now only shows if a provider is selected */}
             {newKeyProvider && (
               <div className="space-y-4 pt-2 animate-in fade-in-0 slide-in-from-top-2 duration-300">
                 <div className="grid gap-2">
@@ -131,12 +119,12 @@ export default function APIKeysSettings() {
                     </Button>
                   </div>
                 </div>
-               
-                {/* --- Updated Button Group --- */}
+                
                 <div className="flex items-center justify-end space-x-2 pt-2">
                   <Button
                     id="cancel-add-key"
                     variant="outline"
+                    
                     onClick={handleCancel}
                   >
                     Cancel
@@ -149,7 +137,6 @@ export default function APIKeysSettings() {
             )}
           </div>
 
-
           <div className="border-t pt-6 mt-6 dark:border-gray-700">
             <h3 className="text-lg font-medium">Current API Keys</h3>
             {keys.length === 0 ? (
@@ -159,17 +146,19 @@ export default function APIKeysSettings() {
             ) : (
               <div className="space-y-4 mt-4">
                 {keys.map((key, index) => (
+      
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 border rounded-md dark:border-gray-700"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-md dark:border-gray-700 gap-4 sm:gap-0"
                   >
-                    <span className="font-mono">
+                    <span className="font-mono text-sm break-all">
                       {key.provider} Key: {key.value}
                     </span>
                     <Button
                       id={`delete-api-key-${index}`}
                       variant="destructive"
                       onClick={() => handleDeleteKey(index)}
+                      className="shrink-0 sm:ml-4 w-full sm:w-auto"
                     >
                       Delete Key
                     </Button>

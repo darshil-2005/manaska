@@ -1,11 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+
 
 export default function HomePage() {
   const [showExamples, setShowExamples] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const hasToken = document.cookie
+      .split(";")
+      .some((cookie) => cookie.startsWith("token="));
+
+    setIsAuthenticated(hasToken);
+  }, []);
 
   return (
     <main className="min-h-screen bg-white text-black">
@@ -25,12 +35,37 @@ export default function HomePage() {
         </nav>
 
         <div className="space-x-4 flex items-center">
-          <Link href="/login" className="text-gray-600 hover:text-black transition px-4 py-2 rounded-md hover:bg-gray-100">
-            Sign In
-          </Link>
-          <Link href="/register" className="bg-black text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition flex items-center gap-2">
-            Try Free →
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link
+                href="/settings"
+                className="text-gray-600 hover:text-black transition px-4 py-2 rounded-md hover:bg-gray-100"
+              >
+                Settings
+              </Link>
+              <Link
+                href="/dashboard"
+                className="bg-black text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition"
+              >
+                Dashboard
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-gray-600 hover:text-black transition px-4 py-2 rounded-md hover:bg-gray-100"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                className="bg-black text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition flex items-center gap-2"
+              >
+                Try Free →
+              </Link>
+            </>
+          )}
         </div>
       </header>
 

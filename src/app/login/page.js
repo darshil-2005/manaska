@@ -6,28 +6,18 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Check, X, Eye, EyeOff, Loader2 } from "lucide-react";
-
-
-// --- TOAST ---
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// --- END TOAST ---
-
-
-//shadcn/ui components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-
-
-// components
 import LeftPanel from "@/components/LeftPanel";
 // NOTE: Social component must now accept isGoogleLoading, isGithubLoading, isAnyLoading
 import Social from "@/components/Social";
+import { useTheme } from "next-themes";
 
 
-// Helper function for email validation
 export function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -49,6 +39,8 @@ function PasswordRuleCheck({ text, isValid }) {
 
 
 export default function LoginPage() {
+
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     email: "", // This field holds either email or username
     password: "",
@@ -56,17 +48,16 @@ export default function LoginPage() {
   });
 
 
-  // State for password visibility
   const [showPassword, setShowPassword] = useState(false);
 
 
   // --- LOADING STATES ---
-  // 1. State for standard form login
+  // State for standard form login
   const [isLoading, setIsLoading] = useState(false);
-  // 2. States for specific social provider logins
+  // States for specific social provider logins
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
-  // --- END LOADING STATES ---
+
 
 
   const router = useRouter();
@@ -166,15 +157,13 @@ export default function LoginPage() {
       {/* --- TOAST CONTAINER --- */}
       <ToastContainer
         position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
+        autoClose={8000}
+        hideProgressBar={true}
         newestOnTop={true}
         closeOnClick
-        theme="dark"
+        theme={theme}
       />
-      {/* --- END TOAST --- */}
-
-
+      
       <div className="w-full max-w-5xl bg-background shadow-lg rounded-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden border border-border">
         {/* LEFT PANEL */}
         <LeftPanel />
