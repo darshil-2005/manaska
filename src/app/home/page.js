@@ -391,6 +391,7 @@ export default function HomePage() {
       <footer className="py-6 sm:py-8 text-center text-gray-500 border-t">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-xs sm:text-sm">© 2025 ManaskaAI. All rights reserved.</p>
+          
         </div>
       </footer>
     </main>
