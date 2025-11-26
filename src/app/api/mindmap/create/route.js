@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { and, like, eq } from "drizzle-orm";
-
+import axios from 'axios'
 import { db } from "../../../../../db/db";
 import { maps } from "../../../../../db/schema";
 
@@ -11,26 +11,21 @@ const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 export async function POST(request) {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("token");
+    const cookieHeader = cookieStore.toString();
 
-    if (!token) {
-      return NextResponse.json(
-        { error: "Unauthorized - No token provided" },
-        { status: 401 }
-      );
+    const response = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+      headers: {
+        Cookie: cookieHeader,
+      }
+    });
+
+    if (response.data.ok != true) {
+      return NextResponse.json({status: 401});
     }
 
-    let userData;
-    try {
-      userData = jwt.verify(token.value, JWT_SECRET);
-    } catch (error) {
-      return NextResponse.json(
-        { error: "Unauthorized - Invalid token" },
-        { status: 401 }
-      );
-    }
+    const userId = response.data.userId;
 
-    const body = await request.json().catch(() => ({}));
+  const body = await request.json().catch(() => ({}));
     const baseTitle = "Untitled mind map";
     const rawTitle =
       typeof body?.title === "string" ? body.title.trim().slice(0, 255) : "";
@@ -49,7 +44,7 @@ export async function POST(request) {
         .select({ title: maps.title })
         .from(maps)
         .where(
-          and(eq(maps.userId, userData.id), like(maps.title, `${baseTitle}%`))
+          and(eq(maps.userId, userId), like(maps.title, `${baseTitle}%`))
         );
 
       const existingTitles = new Set(
@@ -72,7 +67,7 @@ export async function POST(request) {
       .values({
         title,
         description,
-        userId: userData.id,
+        userId: userId,
         url: initialDsl,
       })
       .returning();

@@ -5,39 +5,34 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { eq, desc } from "drizzle-orm";
 import {auth} from "../../../../auth.ts"
+import axios from 'axios'
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 export async function GET(request) {
 
     try {
-        // Get user from cookie
-        const cookieStore = await cookies();
-        const token = cookieStore.get("token");
+      const cookieStore = await cookies();
+      const cookieHeader = cookieStore.toString();
 
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized - No token provided" },
-                { status: 401 }
-            );
+      const response = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+        headers: {
+          Cookie: cookieHeader,
         }
+      });
 
-        // Decode JWT to get user info
-        let userData;
-        try {
-            userData = jwt.verify(token.value, JWT_SECRET);
-        } catch (error) {
-            return NextResponse.json(
-                { error: "Unauthorized - Invalid token" },
-                { status: 401 }
-            );
-        }
+      if (response.data.ok != true) {
+        return NextResponse.json({status: 401});
+      }
 
-        // Retrieve all maps for the user, ordered by most recent first
+      const userId = response.data.userId;
+
+
+       // Retrieve all maps for the user, ordered by most recent first
         const userMaps = await db
             .select()
             .from(maps)
-            .where(eq(maps.userId, userData.id))
+            .where(eq(maps.userId, userId))
             .orderBy(desc(maps.createdAt));
 
         return NextResponse.json(
