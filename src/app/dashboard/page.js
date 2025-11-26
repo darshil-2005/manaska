@@ -54,34 +54,6 @@ export default function DashboardPage() {
   const [navigatingToCanvas, setNavigatingToCanvas] = useState(false);
 
   useEffect(() => {
-
-    async function fetchUser() {
-      try {
-
-        const response = await axios.get("/api/auth/me");
-
-        if (response.status != 200 || response.data.ok != true) {
-          router.push("/login");
-        }
-        
-
-        setUser(response.data);
-
-      } catch (error) {
-        toast.error("Error Authenticating!!");
-        router.push("/login")
-      }
-    }
-
-    
-    async function loadUser() {
-      await fetchUser();
-    }
-    loadUser();
-
-  }, []);
-
-  useEffect(() => {
     const warmUpCanvas = async () => {
       try {
         await Promise.all([
@@ -105,8 +77,6 @@ export default function DashboardPage() {
           "Cache-Control": "no-cache",
         },
       });
-
-      console.log("Response: ", res)
 
       if (res.status === 401) {
         router.push("/login");
