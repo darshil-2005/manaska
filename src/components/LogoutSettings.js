@@ -75,45 +75,6 @@ export default function LogoutSettings() {
               {isLoggingOut ? 'Logging out...' : 'Log out'}
             </Button>
           </div>
-
-          {/* --- Log out of all devices --- */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
-            <div>
-              <h3 className="text-lg font-medium">Log out of all devices</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
-                Log out of all active sessions across all devices, including your current session.
-              </p>
-            </div>
-            <Button
-              id="logout-all-devices"
-              onClick={handleLogoutAll}
-              className="mt-3 md:mt-0 md:ml-4"
-              disabled={isLoggingOut}
-            >
-              {isLoggingOut ? 'Logging out...' : 'Log out all'}
-            </Button> {}
-          </div>
-
-
-          {/* --- Delete Account --- */}
-          {/* <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
-            <div>
-              <h3 className="text-lg font-medium text-red-600 dark:text-red-400">Delete account</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
-                Permanently remove your data. This action cannot be undone.
-              </p>
-            </div>
-            <Button
-              id="delete-account-button"
-              variant="destructive"
-              onClick={handleDeleteAccount}
-              className="mt-3 md:mt-0 md:ml-4"
-              disabled={isDeleting || isLoggingOut}
-            >
-              {isDeleting ? 'Deleting...' : 'Delete account'}
-            </Button>
-          </div> */}
-
         </CardContent>
       </Card>
     </section>

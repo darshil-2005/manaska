@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { eq } from "drizzle-orm";
 
 import { db } from "../../../../../db/db";
-import { map } from "../../../../../db/schema";
+import { maps } from "../../../../../db/schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
@@ -34,7 +34,7 @@ async function getUserMap(mapId, userId) {
     return { ok: false, response: NextResponse.json({ error: "Map ID is required" }, { status: 400 }) };
   }
 
-  const [existingMap] = await db.select().from(map).where(eq(map.id, mapId));
+  const [existingMap] = await db.select().from(maps).where(eq(maps.id, mapId));
 
   if (!existingMap) {
     return { ok: false, response: NextResponse.json({ error: "Mind map not found" }, { status: 404 }) };
