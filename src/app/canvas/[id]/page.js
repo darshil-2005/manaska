@@ -18,6 +18,8 @@ import {
   Play,
   Plus,
   Upload,
+  X,
+  MessageSquare, 
   Download
 } from 'lucide-react';
 import dynamic from "next/dynamic"; 
@@ -77,7 +79,6 @@ const ExcalidrawWrapper = dynamic(
   }
 );
 
-
 export default function MindMapDesigner({params}) {
 
   const router = useRouter();
@@ -110,6 +111,9 @@ export default function MindMapDesigner({params}) {
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(undefined);
   const { id } = useParams();
+  const [showEditor, setShowEditor] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [showExportPopover, setShowExportPopover] = useState(false);
 
   useEffect(() => {
    
@@ -371,130 +375,223 @@ export default function MindMapDesigner({params}) {
     }
   };
 
-
-
   return (
-    <div className="h-screen bg-backgorund flex flex-col">
-
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={true}
-        newestOnTop={true}
-        closeOnClick={true}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme={theme}
-        transition={Zoom}
-      />
-
-    {/* Header */}
-    <header className="bg-backgorund px-4 py-2 flex border items-center justify-between">
-    {/* Project Info */}
-    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-    Untitled Mind Map
-    </div>
-
-    {/* Header Actions */}
-    <div className="flex items-center space-x-2">
-
-    <CoordinatesDisplay coordinates={coordinates}/>
-   
-    <div className="flex tracking-wider gap-x-2 h-10 font-semibold border items-center px-3 rounded-lg">
-      <Label>Grid</Label>
-      <Switch value={gridModeEnabled} onCheckedChange={() => setGridModeEnabled(!gridModeEnabled)}/>
-    </div>
-   <ModeToggle />
-    <Button
-    onClick={handleElementsToDSL}
-    >
-    <CodeXml size={16} />
-    <span>Sync Script</span>
-    </Button>
-    <Button onClick={handleSave}>
-    <Save size={16} />
-    <span>Save</span>
-    </Button>
-
-    <Popover>
-    <PopoverTrigger asChild>
-    <Button>
-    <FolderUp size={16} />
-    <span>Export</span>
-    </Button>
-    </PopoverTrigger>
-
-    <PopoverContent className="flex flex-col gap-y-3">
-
-    <div className="flex flex-col gap-y-2">
-    <div className="text-lg font-semibold">
-    Export Options
-    </div>
-    <Separator/>
-    </div>
-
-    <div className="">
-    <Select value={exportType} onValueChange={(d) => setExportType(d)}>
-    <SelectTrigger className="w-full">
-    <SelectValue placeholder="File Type" />
-    </SelectTrigger>
-    <SelectContent>
-    <SelectItem value="png">PNG</SelectItem>
-    <SelectItem value="jpeg">JPEG</SelectItem>
-    <SelectItem value="svg">SVG</SelectItem>
-    <SelectItem value="json">JSON</SelectItem>
-    <SelectItem value="markdown">Markdown</SelectItem>
-    </SelectContent>
-    </Select>      
-    </div>
-
-    <Button onClick={handleExport} disabled={isExporting}>
-      {!isExporting && <Download size={16}/>}
-      <span>
-        {isExporting && (<div className="animate-spin text-2xl">+</div>)}
-        {!isExporting && (<div className="">Download</div>)}
-      </span>
-    </Button>
-
-    </PopoverContent>
-    </Popover>
-
-    </div>
-    </header>
-
-    <ResizablePanelGroup direction="horizontal">
-
-    <ResizablePanel className="bg-backgorund" defaultSize={25}>
-    <Editor scriptCode={scriptCode} setScriptCode={setScriptCode}/>
-    </ResizablePanel>
-
-    <ResizableHandle className="w-1"/>
-
-    {/* Main Canvas Area */}
-    <ResizablePanel defaultSize={45}>
-    <ExcalidrawWrapper
-    onChange={handleCanvasChange}
-    onPointerUpdate={(event) => {
-      setCoordinates([event.pointer.x, event.pointer.y]);
-    }}
-    theme={theme != "system" ? theme : systemTheme}
-    initialData={null}
-    excalidrawAPI={setExcalidrawAPI}
-    gridModeEnabled={gridModeEnabled}
-    className="text-black border border-gray-200 rounded-lg"
+  <div className="h-screen bg-background flex flex-col">
+    <ToastContainer
+      position="top-center"
+      autoClose={3000}
+      hideProgressBar={true}
+      newestOnTop={true}
+      closeOnClick={true}
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme={theme}
+      transition={Zoom}
     />
-    </ResizablePanel>
     
-    <ResizableHandle className="w-1"/>
+    {/* Header */}
+    <header className="bg-background px-2 sm:px-4 py-2 flex border border-border items-center justify-between gap-2">
+      {/* Project Info */}
+      <div className="flex items-center text-xs sm:text-sm text-muted-foreground truncate min-w-0">
+        <span className="truncate">Untitled Mind Map</span>
+      </div>
+      
+      {/* Header Actions */}
+      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 flex-wrap">
+        {/* Coordinates - Hidden on very small screens */}
+        <div className="hidden sm:block">
+          <CoordinatesDisplay coordinates={coordinates}/>
+        </div>
+        
+        {/* Grid Toggle */}
+        <div className="flex gap-1 sm:gap-2 h-8 sm:h-10 text-xs sm:text-sm font-semibold border border-border items-center px-2 sm:px-3 rounded-lg bg-card">
+          <Label className="hidden sm:inline text-card-foreground">Grid</Label>
+          <Label className="sm:hidden text-card-foreground">G</Label>
+          <Switch value={gridModeEnabled} onCheckedChange={() => setGridModeEnabled(!gridModeEnabled)}/>
+        </div>
+        
+        {/* Mobile Panel Toggles - Only visible on mobile/tablet */}
+        <Button
+          onClick={() => setShowEditor(!showEditor)}
+          className="lg:hidden h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm"
+          variant="outline"
+        >
+          <Code className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline ml-1">Editor</span>
+        </Button>
+        
+        <Button
+          onClick={() => setShowChat(!showChat)}
+          className="lg:hidden h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm"
+          variant="outline"
+        >
+          <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline ml-1">Chat</span>
+        </Button>
+        
+        {/* Theme Toggle */}
+        <div className="hidden md:block">
+          <ModeToggle />
+        </div>
+        
+        {/* Sync Script - Hidden on small mobile */}
+        <Button
+          onClick={handleElementsToDSL}
+          className="hidden md:flex h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm"
+        >
+          <CodeXml className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="ml-1">Sync Script</span>
+        </Button>
+        
+        {/* Save */}
+        <Button 
+          onClick={handleSave}
+          className="h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm"
+        >
+          <Save className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline ml-1">Save</span>
+        </Button>
+        
+        {/* Export Popover */}
+        <Popover open={showExportPopover} onOpenChange={setShowExportPopover}>
+          <PopoverTrigger asChild>
+            <Button className="h-8 sm:h-10 px-2 sm:px-3 text-xs sm:text-sm">
+              <FolderUp className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline ml-1">Export</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="flex flex-col gap-y-3 w-64 bg-popover text-popover-foreground">
+            <div className="flex flex-col gap-y-2">
+              <div className="text-lg font-semibold">Export Options</div>
+              <Separator className="bg-border"/>
+            </div>
+            <div>
+              <Select value={exportType} onValueChange={(d) => setExportType(d)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="File Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="png">PNG</SelectItem>
+                  <SelectItem value="jpeg">JPEG</SelectItem>
+                  <SelectItem value="svg">SVG</SelectItem>
+                  <SelectItem value="json">JSON</SelectItem>
+                  <SelectItem value="markdown">Markdown</SelectItem>
+                </SelectContent>
+              </Select>      
+            </div>
+            <Button onClick={handleExport} disabled={isExporting}>
+              {!isExporting && <Download size={16}/>}
+              <span>
+                {isExporting && (<div className="animate-spin text-2xl">+</div>)}
+                {!isExporting && (<div>Download</div>)}
+              </span>
+            </Button>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </header>
     
-    <ResizablePanel defaultSize={30}>
-      <Chat messages={messages} setMessages={setMessages} scriptCode={scriptCode} setScriptCode={setScriptCode} />
-    </ResizablePanel>
-
-    </ResizablePanelGroup>
-
+    {/* Main Content Area */}
+    <div className="flex-1 overflow-hidden relative">
+      {/* Desktop Layout - ResizablePanels visible on large screens */}
+      <ResizablePanelGroup direction="horizontal" className="h-full">
+        {/* Editor Panel - Hidden on mobile */}
+        <ResizablePanel className="bg-background hidden lg:block" defaultSize={25}>
+          <Editor scriptCode={scriptCode} setScriptCode={setScriptCode}/>
+        </ResizablePanel>
+        <ResizableHandle className="w-1 bg-border hidden lg:block"/>
+        
+        {/* Canvas Panel - Always visible, takes full width on mobile */}
+        <ResizablePanel defaultSize={45} className="lg:default">
+          <ExcalidrawWrapper
+            onChange={handleCanvasChange}
+            onPointerUpdate={(event) => {
+              setCoordinates([event.pointer.x, event.pointer.y]);
+            }}
+            theme={theme !== "system" ? theme : systemTheme}
+            initialData={null}
+            excalidrawAPI={setExcalidrawAPI}
+            gridModeEnabled={gridModeEnabled}
+            className="text-black border border-border rounded-lg"
+          />
+        </ResizablePanel>
+        
+        {/* Chat Panel - Hidden on mobile */}
+        <ResizableHandle className="w-1 bg-border hidden lg:block"/>
+        <ResizablePanel defaultSize={30} className="hidden lg:block">
+          <Chat messages={messages} setMessages={setMessages} scriptCode={scriptCode} setScriptCode={setScriptCode} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+      
+      
+      {/* Editor Overlay - Slides in from left */}
+      {showEditor && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" 
+          onClick={() => setShowEditor(false)}
+        >
+          <div 
+            className="absolute left-0 top-0 bottom-0 w-full sm:w-96 bg-background shadow-2xl border-r border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="h-full flex flex-col">
+              <div className="flex justify-between items-center p-3 sm:p-4 border-b border-border bg-card">
+                <h2 className="text-base sm:text-lg font-semibold text-card-foreground">Editor</h2>
+                <Button 
+                  onClick={() => setShowEditor(false)} 
+                  variant="ghost" 
+                  size="icon"
+                  className="h-8 w-8"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <Editor scriptCode={scriptCode} setScriptCode={setScriptCode}/>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Chat Overlay - Slides in from right */}
+      {showChat && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" 
+          onClick={() => setShowChat(false)}
+        >
+          <div 
+            className="absolute right-0 top-0 bottom-0 w-full sm:w-96 bg-background shadow-2xl border-l border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="h-full flex flex-col">
+              <div className="flex justify-between items-center p-3 sm:p-4 border-b border-border bg-card">
+                <h2 className="text-base sm:text-lg font-semibold text-card-foreground">Chat</h2>
+                <Button 
+                  onClick={() => setShowChat(false)} 
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <Chat 
+                  messages={messages} 
+                  setMessages={setMessages} 
+                  scriptCode={scriptCode} 
+                  setScriptCode={setScriptCode} 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 }
+
