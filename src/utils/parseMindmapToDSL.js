@@ -406,4 +406,3 @@ const mindmap =
         }
     ]
 }
-console.log(parseMindmapToDSL(mindmap, "radial"));

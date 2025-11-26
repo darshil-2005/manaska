@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "../../../../db/db";
-import { map } from "../../../../db/schema";
+import { maps } from "../../../../db/schema";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { eq, desc } from "drizzle-orm";
@@ -36,9 +36,9 @@ export async function GET(request) {
         // Retrieve all maps for the user, ordered by most recent first
         const userMaps = await db
             .select()
-            .from(map)
-            .where(eq(map.userId, userData.id))
-            .orderBy(desc(map.createdAt));
+            .from(maps)
+            .where(eq(maps.userId, userData.id))
+            .orderBy(desc(maps.createdAt));
 
         return NextResponse.json(
             {
@@ -56,13 +56,3 @@ export async function GET(request) {
     }
 }
 
-export async function POST(request) {
-  
-  const info = await auth(); 
-  console.log("Canvas Page: ", info);
-
-  return NextResponse.json({
-    error: "Lol",
-    status: 200,
-  })
-}

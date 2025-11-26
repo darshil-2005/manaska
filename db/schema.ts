@@ -88,12 +88,12 @@ export const verificationTokens = pgTable(
 )
 
 // MAP table
-export const map = pgTable("map", {
+export const maps = pgTable("maps", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   title: varchar("title", { length: 255 }),
-  description: text("description"),
   userId: text("userId").references(() => users.id),
-  url: text("url"),
+  script: text("script"),
+  messages: text("messages"),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow(),
   pinned: boolean("pinned").default(false),

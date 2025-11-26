@@ -2,100 +2,335 @@
 
 import { use, useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
-
-// COMPONENTS
-import CoordinatesDisplay from "../../../components/coordinatesDisplay.jsx";
-import { Button } from "../../../components/ui/button.tsx";
-import { Label } from "../../../components/ui/label.tsx";
-import { Switch } from "../../../components/ui/switch.tsx";
-import { Separator } from "../../../components/ui/separator.tsx";
-import { ModeToggle } from "../../../components/themeToggle.jsx";
-
-// SELECT + POPOVER + RESIZABLE
+import CoordinatesDisplay from "../../../components/coordinatesDisplay.jsx"
+import {
+  Share,
+  CodeXml,
+  Save,
+  MoreHorizontal,
+  Undo,
+  Redo,
+  Search,
+  Settings,
+  Zap,
+  FolderUp,
+  Code,
+  Play,
+  Plus,
+  Upload,
+  Download
+} from 'lucide-react';
+import dynamic from "next/dynamic"; 
+import Chat from "@/components/chat.jsx"
+import {DSLToExcalidraw} from '../../../utils/DSLToExcalidraw.js';
+import {elementsToDSL} from '../../../utils/elementsToDSL.js'
+import {Button} from "../../../components/ui/button.tsx"
+import {Label} from "../../../components/ui/label.tsx"
+import {Switch} from "../../../components/ui/switch.tsx"
+import { toast, ToastContainer, Zoom } from "react-toastify";
+import {Separator} from "../../../components/ui/separator.tsx"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "../../../components/ui/select.tsx";
-
+} from "@/components/ui/select"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../components/ui/popover.tsx";
-
+} from "@/components/ui/popover"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "../../../components/ui/resizable.tsx";
+} from "@/components/ui/resizable"
+import { ModeToggle } from '../../../components/themeToggle.jsx';
+import { useTheme } from "next-themes"
+import axios from 'axios'
+import { useParams } from "next/navigation"
 
-import { useTheme } from "next-themes";
-import dynamic from "next/dynamic";
+const Editor = dynamic(
+  () => import('../../../components/editor.jsx'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-screen flex items-center justify-center bg-white">
+      <div className="text-gray-500 text-sm">Loading editor...</div>
+      </div>
+    )
+  }
+) 
 
-// EDITOR + EXCALIDRAW
-const Editor = dynamic(() => import('../../../components/editor.jsx'), { ssr: false });
-const ExcalidrawWrapper = dynamic(() => import('../../../wrapper/excalidraw.js'), { ssr: false });
+const ExcalidrawWrapper = dynamic(
+  () => import('../../../wrapper/excalidraw.js'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-screen flex items-center justify-center bg-white">
+      <div className="text-gray-500 text-sm">Loading canvas...</div>
+      </div>
+    )
+  }
+);
 
-// DSL UTILS
-import { DSLToExcalidraw } from "../../../utils/DSLToExcalidraw.js";
-import { elementsToDSL } from "../../../utils/elementsToDSL.js";
 
-export default function CanvasPage({ params }) {
+export default function MindMapDesigner({params}) {
+
   const router = useRouter();
-  const { id } = use(params);
+
+  const handleCanvasChange = (elements, appState, files) => {
+  };
 
   const defaultValue = `Node "welcomeNode" {
-    label: "Welcome",
-    fontSize: 40,
-    height: 100,
-    width: 390,
-    x: 400,
-    y: 300,
-    backgroundColor: "#fff3bf",
-    borderColor: "#000000",
-    textColor: "#000000",
-  };`;
+  label: "Welcome",
+  fontSize: 40,
+  height: 100,
+  width: 390,
+  x: 400,
+  y: 300,
+  backgroundColor: "#fff3bf",
+  borderColor: "#000000",
+  textColor: "#000000",
+};`
 
   const [scriptCode, setScriptCode] = useState(defaultValue);
+  const [elements, setElements] = useState(null);
   const [excalidrawAPI, setExcalidrawAPI] = useState(null);
+  const [debounceIndicator, setDebounceIndicator] = useState(true);  
+  const [coordinatesDebounce, setCoordinatesDebounce] = useState(true);
   const [coordinates, setCoordinates] = useState([0, 0]);
-  const [exportType, setExportType] = useState("png");
+  const [exportType, setExportType] = useState('png');
   const [gridModeEnabled, setGridModeEnabled] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const {theme, systemTheme} = useTheme();
+  const [messages, setMessages] = useState([]);
+  const [user, setUser] = useState(undefined);
+  const { id } = useParams();
 
-  const { theme, systemTheme } = useTheme();
+  useEffect(() => {
+   
+    async function fetchUser() {
+      try {
 
-  // -------------------------------
-  // DSL → CONVERT → UPDATE CANVAS
-  // -------------------------------
+        const response = await axios.get("/api/auth/me");
+
+        if (response.status != 200 || response.data.ok != true) {
+          router.push("/login");
+        }
+
+        setUser(response.data);
+
+      } catch(error) {
+        toast.error("Error Authenticating!!");
+        router.push("/login")
+      }
+    }
+
+    async function loadUser() {
+      await fetchUser();
+    }
+    loadUser();
+
+  }, []);
+
+  useEffect(() => {
+
+    if (user == undefined || id == undefined) {
+      return;
+    }
+
+    async function fetchMindmap() {
+      
+      if (user.userId == undefined || id == undefined) {
+        return;
+      }
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/mindmap`, {
+        canvasId: id,
+        userId: user.userId,
+      })
+
+      let fetchedCode = response.data.map.script;
+      if (fetchedCode == null) {
+        return;
+      }
+      setScriptCode(fetchedCode);
+      let fetchedMessages = response.data.map.messages;
+      setMessages(JSON.parse(fetchedMessages));
+    }
+
+    async function loadMindMap() {
+      await fetchMindmap();
+    }
+    loadMindMap();
+
+  }, [user, id]);
+
+    useEffect(() => {
+    const time = setTimeout(() => {
+      setDebounceIndicator(!debounceIndicator);
+    }, 700);
+    return () => clearTimeout(time);
+  }, [scriptCode, excalidrawAPI]);
+
+  useEffect(() => {
+    const time = setTimeout(() => {
+      setCoordinatesDebounce(!coordinatesDebounce);
+    }, 200);
+    return () => clearTimeout(time);
+  }, [coordinates]);
+
   useEffect(() => {
     if (!excalidrawAPI) return;
 
-    const skeletons = DSLToExcalidraw(scriptCode);
-    updateScene(skeletons);
+    const newElementSkeletons = DSLToExcalidraw(scriptCode);
+    setElements(newElementSkeletons);
+    updateScene(newElementSkeletons);
 
-  }, [scriptCode, excalidrawAPI]);
+  }, [debounceIndicator]);   
 
-  const updateScene = async (skeletons) => {
-    if (!excalidrawAPI || !skeletons) return;
+  const updateScene = async (elementSkeletons) => {
+    if (!excalidrawAPI || !elementSkeletons) return;
 
-    const { convertToExcalidrawElements, restoreElements } = await import("@excalidraw/excalidraw");
+    const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
+    const { restoreElements } = await import("@excalidraw/excalidraw");
 
-    let restored = restoreElements(skeletons, null, {
-      normalizeIndices: true,
-      repairBindings: true,
-      refreshDimensions: true
-    });
+    let elements = convertToExcalidrawElements(elementSkeletons);
+    elements = restoreElements(elements, null, {normalizeIndices: true, repairBindings: true, refreshDimensions: true})
 
-    const converted = convertToExcalidrawElements(skeletons);
-
-    excalidrawAPI.updateScene({
-      elements: converted,
+    const sceneData = {
+      elements: elements,
       appState: {}
-    });
+    };
+    excalidrawAPI.updateScene(sceneData);
   };
+
+  async function handleElementsToDSL() {
+    if (!excalidrawAPI) {
+
+      return -1;
+    }
+    const elements = excalidrawAPI.getSceneElements();
+    const script = elementsToDSL(elements);
+    setScriptCode(script);
+  };
+
+  async function handleExport() {
+
+    if (!excalidrawAPI) return -1;
+
+    toast.info("Export might take some time. Be patient!");
+    setIsExporting(true);
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const {exportToBlob, exportToSvg} = await import("@excalidraw/excalidraw");
+    const elements = excalidrawAPI.getSceneElements();
+    const appState = excalidrawAPI.getAppState?.() ?? {};
+    const files = excalidrawAPI.getFiles?.() ?? {};
+    let filename;
+    let blob;
+    appState.exportWithDarkMode = appState.theme == "dark" ? true : false;
+
+    if (exportType == "png") {
+
+    blob = await exportToBlob({
+      elements,
+      appState,
+      files,
+      mimeType: "image/png",
+      exportPadding: 10,
+    });
+    filename = "export.png"
+    } else if (exportType == "jpeg") {
+
+    blob = await exportToBlob({
+      elements,
+      appState,
+      files,
+      mimeType: "image/jpeg",
+      exportPadding: 10,
+      quality: 1,
+    });
+    filename = "export.jpeg"
+
+    } else if (exportType == "svg") {
+
+    const svgObj = await exportToSvg({
+      elements,
+      appState,
+      files,
+      exportPadding: 10,
+    })
+
+      const svgText = new XMLSerializer().serializeToString(svgObj);
+
+      blob = new Blob([svgText], {
+        type: "image/svg+xml",
+      });
+      console.log("Bloh: ", blob)
+      filename = "export.svg"
+
+    } else if (exportType == "json") {
+
+      const json = JSON.stringify(
+        {
+          type: "excalidraw",
+          version: 2,
+          source: "manaska",
+          elements,
+          appState,
+          files,
+        },
+        null,
+        2
+      );
+
+     blob = new Blob([json], { type: "application/json" });
+      filename = "export.json"
+
+    } else if (exportType == "markdown") {
+
+    const sceneData = {
+      type: "excalidraw",
+      version: 2,
+      source: "https://excalidraw.com",
+      elements,
+      appState,
+      files,
+    };
+    
+    const markdownContent = `---
+    type: excalidraw
+    version: 2
+    source: https://excalidraw.com
+    ---
+
+    \`\`\`excalidraw
+    ${JSON.stringify(sceneData, null, 2)}
+    \`\`\`
+    `;
+      blob = new Blob([markdownContent], { type: "text/markdown" });
+      filename = "export.excalidraw.md"
+
+
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    
+    setIsExporting(false);
+  }
 
   const handleSave = async () => {
     if (!excalidrawAPI || !id) {
@@ -116,6 +351,7 @@ export default function CanvasPage({ params }) {
         body: JSON.stringify({
           map_code: mapCode,
           mapId: id,
+          messages: JSON.stringify(messages),
         }),
       });
 
@@ -129,91 +365,135 @@ export default function CanvasPage({ params }) {
         return;
       }
 
-      router.push(`/dashboard?refresh=${Date.now()}`);
+      router.refresh();
     } catch (error) {
       console.error("Error while saving mind map:", error);
     }
   };
 
+
+
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="h-screen bg-backgorund flex flex-col">
 
-      {/* HEADER */}
-      <header className="bg-background px-4 py-2 flex border items-center justify-between">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={theme}
+        transition={Zoom}
+      />
 
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          Mind Map ID: <span className="font-semibold">{id}</span>
-        </div>
+    {/* Header */}
+    <header className="bg-backgorund px-4 py-2 flex border items-center justify-between">
+    {/* Project Info */}
+    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+    Untitled Mind Map
+    </div>
 
-        <div className="flex items-center space-x-2">
+    {/* Header Actions */}
+    <div className="flex items-center space-x-2">
 
-          <CoordinatesDisplay coordinates={coordinates} />
+    <CoordinatesDisplay coordinates={coordinates}/>
+   
+    <div className="flex tracking-wider gap-x-2 h-10 font-semibold border items-center px-3 rounded-lg">
+      <Label>Grid</Label>
+      <Switch value={gridModeEnabled} onCheckedChange={() => setGridModeEnabled(!gridModeEnabled)}/>
+    </div>
+   <ModeToggle />
+    <Button
+    onClick={handleElementsToDSL}
+    >
+    <CodeXml size={16} />
+    <span>Sync Script</span>
+    </Button>
+    <Button onClick={handleSave}>
+    <Save size={16} />
+    <span>Save</span>
+    </Button>
 
-          <div className="flex gap-x-2 h-10 font-semibold border items-center px-3 rounded-lg">
-            <Label>Grid</Label>
-            <Switch
-              value={gridModeEnabled}
-              onCheckedChange={() => setGridModeEnabled(!gridModeEnabled)}
-            />
-          </div>
+    <Popover>
+    <PopoverTrigger asChild>
+    <Button>
+    <FolderUp size={16} />
+    <span>Export</span>
+    </Button>
+    </PopoverTrigger>
 
-          <ModeToggle />
+    <PopoverContent className="flex flex-col gap-y-3">
 
-          <Button>Generate Script</Button>
-          <Button>Share</Button>
-          <Button onClick={handleSave}>Save</Button>
+    <div className="flex flex-col gap-y-2">
+    <div className="text-lg font-semibold">
+    Export Options
+    </div>
+    <Separator/>
+    </div>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button>Export</Button>
-            </PopoverTrigger>
+    <div className="">
+    <Select value={exportType} onValueChange={(d) => setExportType(d)}>
+    <SelectTrigger className="w-full">
+    <SelectValue placeholder="File Type" />
+    </SelectTrigger>
+    <SelectContent>
+    <SelectItem value="png">PNG</SelectItem>
+    <SelectItem value="jpeg">JPEG</SelectItem>
+    <SelectItem value="svg">SVG</SelectItem>
+    <SelectItem value="json">JSON</SelectItem>
+    <SelectItem value="markdown">Markdown</SelectItem>
+    </SelectContent>
+    </Select>      
+    </div>
 
-            <PopoverContent className="flex flex-col gap-y-3">
-              
-              <div className="text-lg font-semibold">Export Options</div>
-              <Separator />
+    <Button onClick={handleExport} disabled={isExporting}>
+      {!isExporting && <Download size={16}/>}
+      <span>
+        {isExporting && (<div className="animate-spin text-2xl">+</div>)}
+        {!isExporting && (<div className="">Download</div>)}
+      </span>
+    </Button>
 
-              <Select value={exportType} onValueChange={setExportType}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="File Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="png">PNG</SelectItem>
-                  <SelectItem value="jpeg">JPEG</SelectItem>
-                  <SelectItem value="svg">SVG</SelectItem>
-                  <SelectItem value="json">JSON</SelectItem>
-                  <SelectItem value="webp">WEBP</SelectItem>
-                </SelectContent>
-              </Select>
+    </PopoverContent>
+    </Popover>
 
-            </PopoverContent>
-          </Popover>
+    </div>
+    </header>
 
-        </div>
-      </header>
+    <ResizablePanelGroup direction="horizontal">
 
-      {/* CANVAS + EDITOR */}
-      <ResizablePanelGroup direction="horizontal">
+    <ResizablePanel className="bg-backgorund" defaultSize={25}>
+    <Editor scriptCode={scriptCode} setScriptCode={setScriptCode}/>
+    </ResizablePanel>
 
-        <ResizablePanel defaultSize={25}>
-          <Editor scriptCode={scriptCode} setScriptCode={setScriptCode} />
-        </ResizablePanel>
+    <ResizableHandle className="w-1"/>
 
-        <ResizableHandle className="w-1" />
+    {/* Main Canvas Area */}
+    <ResizablePanel defaultSize={45}>
+    <ExcalidrawWrapper
+    onChange={handleCanvasChange}
+    onPointerUpdate={(event) => {
+      setCoordinates([event.pointer.x, event.pointer.y]);
+    }}
+    theme={theme != "system" ? theme : systemTheme}
+    initialData={null}
+    excalidrawAPI={setExcalidrawAPI}
+    gridModeEnabled={gridModeEnabled}
+    className="text-black border border-gray-200 rounded-lg"
+    />
+    </ResizablePanel>
+    
+    <ResizableHandle className="w-1"/>
+    
+    <ResizablePanel defaultSize={30}>
+      <Chat messages={messages} setMessages={setMessages} scriptCode={scriptCode} setScriptCode={setScriptCode} />
+    </ResizablePanel>
 
-        <ResizablePanel defaultSize={75}>
-          <ExcalidrawWrapper
-            onChange={() => {}}
-            onPointerUpdate={(e) => setCoordinates([e.pointer.x, e.pointer.y])}
-            theme={theme !== "system" ? theme : systemTheme}
-            initialData={null}
-            excalidrawAPI={setExcalidrawAPI}
-            gridModeEnabled={gridModeEnabled}
-            className="text-black border border-gray-200 rounded-lg"
-          />
-        </ResizablePanel>
-
-      </ResizablePanelGroup>
+    </ResizablePanelGroup>
 
     </div>
   );
