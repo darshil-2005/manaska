@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
+import Head from "next/head";
 //  shadcn/ui components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,9 @@ import LeftPanel from "@/components/LeftPanel";
 import StepForm from "@/components/StepForm";
 
 export default function ForgotPasswordPage() {
+    useEffect(() => {
+      document.title = "Forgot Password";
+    }, []);
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -78,6 +81,8 @@ export default function ForgotPasswordPage() {
   };
 
   return (
+
+
     <div className="min-h-screen flex items-center justify-center bg-muted/20 font-inter">
       <div className="w-full max-w-5xl bg-background shadow-lg rounded-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden border border-border">
         {/* LEFT PANEL */}

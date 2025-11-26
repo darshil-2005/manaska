@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
+import Head from "next/head";
 import { ModeToggle } from "@/components/themeToggle.jsx";
 
 export default function HomePage() {
   const [showExamples, setShowExamples] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  useEffect(() => {
+    document.title = "Manaska";
+  }, []);
 
   return (
     <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white">

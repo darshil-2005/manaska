@@ -4,6 +4,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import axios from "axios";
+import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { Check, X, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
@@ -13,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import LeftPanel from "@/components/LeftPanel";
-// NOTE: Social component must now accept isGoogleLoading, isGithubLoading, isAnyLoading
 import Social from "@/components/Social";
 import { useTheme } from "next-themes";
 
@@ -39,6 +39,9 @@ function PasswordRuleCheck({ text, isValid }) {
 
 
 export default function LoginPage() {
+    useEffect(() => {
+    document.title = "Login";
+  }, []);
 
   const { theme } = useTheme();
   const [formData, setFormData] = useState({
@@ -175,6 +178,7 @@ export default function LoginPage() {
 
 
   return (
+    
     <div className="min-h-screen flex items-center justify-center bg-muted/20 font-inter px-4 sm:px-6">
       {/* --- TOAST CONTAINER --- */}
       <ToastContainer

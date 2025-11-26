@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import Head from "next/head";
 import CoordinatesDisplay from "../../../components/coordinatesDisplay.jsx"
 import {
   Share,
@@ -79,6 +80,9 @@ const ExcalidrawWrapper = dynamic(
 
 
 export default function MindMapDesigner({params}) {
+    useEffect(() => {
+    document.title = "Canvas";
+  }, []);
 
   const router = useRouter();
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Head from "next/head";
 import {
   Brain,
   Loader2,
@@ -39,6 +40,9 @@ function formatTimestamp(value) {
 }
 
 export default function DashboardPage() {
+    useEffect(() => {
+    document.title = "Dashboard";
+  }, []);
   const router = useRouter();
   const [maps, setMaps] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +77,7 @@ export default function DashboardPage() {
       }
     }
 
-    
+
     async function loadUser() {
       await fetchUser();
     }
