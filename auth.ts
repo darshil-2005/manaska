@@ -7,9 +7,10 @@ import {db} from "./db/db.js"
  
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db),
-  providers: [Google, GitHub],
-  secret: process.env.AUTH_SECRET,
-  experimental: {
+  providers: [Google({
     allowDangerousEmailAccountLinking: true,
-  }
+  }), GitHub({
+    allowDangerousEmailAccountLinking: true,
+  })],
+  secret: process.env.AUTH_SECRET,
 })
