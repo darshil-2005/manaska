@@ -1,29 +1,13 @@
 "use client";
 
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link"
+import { ModeToggle } from "@/components/themeToggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
-  SidebarTrigger
-} from "@/components/ui/sidebar";
-
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
-
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 import NodeFormatDocs from "./components/NodeFormat";
 import MindmapTypesSection1 from "./components/templates";
@@ -33,132 +17,75 @@ export default function DocsLayout() {
       document.title = "Documentation";
     }, []);
   const [active, setActive] = useState("node-format");
-  const [open, setOpen] = useState(false); // mobile sidebar toggle
+  const [open, setOpen] = useState(false);
+
+  const menuItem = (id: string, label: string) => (
+    <button
+      key={id}
+      onClick={() => {
+        setActive(id);
+        setOpen(false);
+      }}
+      className={`w-full text-left px-4 py-3 rounded-md transition-colors ${
+        active === id ? "bg-blue-600 text-white" : "text-foreground hover:bg-muted"
+      }`}
+    >
+      {label}
+    </button>
+  );
 
   return (
-    <div className="flex h-screen w-full bg-background text-foreground">
+    <div className="flex flex-col h-screen w-full bg-background text-foreground">
 
-      {/* ===== MOBILE HEADER ===== */}
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 border-b bg-card">
-        <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
-          <Menu className="h-5 w-5" />
-        </Button>
-        <h2 className="text-lg font-semibold">Documentation</h2>
+      {/* HEADER */}
+      <header className="flex items-center justify-between px-4 py-3 border-b bg-card">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+            <Menu className="h-5 w-5" />
+          </Button>
+
+          <h1 className="text-lg font-semibold select-none">Documentation</h1>
+        </div>
+
+        <div />
+        <NavLink href="/dashboard">Dashboard</NavLink>
+        <ModeToggle />
       </header>
 
-      {/* ===== MOBILE SIDEBAR ===== */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="p-0 w-72">
+        <SheetContent
+          side="left"
+          className="
+            p-0 
+            w-[min(20rem,90vw)] 
+            bg-card/95 
+            backdrop-blur-sm 
+            border-r 
+            border-border 
+            shadow-lg 
+            [&>button]:hidden
+          "
+        >
+          <SheetHeader className="flex items-center justify-between px-4 py-3 border-b">
+            <SheetTitle className="text-lg font-medium">Documentation</SheetTitle>
 
-          {/* IMPORTANT FIX: Provider INSIDE Sheet */}
-          <SidebarProvider>
-            <Sidebar className="h-full">
+            {/* ONLY close button */}
+            <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
+              <X className="h-5 w-5" />
+            </Button>
+          </SheetHeader>
 
-              <SidebarHeader>
-                <h2 className="px-4 py-4 text-xl font-semibold">Documentation</h2>
-              </SidebarHeader>
+          <nav className="px-3 py-4 space-y-2">
+            <div className="px-2 text-xs text-muted-foreground uppercase tracking-wide">
+              Sections
+            </div>
 
-              <SidebarContent>
-                <SidebarGroup>
-                  <SidebarGroupLabel>Sections</SidebarGroupLabel>
-
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-
-                      <SidebarMenuItem>
-                        <SidebarMenuButton
-                          onClick={() => {
-                            setActive("node-format");
-                            setOpen(false);
-                          }}
-                          className={`${active === "node-format"
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-muted"
-                          }`}
-                        >
-                          Node Format
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-
-                      <SidebarMenuItem>
-                        <SidebarMenuButton
-                          onClick={() => {
-                            setActive("mindmap-templates");
-                            setOpen(false);
-                          }}
-                          className={`${active === "mindmap-templates"
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-muted"
-                          }`}
-                        >
-                          Mindmap Templates
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-
-                </SidebarGroup>
-              </SidebarContent>
-
-            </Sidebar>
-          </SidebarProvider>
-
+            {menuItem("node-format", "Node Format")}
+            {menuItem("mindmap-templates", "Mindmap Templates")}
+          </nav>
         </SheetContent>
       </Sheet>
 
-      {/* ===== DESKTOP SIDEBAR ===== */}
-      <aside className="hidden lg:flex lg:w-72 border-r bg-card">
-
-        {/* Provider ONLY for desktop sidebar */}
-        <SidebarProvider>
-          <Sidebar className="h-full">
-            <SidebarHeader>
-              <h2 className="px-4 py-4 text-xl font-semibold">Documentation</h2>
-              <SidebarTrigger />
-            </SidebarHeader>
-
-            <SidebarContent>
-              <SidebarGroup>
-                <SidebarGroupLabel>Sections</SidebarGroupLabel>
-
-                <SidebarGroupContent>
-                  <SidebarMenu>
-
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={() => setActive("node-format")}
-                        className={`${active === "node-format"
-                          ? "bg-blue-600 text-white hover:bg-blue-700"
-                          : "hover:bg-muted"
-                        }`}
-                      >
-                        Node Format
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={() => setActive("mindmap-templates")}
-                        className={`${active === "mindmap-templates"
-                          ? "bg-blue-600 text-white hover:bg-blue-700"
-                          : "hover:bg-muted"
-                        }`}
-                      >
-                        Mindmap Templates
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-
-                  </SidebarMenu>
-                </SidebarGroupContent>
-
-              </SidebarGroup>
-            </SidebarContent>
-          </Sidebar>
-        </SidebarProvider>
-      </aside>
-
-      {/* ===== MAIN CONTENT ===== */}
       <main className="flex-1 overflow-hidden">
         <ScrollArea className="h-full p-4 sm:p-6 md:p-8">
           <div className="max-w-4xl mx-auto">
@@ -167,7 +94,16 @@ export default function DocsLayout() {
           </div>
         </ScrollArea>
       </main>
-
     </div>
+  );
+}
+function NavLink({ href, children }) {
+  return (
+    <Link
+      href={href}
+      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {children}
+    </Link>
   );
 }
