@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { Check, X, Loader2 } from "lucide-react";
@@ -42,6 +42,7 @@ export default function RegisterPage() {
     agree: false,
   });
 
+
   const [termsError, setTermsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -52,6 +53,31 @@ export default function RegisterPage() {
   const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
 
   const router = useRouter();
+
+  useEffect(() => {
+     
+      async function fetchUser() {
+        try {
+  
+          const response = await axios.get("/api/auth/me");
+  
+          if (response.status === 200 && response.data.ok === true) {
+            router.push("/dashboard");
+          }
+  
+          
+  
+        } catch(error) {
+          console.log("User not found.");
+        }
+      }
+  
+      async function loadUser() {
+        await fetchUser();
+      }
+      loadUser();
+  
+    }, [router]);
 
   const emailIsValid = useMemo(() => {
     return validateEmail(formData.email);
