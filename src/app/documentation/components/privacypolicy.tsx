@@ -153,6 +153,235 @@ export default function PrivacyPolicy() {
 
             <p className="font-medium">support@mindmap-ai.com</p>
 
+            <Separator />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">9. Data Retention Policy</h2>
+            <p>We retain personal and usage data only for as long as necessary to fulfill the purposes outlined in this Privacy Policy. Retention timelines include:</p>
+            <ul className="list-disc ml-6 space-y-2">
+                <li>Account Data: Retained as long as your account remains active. Deleted automatically 30 days after account deletion.</li>
+                <li>Mindmap Content: Stored until you manually delete it or your account is removed.</li>
+                <li>Log & Diagnostic Data: Retained for 6–12 months to monitor performance, fix bugs, and comply with legal/regulatory requirements.</li>
+                <li>Cookies: Retention varies by cookie type (session cookies expire automatically; preference cookies persist longer).</li>
+            </ul>
+            <p>If you request account deletion, all associated files, diagrams, chat messages, and mindmap content will be permanently removed from our servers unless legally required otherwise.</p>
+
+            <h2 className="text-xl sm:text-2xl font-semibold">10. International Data Transfers</h2>
+            <p>Depending on your location, personal data may be processed on servers located in:</p>
+            <ul className="list-disc ml-6 space-y-2">
+                <li>United States</li>
+                <li>European Union</li>
+                <li>Asia-Pacific Regions</li>
+            </ul>
+            <p>Where required, we implement:</p>
+            <ul className="list-disc ml-6 space-y-2">
+                <li>Standard Contractual Clauses (SCCs)</li>
+                <li>Data Processing Addendums (DPAs)</li>
+                <li>Secure transfer protocols (TLS/SSL)</li>
+                <li>GDPR-compliant safeguards</li>
+            </ul>
+            <p>We ensure that all international data transfers are done securely and lawfully.</p>
+
+            <h2 className="text-xl sm:text-2xl font-semibold">11. Cookies & Tracking Technologies</h2>
+            <p>
+            Our platform uses cookies and tracking technologies to optimize functionality. These include:
+            </p>
+
+            <h3 className="text-lg font-medium mt-4">Types of Cookies Used</h3>
+
+            <h4 className="font-semibold mt-2">Essential Cookies</h4>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>Required for login, authentication, and core site functionality.</li>
+            <li>You cannot disable essential cookies.</li>
+            </ul>
+
+            <h4 className="font-semibold mt-2">Preference Cookies</h4>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>Store theme preferences (light/dark mode)</li>
+            <li>Remember sidebar layout, editor settings, and UI preferences.</li>
+            </ul>
+
+            <h4 className="font-semibold mt-2">Analytics Cookies</h4>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>Help us understand how users interact with the app.</li>
+            <li>Includes session duration, clicked tools, layout usage, export frequency, etc.</li>
+            </ul>
+
+            <h4 className="font-semibold mt-2">Performance & Diagnostic Cookies</h4>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>Monitor service uptime, loading speeds, and error rates.</li>
+            <li>Used to identify bugs and improve stability.</li>
+            </ul>
+
+            <h4 className="font-semibold mt-2">Optional Cookies</h4>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>May store AI suggestion preferences</li>
+            <li>Chat/assistant interaction logs (if enabled)</li>
+            </ul>
+
+            <p className="mt-2">
+            You can control non-essential cookies in your browser settings.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">12. How AI Handles Your Data</h2>
+            <p>
+            Our AI features may process parts of your input solely for generating recommendations,
+            mindmap expansions, summaries, or related enhancements.
+            </p>
+
+            <h3 className="font-semibold mt-4">AI Processing Rules</h3>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>Your data is not used to train AI models unless explicitly allowed.</li>
+            <li>Your content is not shared, published, or used outside your account.</li>
+            <li>
+                All processing is ephemeral and exists only for the duration of your session unless saved in your mindmap.
+            </li>
+            <li>
+                We maintain strict isolation between user datasets and ensure that AI responses respect
+                privacy and confidentiality.
+            </li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">13. Third-Party Integrations</h2>
+            <p>Our system may integrate with trusted third-party services:</p>
+
+            <h3 className="font-semibold mt-4">Examples of External Services:</h3>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>Cloud storage providers (AWS, Vercel, Supabase, Firebase, etc.)</li>
+            <li>CDN & edge networks</li>
+            <li>AI model providers</li>
+            <li>Payment processors (if applicable)</li>
+            </ul>
+
+            <p className="mt-2">These providers are contractually obligated to:</p>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>Follow industry-standard security practices</li>
+            <li>Only process data we explicitly allow</li>
+            <li>Never use your content for unrelated purposes</li>
+            </ul>
+
+            <p className="mt-2">
+            We do not grant third parties unrestricted access to your mindmaps or stored content.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">14. Data Breach Protocol</h2>
+            <p>We take all breaches seriously. In the unlikely event of unauthorized access:</p>
+
+            <h3 className="font-semibold mt-4">Our Response Steps</h3>
+            <ul className="list-disc ml-6 space-y-1">
+                <li>Immediate containment and system isolation</li>
+                <li>Investigation of root cause</li>
+                <li>Revocation of compromised tokens or credentials</li>
+                <li>User notification within 72 hours (or earlier when legally mandated)</li>
+                <li>Restoration of secure system state</li>
+                <li>Preventive system patching and audits</li>
+            </ul>
+
+            <p className="mt-2">
+            You will be notified if your data is involved in any breach affecting confidentiality.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">15. Logging & Monitoring</h2>
+            <p>
+            To ensure service integrity, we maintain controlled logs that may include:
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1">
+                <li>Authentication attempts</li>
+                <li>Editor actions (non-content-based)</li>
+                <li>Export requests</li>
+                <li>API errors</li>
+                <li>Device metadata</li>
+                <li>Session timestamps</li>
+            </ul>
+
+            <p className="mt-2">Logs are strictly access-controlled and used only for:</p>
+            <ul className="list-disc ml-6 space-y-1">
+                <li>Debugging</li>
+                <li>Fraud detection</li>
+                <li>System optimization</li>
+                <li>Security monitoring</li>
+            </ul>
+
+            <p className="mt-2">
+            We do not log your actual mindmap content unless required to process your user request.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">16. Ads, Analytics & External Links</h2>
+            <p>
+            Our platform currently does not display advertisements, but we may use analytics tools such as:
+            </p>
+            <ul className="list-disc ml-6 space-y-1">
+                <li>Google Analytics</li>
+                <li>Vercel Analytics</li>
+                <li>Proprietary usage analytics</li>
+            </ul>
+
+            <h3 className="font-semibold mt-4">External Links</h3>
+            <p>
+            Our documentation or platform may contain links to external websites.
+            We do not control and are not responsible for their privacy practices.
+            </p>
+            <p>We encourage you to review their policies independently.</p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">17. User-Generated Content</h2>
+            <p>
+            By using our platform, you retain full ownership of all content you create.
+            However, you grant us a limited license to:
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1">
+                <li>Process the content to generate diagrams</li>
+                <li>Store it securely in your account</li>
+                <li>Render/export/modify it according to your actions</li>
+            </ul>
+
+            <p className="mt-2">
+            This license is revoked immediately upon content deletion or account closure.
+            </p>
+            <p>We never reuse or publicly display user content without explicit permission.</p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">18. Definitions</h2>
+            <ul className="list-disc ml-6 space-y-1">
+                <li><strong>Personal Data</strong> – Any information that identifies a user directly or indirectly.</li>
+                <li><strong>Mindmap Content</strong> – Any diagram, node, connection, text, or asset created within the platform.</li>
+                <li><strong>Processing</strong> – Any operation performed on data (collection, storage, analysis, deletion).</li>
+                <li><strong>Service Providers</strong> – Third-party companies that support platform operations.</li>
+                <li><strong>AI Processing</strong> – Automated operations that generate suggestions, outputs, or mindmap elements.</li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">19. Enforcement & Legal Compliance</h2>
+            <p>We comply with:</p>
+            <ul className="list-disc ml-6 space-y-1">
+            <li>GDPR (EU General Data Protection Regulation)</li>
+            <li>CCPA (California Consumer Privacy Act)</li>
+            <li>CPRA (California Privacy Rights Act)</li>
+            <li>Indian DPDP Act (2023)</li>
+            <li>Applicable global data protection laws</li>
+            </ul>
+
+            <p className="mt-2">
+            We provide mechanisms for data access, correction, deletion, and portability.
+            </p>
+
+            <hr className="my-6" />
+
+
           </CardContent>
         </Card>
       </ScrollArea>

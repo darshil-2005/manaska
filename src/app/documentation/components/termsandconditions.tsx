@@ -179,6 +179,179 @@ export default function TermsAndConditions() {
             <Separator />
 
             <p className="text-sm text-muted-foreground">Last Updated: January 2025</p>
+            
+            <h2 className="text-xl sm:text-2xl font-semibold mt-8">11. User Responsibilities</h2>
+            <p>
+            By accessing and using this platform, you agree to follow all applicable laws and
+            refrain from engaging in any activities that may harm, disrupt, or misuse the service.
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>You are responsible for maintaining the confidentiality of your account.</li>
+                <li>You must ensure the accuracy of all information provided during registration.</li>
+                <li>You agree not to use the service for fraudulent, harmful, or illegal purposes.</li>
+                <li>You will not attempt to reverse-engineer, bypass security, or disrupt platform services.</li>
+                <li>You must not upload malicious software, viruses, or scripts of any kind.</li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">12. Prohibited Activities</h2>
+            <p>
+            Users are strictly prohibited from engaging in the following activities:
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>Uploading content that infringes on intellectual property or violates privacy.</li>
+                <li>Conducting unauthorized scraping, data extraction, or automated crawling.</li>
+                <li>Harassing other users or engaging in abusive behavior.</li>
+                <li>Attempting to exploit or misuse platform vulnerabilities.</li>
+                <li>Attempting to access restricted backend systems or APIs without permission.</li>
+                <li>Using the platform for extremist, harmful, or hateful content.</li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">13. Intellectual Property Rights</h2>
+            <p>
+            All platform content—including design, algorithms, code, branding, UI elements,
+            and documentation—is owned by the platform operator unless stated otherwise.
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>You may not copy, modify, distribute, or reverse-engineer platform assets.</li>
+                <li>
+                    You retain ownership of all mindmaps and content you create, except when legally required or explicitly permitted by you.
+                </li>
+                <li>
+                    You grant us a limited license to store, render, and process your content solely for platform functionality.
+                </li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">14. User-Generated Content Policy</h2>
+            <p>
+            You are solely responsible for the content you create using the platform.
+            You agree that your content will not:
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>Violate copyright, trademarks, or proprietary rights.</li>
+                <li>Contain unlawful, abusive, defamatory, or offensive material.</li>
+                <li>Promote harmful or malicious acts.</li>
+                <li>Contain personal data of others without explicit permission.</li>
+            </ul>
+
+            <p className="mt-2">
+            We reserve the right (but are not obligated) to remove content that violates these terms.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">15. Service Availability & Downtime</h2>
+            <p>
+            While we strive to provide continuous access to the platform, we do not guarantee
+            uninterrupted service. Planned maintenance, updates, and unavoidable outages may occur.
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>We may temporarily suspend services for updates, fixes, or maintenance.</li>
+                <li>We are not responsible for losses caused by downtime or service interruptions.</li>
+                <li>We reserve the right to modify features or restrict access at our discretion.</li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">16. Termination of Accounts</h2>
+            <p>
+            We may suspend or terminate accounts under specific conditions, including:
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>Violation of these Terms & Conditions</li>
+                <li>Illegal or harmful activities</li>
+                <li>Multiple failed payment attempts (if applicable)</li>
+                <li>Abuse of platform features, API rates, or automation tools</li>
+            </ul>
+
+            <p className="mt-2">
+            Users may also request account deletion at any time.
+            Deleted accounts cannot be recovered.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">17. Disclaimers</h2>
+            <p>
+            The platform and all its features are provided on an <strong>"as is" and "as available"</strong> basis.
+            We make no warranties regarding:
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>Accuracy or reliability of platform outputs or AI-generated suggestions</li>
+                <li>Bug-free, error-free, or uninterrupted operation</li>
+                <li>Compatibility with all devices, browsers, or configurations</li>
+                <li>Completeness or correctness of documentation or tutorials</li>
+            </ul>
+
+            <p className="mt-2">
+            You use the platform at your own discretion and risk.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">18. Limitation of Liability</h2>
+            <p>
+            To the fullest extent permitted by law, we are not liable for:
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>Loss of data or content</li>
+                <li>Loss of revenue, profits, or business opportunities</li>
+                <li>Damage arising from unauthorized access to your account</li>
+                <li>Indirect, incidental, or consequential damages</li>
+                <li>Performance issues caused by third-party service providers</li>
+            </ul>
+
+            <p className="mt-2">
+            Our maximum liability, under any circumstance, will not exceed the amount paid by
+            the user (if any) in the last 12 months.
+            </p>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">19. Governing Law</h2>
+            <p>
+            These Terms & Conditions are governed by the laws of your jurisdiction unless otherwise required by local legislation.
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>Disputes will be handled through arbitration or competent courts.</li>
+                <li>Users agree to comply with all applicable national and international laws.</li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">20. Changes to These Terms</h2>
+            <p>
+            We may update or modify these Terms & Conditions at any time.
+            Changes will take effect once published on this page.
+            </p>
+
+            <ul className="list-disc ml-6 space-y-1 mt-2">
+                <li>You will be notified of major changes via email or in-app notifications.</li>
+                <li>Continued use after updates implies acceptance of revised terms.</li>
+            </ul>
+
+            <hr className="my-6" />
+
+            <h2 className="text-xl sm:text-2xl font-semibold">21. Contact Information</h2>
+            <p>
+            For questions regarding these Terms & Conditions, please contact our support team.
+            </p>
+            <p>Email: <strong>support@yourdomain.com</strong></p>
+            <p className="mt-2">We typically respond within 48 hours.</p>
 
           </CardContent>
         </Card>
