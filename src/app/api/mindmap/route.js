@@ -2,11 +2,6 @@ import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server"
 import { db } from "../../../../db/db";
 import { maps } from "../../../../db/schema.ts"
-import {
-  DEFAULT_KEY_NOT_CONFIGURED,
-  USER_KEY_NOT_FOUND,
-  resolveGroqApiKey,
-} from "../../../utils/resolveGroqApiKey.js";
 import axios from 'axios'
 import {cookies} from "next/headers"
 import {eq} from "drizzle-orm"
