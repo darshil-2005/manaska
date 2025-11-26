@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import axios from "axios";
+import Head from "next/head";
 import { Check, X, Loader2 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,6 +33,11 @@ function PasswordRuleCheck({ text, isValid }) {
 }
 
 export default function RegisterPage() {
+
+    useEffect(() => {
+    document.title = "Register";
+  }, []);
+
   const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: "",

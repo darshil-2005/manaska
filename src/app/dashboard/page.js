@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Head from "next/head";
 import {
   Brain,
   Loader2,
@@ -39,6 +40,9 @@ function formatTimestamp(value) {
 }
 
 export default function DashboardPage() {
+    useEffect(() => {
+    document.title = "Dashboard";
+  }, []);
   const router = useRouter();
   const [maps, setMaps] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +56,34 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
   const [navigatingToCanvas, setNavigatingToCanvas] = useState(false);
+
+  useEffect(() => {
+
+    async function fetchUser() {
+      try {
+
+        const response = await axios.get("/api/auth/me");
+
+        if (response.status != 200 || response.data.ok != true) {
+          router.push("/login");
+        }
+        
+
+        setUser(response.data);
+
+      } catch (error) {
+        toast.error("Error Authenticating!!");
+        router.push("/login")
+      }
+    }
+
+
+    async function loadUser() {
+      await fetchUser();
+    }
+    loadUser();
+
+  }, []);
 
   useEffect(() => {
     const warmUpCanvas = async () => {
