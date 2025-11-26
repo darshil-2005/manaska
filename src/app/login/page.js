@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -84,7 +84,7 @@ export default function LoginPage() {
     loadUser();
 
   }, [router]);
-  
+
   // Smart validation for the "Email or username" field
   const emailCheck = useMemo(() => {
     const input = formData.email;
