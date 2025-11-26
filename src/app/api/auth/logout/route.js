@@ -1,20 +1,30 @@
 import { NextResponse } from "next/server";
+import {signOut} from "../../../../../auth.ts"
 
 export async function POST() {
-    try {
-        const response = NextResponse.json({ message: "Logged out successfully" });
+  try {
+    const response = NextResponse.json({ message: "Logged out successfully" });
 
-        // Clear cookie
-        response.cookies.set("token", "", {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === "production",
-            path: "/",
-            expires: new Date(0),
-        });
+    response.cookies.set("token", "", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      expires: new Date(0),
+    });
 
-        return response;
-    } catch (err) {
-        console.error("Logout error:", err);
-        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-    }
+    response.cookies.set("__Secure-authjs.session-token", "", {
+      path: "/",
+      expires: new Date(0),
+    });
+
+    response.cookies.set("authjs.session-token", "", {
+      path: "/",
+      expires: new Date(0),
+    });
+
+    return response;
+  } catch (err) {
+    console.error("Logout error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
