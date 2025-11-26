@@ -63,6 +63,7 @@ export default function DashboardPage() {
         if (response.status != 200 || response.data.ok != true) {
           router.push("/login");
         }
+        
 
         setUser(response.data);
 

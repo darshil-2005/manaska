@@ -53,6 +53,7 @@ export default function RegisterPage() {
             router.push("/dashboard");
           }
   
+          
   
         } catch(error) {
           console.log("User not found.");

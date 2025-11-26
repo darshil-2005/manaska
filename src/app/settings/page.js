@@ -74,6 +74,7 @@ export default function SettingsPage() {
           router.push("/login");
         }
 
+        
         setUser(response.data);
 
       } catch(error) {
