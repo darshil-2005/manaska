@@ -155,7 +155,7 @@ ${extractedText.slice(0, 4000)}
     }
 
     // Convert mindmap to DSL for storage
-    const { parseMindmapToDSL } = await import("../../../../utils/parseJsonToDSL.js");
+    const { parseMindmapToDSL } = await import("../../../../utils/parseMindmapToDSL.js");
     const dslCode = parseMindmapToDSL(parsed);
 
     // Create map entry in database

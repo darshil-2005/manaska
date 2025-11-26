@@ -25,5 +25,5 @@
     "**/*.ts",
     "**/*.tsx"
 , "src/app/dashboard/page.js"  ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "cypress"]
 }

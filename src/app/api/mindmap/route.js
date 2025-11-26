@@ -1,17 +1,49 @@
-import { ChatGroq } from "@langchain/groq";
-import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-
+import { NextResponse } from "next/server"
 import { db } from "../../../../db/db";
-import { map } from "../../../../db/schema";
+import { maps } from "../../../../db/schema.ts"
 import {
   DEFAULT_KEY_NOT_CONFIGURED,
   USER_KEY_NOT_FOUND,
   resolveGroqApiKey,
 } from "../../../utils/resolveGroqApiKey.js";
+import axios from 'axios'
+import {cookies} from "next/headers"
+import {eq} from "drizzle-orm"
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+export async function POST(request) {
+ 
+  const { userId, canvasId } = await request.json();
+  
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
+
+  const user = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+    headers: {
+      Cookie: cookieHeader,
+    }
+  });
+
+  if (userId != user.data.userId) {
+    return NextResponse.json({status: 401})
+  }
+
+  const mindmap = await db.select().from(maps).where(eq(maps.id, canvasId));
+
+  if (mindmap.length <= 0) {
+    return NextResponse.json({status: 404, error: "Map does not exist!!"});
+  }
+
+  if (mindmap[0].userId != userId) {
+    return NextResponse.json({status: 404, error: "Map does not exist!!"});
+  }
+  
+  return NextResponse.json({status: 200, map: mindmap[0]})
+}
+
+/*
 export async function POST(req) {
   try {
     // Get user from cookie
@@ -140,7 +172,7 @@ Topic: ${prompt}
     console.log("Parsed mindmap JSON generated successfully!");
 
     // Convert mindmap to DSL for storage
-    const { parseMindmapToDSL } = await import("../../../utils/parseJsonToDSL.js");
+    const { parseMindmapToDSL } = await import("../../../utils/parseMindmapToDSL.js");
     const dslCode = parseMindmapToDSL(parsed);
 
     // Create map entry in database
@@ -171,4 +203,4 @@ Topic: ${prompt}
       { status: 500 }
     );
   }
-}
+}*/

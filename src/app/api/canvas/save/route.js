@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
 import { db } from "../../../../../db/db";
-import { map } from "../../../../../db/schema";
+import { maps } from "../../../../../db/schema";
 import { verifyAuth } from "@/utils/verifyAuth";
 
 export async function POST(request) {
@@ -18,6 +18,7 @@ export async function POST(request) {
     const body = await request.json().catch(() => ({}));
     const mapCode = typeof body?.map_code === "string" ? body.map_code : "";
     const mapId = typeof body?.mapId === "string" ? body.mapId.trim() : "";
+    const messages = body?.messages;  
 
     if (!mapCode || !mapId) {
       return NextResponse.json(
@@ -27,9 +28,9 @@ export async function POST(request) {
     }
 
     const [existing] = await db
-      .select({ id: map.id, userId: map.userId })
-      .from(map)
-      .where(eq(map.id, mapId));
+      .select({ id: maps.id, userId: maps.userId })
+      .from(maps)
+      .where(eq(maps.id, mapId));
 
     if (!existing) {
       return NextResponse.json(
@@ -46,12 +47,13 @@ export async function POST(request) {
     }
 
     const [updated] = await db
-      .update(map)
+      .update(maps)
       .set({
-        url: mapCode,
+        script: mapCode,
+        messages: messages,
         updatedAt: new Date(),
       })
-      .where(eq(map.id, mapId))
+      .where(eq(maps.id, mapId))
       .returning();
 
     if (!updated) {

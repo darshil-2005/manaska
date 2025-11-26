@@ -1,4 +1,4 @@
-import { parseMindmapToDSL } from "./parseJsonToDSL.js";
+import { parseMindmapToDSL } from "./parseMindmapToDSL.js";
 
 export async function generate_map(prompt) {
   try {

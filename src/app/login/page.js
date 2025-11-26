@@ -108,7 +108,7 @@ export default function LoginPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`,
         {
           email: formData.email,
           password: formData.password,

@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { and, like, eq } from "drizzle-orm";
 
 import { db } from "../../../../../db/db";
-import { map } from "../../../../../db/schema";
+import { maps } from "../../../../../db/schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
@@ -46,10 +46,10 @@ export async function POST(request) {
 
     if (!title) {
       const existingUntitled = await db
-        .select({ title: map.title })
-        .from(map)
+        .select({ title: maps.title })
+        .from(maps)
         .where(
-          and(eq(map.userId, userData.id), like(map.title, `${baseTitle}%`))
+          and(eq(maps.userId, userData.id), like(maps.title, `${baseTitle}%`))
         );
 
       const existingTitles = new Set(
@@ -68,7 +68,7 @@ export async function POST(request) {
     }
 
     const [newMap] = await db
-      .insert(map)
+      .insert(maps)
       .values({
         title,
         description,

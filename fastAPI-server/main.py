@@ -126,7 +126,7 @@ class MindmapGenerateRequest(BaseModel):
 class MindmapExplainRequest(BaseModel):
     model: str
     api_key: str
-    mindmap: Dict[str, Any]
+    mindmap: str
     question: str | None = None
     max_tokens: int = 800
     temperature: float = 0.2

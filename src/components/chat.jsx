@@ -3,7 +3,7 @@ import {Button} from "../components/ui/button.tsx"
 import {Input} from "../components/ui/input.tsx"
 import {Label} from "../components/ui/label.tsx"
 import { ArrowBigRight, File } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import { useTheme } from "next-themes"
 import axios from 'axios'
@@ -18,6 +18,12 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
   const [parsedFiles, setParsedFiles] = useState([]);
   const [processingFile, setProcessingFile] = useState(false);
   const [jsonMap, setJsonMap] = useState(undefined);
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      setJsonMap(messages[1]);
+    }
+  }, [messages])
 
   const {theme, setTheme} = useTheme(); 
 
@@ -138,7 +144,7 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
 
         setScriptCode(scriptCode + "\n\n" + script);
         setInput("");
-        setMessages([...messages, fullPrompt, "Your Mindmap is generated, Check the canvas!!"]);
+        setMessages([...messages, fullPrompt, JSON.stringify(jsonMap)]);
 
       } catch (error) {
         toast.error("Error generating mindmap. Please try again!");
