@@ -64,33 +64,6 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-   
-    async function fetchUser() {
-      try {
-
-        const response = await axios.get("/api/auth/me");
-
-        if (response.status != 200 || response.data.ok != true) {
-          router.push("/login");
-        }
-
-        
-        setUser(response.data);
-
-      } catch(error) {
-        toast.error("Error Authenticating!!");
-        router.push("/login")
-      }
-    }
-
-    async function loadUser() {
-      await fetchUser();
-    }
-    loadUser();
-
-  }, []);
-
-  useEffect(() => {
     const mainEl = mainRef.current;
     if (!mainEl) return;
 
@@ -138,7 +111,33 @@ export default function SettingsPage() {
       mainEl.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  
+  useEffect(() => {
+   
+    async function fetchUser() {
+      try {
 
+        const response = await axios.get("/api/auth/me");
+
+        if (response.status != 200 || response.data.ok != true) {
+          router.push("/login");
+        }
+
+        
+        setUser(response.data);
+
+      } catch(error) {
+        toast.error("Error Authenticating!!");
+        router.push("/login")
+      }
+    }
+
+    async function loadUser() {
+      await fetchUser();
+    }
+    loadUser();
+
+  }, []);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground">

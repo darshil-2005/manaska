@@ -58,6 +58,8 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
 
+  const router = useRouter();
+
   useEffect(() => {
 
     async function fetchUser() {
@@ -82,10 +84,7 @@ export default function LoginPage() {
     loadUser();
 
   }, [router]);
-
-  const router = useRouter();
-
-
+  
   // Smart validation for the "Email or username" field
   const emailCheck = useMemo(() => {
     const input = formData.email;

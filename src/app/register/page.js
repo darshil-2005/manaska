@@ -42,6 +42,18 @@ export default function RegisterPage() {
     agree: false,
   });
 
+
+  const [termsError, setTermsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+
+  const {data} = useSession();
+
+  const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
+
+  const router = useRouter();
+
   useEffect(() => {
      
       async function fetchUser() {
@@ -66,17 +78,6 @@ export default function RegisterPage() {
       loadUser();
   
     }, [router]);
-
-  const [termsError, setTermsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isGithubLoading, setIsGithubLoading] = useState(false);
-
-  const {data} = useSession();
-
-  const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
-
-  const router = useRouter();
 
   const emailIsValid = useMemo(() => {
     return validateEmail(formData.email);

@@ -73,6 +73,7 @@ export default function DashboardPage() {
       }
     }
 
+    
     async function loadUser() {
       await fetchUser();
     }
