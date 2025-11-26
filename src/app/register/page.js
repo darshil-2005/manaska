@@ -48,7 +48,6 @@ export default function RegisterPage() {
   const [isGithubLoading, setIsGithubLoading] = useState(false);
 
   const {data} = useSession();
-  console.log("data: ", data);
 
   const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
 
@@ -129,7 +128,7 @@ export default function RegisterPage() {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}api/auth/register`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/register`,
         {
           email: formData.email,
           username: formData.username,
