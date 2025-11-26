@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link"
 import { ModeToggle } from "@/components/themeToggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,6 +13,9 @@ import NodeFormatDocs from "./components/NodeFormat";
 import MindmapTypesSection1 from "./components/templates";
 
 export default function DocsLayout() {
+    useEffect(() => {
+      document.title = "Documentation";
+    }, []);
   const [active, setActive] = useState("node-format");
   const [open, setOpen] = useState(false);
 
