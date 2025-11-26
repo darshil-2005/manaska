@@ -1,3 +1,5 @@
+/*
+
 import { NextResponse } from "next/server";
 import { db } from "../../../../../db/db";
 import {maps} from "../../../../../db/schema"
@@ -94,3 +96,5 @@ export async function POST(request) {
         );
     }
 }
+
+*/
