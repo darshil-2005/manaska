@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link"
+import { ModeToggle } from "@/components/themeToggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -38,10 +40,13 @@ export default function DocsLayout() {
           <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
+
           <h1 className="text-lg font-semibold select-none">Documentation</h1>
         </div>
 
         <div />
+        <NavLink href="/dashboard">Dashboard</NavLink>
+        <ModeToggle />
       </header>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -55,7 +60,7 @@ export default function DocsLayout() {
             border-r 
             border-border 
             shadow-lg 
-            
+            [&>button]:hidden
           "
         >
           <SheetHeader className="flex items-center justify-between px-4 py-3 border-b">
@@ -87,5 +92,15 @@ export default function DocsLayout() {
         </ScrollArea>
       </main>
     </div>
+  );
+}
+function NavLink({ href, children }) {
+  return (
+    <Link
+      href={href}
+      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {children}
+    </Link>
   );
 }
