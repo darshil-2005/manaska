@@ -4,16 +4,25 @@ import { eq } from "drizzle-orm";
 import { db } from "../../../../../db/db";
 import { maps } from "../../../../../db/schema";
 import { verifyAuth } from "@/utils/verifyAuth";
+import {cookies} from "next/headers"
+import axios from 'axios'
 
 export async function POST(request) {
   try {
-    const auth = await verifyAuth(request);
-    if (!auth.valid) {
-      return NextResponse.json(
-        { error: auth.error || "Unauthorized" },
-        { status: 401 }
-      );
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+      headers: {
+        Cookie: cookieHeader,
+      }
+    });
+
+    if (response.data.ok != true) {
+      return NextResponse.json({status: 401});
     }
+
+    const userId = response.data.userId;
 
     const body = await request.json().catch(() => ({}));
     const mapCode = typeof body?.map_code === "string" ? body.map_code : "";
@@ -39,7 +48,7 @@ export async function POST(request) {
       );
     }
 
-    if (existing.userId !== auth.user.id) {
+    if (existing.userId !== userId) {
       return NextResponse.json(
         { error: "Forbidden" },
         { status: 403 }

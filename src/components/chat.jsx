@@ -191,29 +191,26 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
     }
   }
 
-  const MessageBubble = ({ content, index }) => {
-    const isUser = index % 2 === 0;
-
-    return (
-      <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
+const MessageBubble = ({ content, index }) => {
+  const isUser = index % 2 === 0;
+  return (
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3 px-2 sm:px-0`}>
       <div 
-      className={`max-w-[85%] p-3 rounded-xl shadow-sm text-base break-words ${
-        isUser 
-          ? 'bg-primary text-primary-foreground rounded-br-none' // User: Primary background, text is primary-foreground
-          : 'bg-muted text-muted-foreground rounded-tl-none' // Assistant: Muted background, text is muted-foreground
-      }`}
-      style={{ borderRadius: `var(--radius)` }} // Use shadcn radius variable
+        className={`max-w-[90%] sm:max-w-[85%] p-2.5 sm:p-3 rounded-xl shadow-sm text-sm sm:text-base break-words ${
+          isUser 
+            ? 'bg-primary text-primary-foreground rounded-br-none'
+            : 'bg-muted text-muted-foreground rounded-tl-none'
+        }`}
+        style={{ borderRadius: `var(--radius)` }}
       >
-      {content}
+        {content}
       </div>
-      </div>
-    );
-  };
+    </div>
+  );
+};
 
 return (
-    // Outer container: Full height, flexible column layout
-    <div className="flex h-full px-2 flex-col justify-between bg-sidebar text-sidebar-foreground rounded-lg" style={{ borderRadius: `var(--radius)` }}> 
-
+    <div className="flex h-full px-1 sm:px-2 flex-col justify-between bg-sidebar text-sidebar-foreground rounded-lg" style={{ borderRadius: `var(--radius)` }}> 
       <ToastContainer
         position="top-center"
         autoClose={3000}
@@ -227,17 +224,16 @@ return (
         theme={theme}
         transition={Zoom}
       />
-
+      
       {/* Message Area: Takes remaining space, scrollable */}
       <div className="flex-grow overflow-y-auto pt-2 pb-4"> 
-        
         {messages.length === 0 ? (
           // Welcome message when no messages are present
           <div className="flex flex-col h-full items-center justify-center text-muted-foreground text-center px-4">
-            <div className="text-2xl font-semibold mb-3">
+            <div className="text-xl sm:text-2xl font-semibold mb-3">
               Manaska
             </div>
-            Enter your thoughts to generate mindmap...
+            <p className="text-sm sm:text-base">Enter your thoughts to generate mindmap...</p>
           </div>
         ) : (
           // Messages loop: Render all string messages
@@ -252,28 +248,29 @@ return (
           </div>
         )}
       </div>
-
+      
       {/* Input Area: Fixed at the bottom */}
       <div className="px-1 py-2 flex items-end gap-x-2 border-t border-sidebar-border"> 
         <Textarea 
           value={input} 
           onChange={handleInputChange} 
-          className="max-h-40 flex-grow" // flex-grow for responsiveness
+          className="max-h-32 sm:max-h-40 flex-grow text-sm sm:text-base" 
           placeholder="Ask away..."
+          rows={2}
         />
         <div className="flex flex-col gap-y-2 items-center justify-center">
           {/* File Input */}
-          <Label className="border border-sidebar-border p-2 rounded-full cursor-pointer bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80 transition-colors h-10 w-10 flex items-center justify-center">
-            { !processingFile && <File className="size-4"/>}
-            { processingFile && <span className="animate-spin text-lg">⚙️</span>}
+          <Label className="border border-sidebar-border p-1.5 sm:p-2 rounded-full cursor-pointer bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80 transition-colors h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center">
+            {!processingFile && <File className="w-3.5 h-3.5 sm:w-4 sm:h-4"/>}
+            {processingFile && <span className="animate-spin text-base sm:text-lg">⚙️</span>}
             <Input type="file" className="hidden" onChange={handleFileInput} accept="image/*, application/pdf, .pdf, .jpg, .jpeg, .png"/>
           </Label>
           {/* Send Button */}
           <Button 
-            className="rounded-full w-10 h-10 flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" 
+            className="rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 p-0" 
             onClick={handlePrompt}
           >
-            <ArrowBigRight className="size-5"/>
+            <ArrowBigRight className="w-4 h-4 sm:w-5 sm:h-5"/>
           </Button>
         </div>
       </div>
