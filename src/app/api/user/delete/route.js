@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "../../../../../db/db";
-import { users, map, invoice, feedback, userAPIKeys } from "../../../../../db/schema";
+import { users, maps, invoice, feedback, userAPIKeys } from "../../../../../db/schema";
 import { eq } from "drizzle-orm";
 import { verifyAuth } from "../../../../utils/verifyAuth";
 
@@ -17,7 +17,7 @@ export async function DELETE(req) {
 
     try {
       await db.transaction(async (tx) => {
-        await tx.delete(map).where(eq(map.userId, userId));
+        await tx.delete(maps).where(eq(maps.userId, userId));
         await tx.delete(invoice).where(eq(invoice.userId, userId));
         await tx.delete(feedback).where(eq(feedback.userId, userId));
         await tx.delete(userAPIKeys).where(eq(userAPIKeys.userId, userId));

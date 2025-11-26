@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 // Check strict relative paths. If using Next.js aliases, '@/db/db' is safer.
 import { db } from "../../../../../db/db"; 
 // Alias 'map' to 'mapTable' to avoid conflict with JS Map or Array.map
-import { map as mapTable } from "../../../../../db/schema"; 
+import { maps } from "../../../../../db/schema"; 
 import { verifyAuth } from "../../../../utils/verifyAuth";
 
 export async function POST(request) {
@@ -30,8 +30,8 @@ export async function POST(request) {
     // Fetch the map to check ownership
     const [currentMap] = await db
       .select()
-      .from(mapTable)
-      .where(eq(mapTable.id, mapId));
+      .from(maps)
+      .where(eq(maps.id, mapId));
 
     if (!currentMap) {
       return NextResponse.json(
@@ -52,9 +52,9 @@ export async function POST(request) {
     // 1. If currently pinned, just unpin it.
     if (currentMap.pinned) {
       const [updated] = await db
-        .update(mapTable)
+        .update(maps)
         .set({ pinned: false, updatedAt: now })
-        .where(eq(mapTable.id, mapId))
+        .where(eq(maps.id, mapId))
         .returning();
 
       return NextResponse.json(
@@ -70,15 +70,15 @@ export async function POST(request) {
     // 2. If pinning: First, unpin ALL other maps for this user (Single Pin Mode)
     // This ensures only one map is pinned at a time.
     await db
-      .update(mapTable)
+      .update(maps)
       .set({ pinned: false, updatedAt: now })
-      .where(eq(mapTable.userId, auth.user.id));
+      .where(eq(maps.userId, auth.user.id));
 
     // 3. Then, pin the requested map
     const [updated] = await db
-      .update(mapTable)
+      .update(maps)
       .set({ pinned: true, updatedAt: now })
-      .where(eq(mapTable.id, mapId))
+      .where(eq(maps.id, mapId))
       .returning();
 
     return NextResponse.json(

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "../../../../../db/db";
-import {map} from "../../../../../db/schema"
+import {maps} from "../../../../../db/schema"
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { generate_map } from "../../../../utils/generateMap"
@@ -64,12 +64,9 @@ export async function POST(request) {
         const title = mapAIData.title
         const mapCode = mapAIData.mapCode;
 
-        console.log("Title: ", title);
-        console.log("Map Code: ", mapCode);
-
         // Create map entry in database
         const [newMap] = await db
-            .insert(map)
+            .insert(maps)
             .values({
                 id: crypto.randomUUID(),
                 title: title || "Untitled Map",

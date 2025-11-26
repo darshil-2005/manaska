@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Brain,
   Loader2,
@@ -40,7 +40,6 @@ function formatTimestamp(value) {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [maps, setMaps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -136,7 +135,7 @@ export default function DashboardPage() {
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [fetchMaps]);
-
+/*
   const refreshParam = searchParams.get("refresh");
   useEffect(() => {
     if (refreshParam) {
@@ -144,6 +143,7 @@ export default function DashboardPage() {
       router.replace("/dashboard");
     }
   }, [refreshParam, fetchMaps, router]);
+  */
 
   const filteredMaps = useMemo(() => {
     const term = searchTerm.toLowerCase();
