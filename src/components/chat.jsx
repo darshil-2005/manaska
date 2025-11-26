@@ -138,7 +138,7 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
 
         setScriptCode(scriptCode + "\n\n" + script);
         setInput("");
-        setMessages([...messages, fullPrompt, "Your Mindmap is generated, Check the canvas!!"]);
+        setMessages([...messages, fullPrompt, jsonMap]);
 
       } catch (error) {
         toast.error("Error generating mindmap. Please try again!");

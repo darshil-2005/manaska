@@ -42,5 +42,11 @@ next-env.d.ts
 
 .early.coverage
 
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+composer.lock
+Gemfile.lock
+
 __pycache__
 venv

@@ -14,7 +14,7 @@ router = APIRouter()
 def get_llm(model: str, api_key: str, temperature: float, max_tokens: int):
     if model.startswith("groq"):
         return ChatGroq(
-            model=model.replace("groq/", ""),
+            model=model,
             groq_api_key=api_key,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -22,7 +22,7 @@ def get_llm(model: str, api_key: str, temperature: float, max_tokens: int):
 
     if model.startswith("openai"):
         return ChatOpenAI(
-            model=model.replace("openai/", ""),
+            model=model,
             openai_api_key=api_key,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -30,7 +30,7 @@ def get_llm(model: str, api_key: str, temperature: float, max_tokens: int):
 
     if model.startswith("deepseek"):
         return ChatOpenAI(
-            model=model.replace("deepseek/", ""),
+            model=model,
             openai_api_key=api_key,
             openai_api_base="https://api.deepseek.com/v1",
             temperature=temperature,
