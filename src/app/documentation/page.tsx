@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link"
 import { ModeToggle } from "@/components/themeToggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import PrivacyPolicy from "./components/privacypolicy";
+import TermsAndConditions from "./components/termsandconditions";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -13,9 +15,6 @@ import NodeFormatDocs from "./components/NodeFormat";
 import MindmapTypesSection1 from "./components/templates";
 
 export default function DocsLayout() {
-    useEffect(() => {
-      document.title = "Documentation";
-    }, []);
   const [active, setActive] = useState("node-format");
   const [open, setOpen] = useState(false);
 
@@ -82,6 +81,8 @@ export default function DocsLayout() {
 
             {menuItem("node-format", "Node Format")}
             {menuItem("mindmap-templates", "Mindmap Templates")}
+            {menuItem("privacy-policy", "Privacy Policy")}
+            {menuItem("terms-and-conditions", "Terms And Conditions")}
           </nav>
         </SheetContent>
       </Sheet>
@@ -91,6 +92,8 @@ export default function DocsLayout() {
           <div className="max-w-4xl mx-auto">
             {active === "node-format" && <NodeFormatDocs />}
             {active === "mindmap-templates" && <MindmapTypesSection1 />}
+            {active === "privacy-policy" && <PrivacyPolicy/>}
+            {active === "terms-and-conditions" && <TermsAndConditions/>}
           </div>
         </ScrollArea>
       </main>
