@@ -54,6 +54,32 @@ export default function DashboardPage() {
   const [navigatingToCanvas, setNavigatingToCanvas] = useState(false);
 
   useEffect(() => {
+
+    async function fetchUser() {
+      try {
+
+        const response = await axios.get("/api/auth/me");
+
+        if (response.status != 200 || response.data.ok != true) {
+          router.push("/login");
+        }
+
+        setUser(response.data);
+
+      } catch (error) {
+        toast.error("Error Authenticating!!");
+        router.push("/login")
+      }
+    }
+
+    async function loadUser() {
+      await fetchUser();
+    }
+    loadUser();
+
+  }, []);
+
+  useEffect(() => {
     const warmUpCanvas = async () => {
       try {
         await Promise.all([
@@ -91,9 +117,9 @@ export default function DashboardPage() {
       setMaps(
         Array.isArray(data?.maps)
           ? data.maps.map((m) => ({
-              ...m,
-              pinned: m.pinned === true || m.pinned === "true" || m.pinned === 1,
-            }))
+            ...m,
+            pinned: m.pinned === true || m.pinned === "true" || m.pinned === 1,
+          }))
           : []
       );
     } catch (err) {
@@ -110,7 +136,7 @@ export default function DashboardPage() {
       if (!res.ok) return;
       const data = await res.json();
       setProfile(data?.profile ?? null);
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -135,15 +161,15 @@ export default function DashboardPage() {
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [fetchMaps]);
-/*
-  const refreshParam = searchParams.get("refresh");
-  useEffect(() => {
-    if (refreshParam) {
-      fetchMaps();
-      router.replace("/dashboard");
-    }
-  }, [refreshParam, fetchMaps, router]);
-  */
+  /*
+    const refreshParam = searchParams.get("refresh");
+    useEffect(() => {
+      if (refreshParam) {
+        fetchMaps();
+        router.replace("/dashboard");
+      }
+    }, [refreshParam, fetchMaps, router]);
+    */
 
   const filteredMaps = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -158,10 +184,10 @@ export default function DashboardPage() {
 
     return term
       ? sorted.filter(
-          (m) =>
-            (m.title || "").toLowerCase().includes(term) ||
-            (m.description || "").toLowerCase().includes(term)
-        )
+        (m) =>
+          (m.title || "").toLowerCase().includes(term) ||
+          (m.description || "").toLowerCase().includes(term)
+      )
       : sorted;
   }, [maps, searchTerm]);
 
@@ -434,9 +460,9 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 lg:mb-16">
           {/* Logo and Title */}
           <div className="flex gap-4 sm:gap-6 items-center sm:items-start w-full sm:w-auto">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl shrink-0">
+            {/* <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl shrink-0">
               <Brain className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white dark:text-black" />
-            </div>
+            </div> */}
 
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight truncate">
@@ -456,8 +482,8 @@ export default function DashboardPage() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button 
-                  id="user-menu-button" 
+                <button
+                  id="user-menu-button"
                   className="relative rounded-full w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black shadow-xl transition-transform hover:scale-105 active:scale-95"
                 >
                   {profile?.image ? (

@@ -42,6 +42,30 @@ export default function RegisterPage() {
     agree: false,
   });
 
+  useEffect(() => {
+     
+      async function fetchUser() {
+        try {
+  
+          const response = await axios.get("/api/auth/me");
+  
+          if (response.status === 200 && response.data.ok === true) {
+            router.push("/dashboard");
+          }
+  
+  
+        } catch(error) {
+          console.log("User not found.");
+        }
+      }
+  
+      async function loadUser() {
+        await fetchUser();
+      }
+      loadUser();
+  
+    }, [router]);
+
   const [termsError, setTermsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
