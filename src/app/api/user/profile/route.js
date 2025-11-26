@@ -3,6 +3,8 @@ import { db } from "../../../../../db/db";
 import { users } from "../../../../../db/schema";
 import { eq } from "drizzle-orm";
 import { verifyAuth } from "../../../../utils/verifyAuth";
+import {cookies} from "next/headers"
+import axios from 'axios'
 
 const PUBLIC_FIELDS = ["id", "name", "username", "email", "image", "coins", "createdAt"];
 const ALLOWED_UPDATE_FIELDS = new Set(["name", "username", "image"]);
@@ -15,12 +17,21 @@ function pick(obj, keys) {
 
 export async function GET(req) {
   try {
-    const auth = await verifyAuth(req);
-    if (!auth.valid) {
-      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: 401 });
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+      headers: {
+        Cookie: cookieHeader,
+      }
+    });
+
+    if (response.data.ok != true) {
+      return NextResponse.json({status: 401});
     }
 
-    const userId = auth.user.id;
+    const userId = response.data.userId;
+
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -35,11 +46,21 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const auth = await verifyAuth(req);
-    if (!auth.valid) {
-      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: 401 });
+  
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
+
+  const user = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+    headers: {
+      Cookie: cookieHeader,
     }
-    const userId = auth.user.id;
+  });
+
+  if (user.data.ok != true) {
+    return NextResponse.json({status: 401})
+  }
+
+   const userId = user.data.userId;
 
     const body = await req.json().catch(() => ({}));
     if (!body || typeof body !== "object") {

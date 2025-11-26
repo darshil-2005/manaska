@@ -9,4 +9,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db),
   providers: [Google, GitHub],
   secret: process.env.AUTH_SECRET,
+  experimental: {
+    allowDangerousEmailAccountLinking: true,
+  }
 })

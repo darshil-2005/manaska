@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -58,10 +58,32 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
 
-
-
   const router = useRouter();
 
+  useEffect(() => {
+
+    async function fetchUser() {
+      try {
+
+        const response = await axios.get("/api/auth/me");
+
+        if (response.status === 200 && response.data.ok === true) {
+          router.push("/dashboard");
+        }
+
+        
+
+      } catch (error) {
+        console.log("User not found.");
+      }
+    }
+
+    async function loadUser() {
+      await fetchUser();
+    }
+    loadUser();
+
+  }, [router]);
 
   // Smart validation for the "Email or username" field
   const emailCheck = useMemo(() => {
@@ -163,7 +185,7 @@ export default function LoginPage() {
         closeOnClick
         theme={theme}
       />
-      
+
       <div className="w-full max-w-5xl bg-background shadow-lg rounded-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden border border-border">
         {/* LEFT PANEL */}
         <LeftPanel />
@@ -219,7 +241,7 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-      
+
                   disabled={isAnyLoading} // Disable input fields while any login is pending
                 />
                 <Button
