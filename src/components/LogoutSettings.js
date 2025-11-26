@@ -96,7 +96,7 @@ export default function LogoutSettings() {
 
 
           {/* --- Delete Account --- */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
+          {/* <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-6 first:pt-0">
             <div>
               <h3 className="text-lg font-medium text-red-600 dark:text-red-400">Delete account</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md">
@@ -112,7 +112,7 @@ export default function LogoutSettings() {
             >
               {isDeleting ? 'Deleting...' : 'Delete account'}
             </Button>
-          </div>
+          </div> */}
 
         </CardContent>
       </Card>
