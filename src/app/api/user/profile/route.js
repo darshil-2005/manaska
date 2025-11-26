@@ -35,11 +35,21 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const auth = await verifyAuth(req);
-    if (!auth.valid) {
-      return NextResponse.json({ error: auth.error || "Unauthorized" }, { status: 401 });
+  
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
+
+  const user = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+    headers: {
+      Cookie: cookieHeader,
     }
-    const userId = auth.user.id;
+  });
+
+  if (user.data.ok != true) {
+    return NextResponse.json({status: 401})
+  }
+
+   const userId = auth.data.userId;
 
     const body = await req.json().catch(() => ({}));
     if (!body || typeof body !== "object") {
