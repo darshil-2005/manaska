@@ -140,7 +140,7 @@ Topic: ${prompt}
     console.log("Parsed mindmap JSON generated successfully!");
 
     // Convert mindmap to DSL for storage
-    const { parseMindmapToDSL } = await import("../../../utils/parseJsonToDSL.js");
+    const { parseMindmapToDSL } = await import("../../../utils/parseMindmapToDSL.js");
     const dslCode = parseMindmapToDSL(parsed);
 
     // Create map entry in database

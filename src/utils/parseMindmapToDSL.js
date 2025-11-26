@@ -1,16 +1,16 @@
 /*
- * @file parseJsonToDSL.js
+ * @file parseMindmapToDSL.js
  *
  * @brief 
- * Contains the central function parseJsonToDSL and a bunch of its helper functions.
+ * Contains the central function parseMindmapToDSL and a bunch of its helper functions.
  *
  * @details
- * This file implements the central callable function parseJsonToDSL() and helper functions as listed below:
+ * This file implements the central callable function parseMindmapToDSL() and helper functions as listed below:
  * - buildNodes()
  * - buildConnections()
  * - extractNodesAndConnections()
  *
- * The parseJsonToDSL() function takes in a mindmap in json format and processes it completely to convert it into
+ * The parseMindmapToDSL() function takes in a mindmap in json format and processes it completely to convert it into
  * custom DSL script as defined in the Manaska docs.
  *
  * The function can arrange mindmap in 3 ways:
