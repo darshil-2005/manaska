@@ -106,6 +106,8 @@ export default function DashboardPage() {
         },
       });
 
+      console.log("Response: ", res)
+
       if (res.status === 401) {
         router.push("/login");
         return;
