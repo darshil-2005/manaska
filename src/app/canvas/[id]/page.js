@@ -378,7 +378,6 @@ export default function MindMapDesigner({params}) {
       
       {/* Header Actions */}
       <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 flex-wrap">
-        {/* Coordinates - Hidden on very small screens */}
         <div className="hidden sm:block">
           <CoordinatesDisplay coordinates={coordinates}/>
         </div>
