@@ -2,7 +2,7 @@ import {Textarea} from "../components/ui/textarea.tsx"
 import {Button} from "../components/ui/button.tsx"
 import {Input} from "../components/ui/input.tsx"
 import {Label} from "../components/ui/label.tsx"
-import { ArrowBigRight, File } from "lucide-react"
+import { ArrowBigRight, File, Loader2 } from "lucide-react" 
 import { useState, useEffect } from "react"
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import { useTheme } from "next-themes"
@@ -18,6 +18,10 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
   const [parsedFiles, setParsedFiles] = useState([]);
   const [processingFile, setProcessingFile] = useState(false);
   const [jsonMap, setJsonMap] = useState(undefined);
+  const [isLoading, setIsLoading] = useState(false); 
+
+  
+  const isBusy = isLoading || processingFile;
 
   useEffect(() => {
     if (messages.length > 1) {
@@ -69,13 +73,11 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
 
     try {
       if (file.type.startsWith("image")) {
-
         const formData = new FormData();
         formData.append('file', file);
         response = await axios.post(`${process.env.NEXT_PUBLIC_FILE_CHAT_SERVER}/extract-image`, formData);
       }
       else if (file.type == "application/pdf") {
-
         const formData = new FormData();
         formData.append('file', file);
         response = await axios.post(`${process.env.NEXT_PUBLIC_FILE_CHAT_SERVER}/extract-pdf`, formData);
@@ -91,12 +93,10 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
       setParsedFiles([...parsedFiles, output]);
 
     } catch (error) {
-
       console.error("File processing failed:", error);
       toast.error("File parsing failed!");
       return -1;
     } finally {
-
       setProcessingFile(false);
     }
   }
@@ -104,6 +104,8 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
   async function handlePrompt() {
 
     const prompt = input;
+
+    if (isBusy) return;
 
     if (!prompt) {
       toast.error("No input prompt.");
@@ -117,13 +119,14 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
         return -1;
       }
 
+      setIsLoading(true);
+
       const fileInput = parsedFiles.join("\n");
       const fullPrompt = fileInput + "\n" + input;
 
       let response;
 
       try {
-
         const data = {
           model: "gemini-2.5-flash",
           api_key: process.env.NEXT_PUBLIC_TEMP_API_KEY || "No-key",
@@ -149,6 +152,8 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
       } catch (error) {
         toast.error("Error generating mindmap. Please try again!");
         return -1;
+      } finally {
+        setIsLoading(false);
       }
     }
     else if (messages.length > 0) {
@@ -167,10 +172,11 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
         return -1;
       }
 
+      setIsLoading(true);
+
       let response;
 
       try {
-
         const data = {
           model: "gemini-2.5-flash",
           api_key: process.env.NEXT_PUBLIC_TEMP_API_KEY,
@@ -187,29 +193,31 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
       } catch (error) {
         toast.error("Error processing prompt!!");
         return -1;
+      } finally {
+        setIsLoading(false);
       }
     }
   }
 
-const MessageBubble = ({ content, index }) => {
-  const isUser = index % 2 === 0;
-  return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3 px-2 sm:px-0`}>
-      <div 
-        className={`max-w-[90%] sm:max-w-[85%] p-2.5 sm:p-3 rounded-xl shadow-sm text-sm sm:text-base break-words ${
-          isUser 
-            ? 'bg-primary text-primary-foreground rounded-br-none'
-            : 'bg-muted text-muted-foreground rounded-tl-none'
-        }`}
-        style={{ borderRadius: `var(--radius)` }}
-      >
-        {content}
+  const MessageBubble = ({ content, index }) => {
+    const isUser = index % 2 === 0;
+    return (
+      <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3 px-2 sm:px-0`}>
+        <div 
+          className={`max-w-[90%] sm:max-w-[85%] p-2.5 sm:p-3 rounded-xl shadow-sm text-sm sm:text-base break-words ${
+            isUser 
+              ? 'bg-primary text-primary-foreground rounded-br-none'
+              : 'bg-muted text-muted-foreground rounded-tl-none'
+          }`}
+          style={{ borderRadius: `var(--radius)` }}
+        >
+          {content}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-return (
+  return (
     <div className="flex h-full px-1 sm:px-2 flex-col justify-between bg-sidebar text-sidebar-foreground rounded-lg" style={{ borderRadius: `var(--radius)` }}> 
       <ToastContainer
         position="top-center"
@@ -225,10 +233,8 @@ return (
         transition={Zoom}
       />
       
-      {/* Message Area: Takes remaining space, scrollable */}
       <div className="flex-grow overflow-y-auto pt-2 pb-4"> 
         {messages.length === 0 ? (
-          // Welcome message when no messages are present
           <div className="flex flex-col h-full items-center justify-center text-muted-foreground text-center px-4">
             <div className="text-xl sm:text-2xl font-semibold mb-3">
               Manaska
@@ -236,7 +242,6 @@ return (
             <p className="text-sm sm:text-base">Enter your thoughts to generate mindmap...</p>
           </div>
         ) : (
-          // Messages loop: Render all string messages
           <div className="h-full space-y-4">
             {messages.map((messageContent, index) => (
               <MessageBubble 
@@ -249,7 +254,6 @@ return (
         )}
       </div>
       
-      {/* Input Area: Fixed at the bottom */}
       <div className="px-1 py-2 flex items-end gap-x-2 border-t border-sidebar-border"> 
         <Textarea 
           value={input} 
@@ -257,20 +261,45 @@ return (
           className="max-h-32 sm:max-h-40 flex-grow text-sm sm:text-base" 
           placeholder="Ask away..."
           rows={2}
+         
+          disabled={isBusy}
         />
         <div className="flex flex-col gap-y-2 items-center justify-center">
-          {/* File Input */}
-          <Label className="border border-sidebar-border p-1.5 sm:p-2 rounded-full cursor-pointer bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80 transition-colors h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center">
+          
+          
+          <Label 
+          
+            className={`border border-sidebar-border p-1.5 sm:p-2 rounded-full cursor-pointer bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80 transition-colors h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center ${
+              isBusy ? 'opacity-50 pointer-events-none' : ''
+            }`}
+          >
+            
             {!processingFile && <File className="w-3.5 h-3.5 sm:w-4 sm:h-4"/>}
             {processingFile && <span className="animate-spin text-base sm:text-lg">⚙️</span>}
-            <Input type="file" className="hidden" onChange={handleFileInput} accept="image/*, application/pdf, .pdf, .jpg, .jpeg, .png"/>
+            
+            <Input 
+              type="file" 
+              className="hidden" 
+              onChange={handleFileInput} 
+              accept="image/*, application/pdf, .pdf, .jpg, .jpeg, .png"
+             
+              disabled={isBusy}
+            />
           </Label>
-          {/* Send Button */}
+
+         
           <Button 
             className="rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 p-0" 
             onClick={handlePrompt}
+            
+            disabled={isBusy}
           >
-            <ArrowBigRight className="w-4 h-4 sm:w-5 sm:h-5"/>
+             
+             {isLoading ? (
+               <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin"/>
+             ) : (
+               <ArrowBigRight className="w-4 h-4 sm:w-5 sm:h-5"/>
+             )}
           </Button>
         </div>
       </div>

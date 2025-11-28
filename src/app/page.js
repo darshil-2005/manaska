@@ -9,14 +9,44 @@ export default function HomePage() {
   const [showExamples, setShowExamples] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const [activeSection, setActiveSection] = useState("");
+
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["features", "how", "use-cases"];
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            setActiveSection(section);
+            break; 
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [mobileMenuOpen]);
+  
   useEffect(() => {
     document.title = "Manaska";
   }, []);
 
   return (
     <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      {/* Navbar - Fully Responsive */}
-      <header className="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-300 dark:border-gray-800">
         <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-6">
           <div className="flex items-center space-x-2 sm:space-x-3">
             <div className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-black dark:bg-white text-white dark:text-black rounded-lg font-bold shadow-md flex items-center justify-center text-sm sm:text-base lg:text-lg">
@@ -25,17 +55,35 @@ export default function HomePage() {
             <h1 className="font-semibold text-sm sm:text-base lg:text-lg">Manaska</h1>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-6 xl:space-x-8 text-gray-600 dark:text-gray-400 font-medium text-sm">
-            <Link href="#features" className="hover:text-black dark:hover:text-white transition">Features</Link>
-            <Link href="#how" className="hover:text-black dark:hover:text-white transition">How it Works</Link>
-            <Link href="#use-cases" className="hover:text-black dark:hover:text-white transition">Use Cases</Link>
-          </nav>
+        
+         {/* Desktop Navigation */}
+        <nav className="hidden lg:flex space-x-6 xl:space-x-8 text-gray-600 dark:text-gray-400 font-medium text-sm">
+          <Link 
+            href="#features" 
+            className={`transition ${activeSection === "features" ? "text-black dark:text-white font-bold" : "hover:text-black dark:hover:text-white"}`}
+          >
+            Features
+          </Link>
+          <Link 
+            href="#how" 
+            className={`transition ${activeSection === "how" ? "text-black dark:text-white font-bold" : "hover:text-black dark:hover:text-white"}`}
+          >
+            How it Works
+          </Link>
+          <Link 
+            href="#use-cases" 
+            className={`transition ${activeSection === "use-cases" ? "text-black dark:text-white font-bold" : "hover:text-black dark:hover:text-white"}`}
+          >
+            Use Cases
+          </Link>
+        </nav>
 
           {/* Desktop Auth Buttons */}
           <div className="hidden sm:flex items-center gap-2 lg:gap-4">
-            <ModeToggle />
-            <Link href="/login" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition px-3 lg:px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm lg:text-base">
+            <div className="scale-125 sm:scale-140">
+                <ModeToggle />
+            </div>
+            <Link href="/login" className="bg-black dark:bg-white text-white dark:text-black px-3 sm:px-4 lg:px-6 py-2 lg:py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition text-xs sm:text-sm lg:text-base whitespace-nowrap">
               Sign In
             </Link>
             <Link href="/register" className="bg-black dark:bg-white text-white dark:text-black px-3 sm:px-4 lg:px-6 py-2 lg:py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition text-xs sm:text-sm lg:text-base whitespace-nowrap">
@@ -59,50 +107,88 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+       {/* Full Screen Mobile Menu Overlay */}
         {mobileMenuOpen && (
-          <div className="sm:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-            <nav className="flex flex-col px-4 py-3 space-y-3">
-              <Link
-                href="#features"
-                className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition py-2 text-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Features
-              </Link>
-              <Link
-                href="#how"
-                className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition py-2 text-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                How it Works
-              </Link>
-              <Link
-                href="#use-cases"
-                className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition py-2 text-sm"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Use Cases
-              </Link>
-              <div className="pt-3 border-t border-gray-200 dark:border-gray-800 space-y-2">
-                <div className="flex justify-center mb-2">
-                  <ModeToggle />
+          <>
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 sm:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+
+           
+            <div className="absolute top-full left-0 right-0 z-50 p-4 sm:hidden animate-in slide-in-from-top-2 fade-in duration-200">
+              
+          
+              <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl ring-1 ring-black/5 overflow-hidden max-w-md mx-auto">
+                
+          
+                <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-black dark:bg-white text-white dark:text-black rounded-md flex items-center justify-center font-bold text-xs">
+                      M
+                    </div>
+                    <span className="font-semibold text-sm">Manaska</span>
+                  </div>
+                  <button 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-1.5 bg-gray-100 dark:bg-gray-900 rounded-full text-gray-500 hover:text-black dark:hover:text-white transition"
+                    aria-label="Close menu"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
-                <Link
-                  href="/login"
-                  className="block text-center text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-sm"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className="block text-center bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-semibold shadow-lg text-sm"
-                >
-                  Try Free →
-                </Link>
+
+               
+                <nav className="flex flex-col p-4 space-y-2 text-center">
+                  <Link
+                    href="#features"
+                    className="py-2.5 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Features
+                  </Link>
+                  <Link
+                    href="#how"
+                    className="py-2.5 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    How it Works
+                  </Link>
+                  <Link
+                    href="#use-cases"
+                    className="py-2.5 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Use Cases
+                  </Link>
+                  
+                
+                  <div className="w-full h-px bg-gray-200 dark:bg-gray-800 my-2"></div>
+
+                  
+                  <div className="flex flex-col gap-3 pt-1">
+                    <div className="flex justify-center scale-110 pb-2">
+                       <ModeToggle />
+                    </div>
+                    <Link
+                      href="/login"
+                     className="w-full py-2.5 rounded-xl font-semibold bg-black dark:bg-white text-white dark:text-black shadow-lg hover:opacity-90 transition text-sm"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="w-full py-2.5 rounded-xl font-semibold bg-black dark:bg-white text-white dark:text-black shadow-lg hover:opacity-90 transition text-sm"
+                    >
+                      Register Now
+                    </Link>
+                  </div>
+                </nav>
               </div>
-            </nav>
-          </div>
+            </div>
+          </>
         )}
       </header>
 
@@ -118,7 +204,7 @@ export default function HomePage() {
         <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
           <button
             onClick={() => setShowExamples(!showExamples)}
-            className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-black dark:text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition text-sm sm:text-base w-full sm:w-auto"
+            className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-lg font-semibold shadow-lg hover:scale-105 transition text-sm sm:text-base w-full sm:w-auto"
           >
             See Examples
           </button>
@@ -346,29 +432,8 @@ export default function HomePage() {
               </p>
             </div>
 
+
             {/* FAQ Item 3 */}
-            <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 sm:p-6">
-              <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-2 sm:mb-3 flex items-center justify-between gap-4">
-                Is there a free plan?
-                <span className="text-gray-400 shrink-0 text-xl sm:text-2xl">+</span>
-              </h3>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                Yes! Our free plan includes 5 mind maps per month with basic export options. No credit card required to get started.
-              </p>
-            </div>
-
-            {/* FAQ Item 4 */}
-            <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 sm:p-6">
-              <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-2 sm:mb-3 flex items-center justify-between gap-4">
-                Can I collaborate with team members?
-                <span className="text-gray-400 shrink-0 text-xl sm:text-2xl">+</span>
-              </h3>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                Team collaboration is available on our Pro and Business plans. Share mind maps, comment, and work together in real-time.
-              </p>
-            </div>
-
-            {/* FAQ Item 5 */}
             <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 sm:p-6">
               <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-2 sm:mb-3 flex items-center justify-between gap-4">
                 How secure is my data?
@@ -380,11 +445,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="text-center mt-8 sm:mt-12 px-4">
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-              Still have questions? <a href="/contact" className="text-black dark:text-white font-semibold hover:underline ml-1">Contact our team</a>
-            </p>
-          </div>
+          
         </div>
       </section>
 
@@ -392,7 +453,7 @@ export default function HomePage() {
       <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-6 text-center bg-black dark:bg-[#0a0a0a] text-white dark:text-gray-200">
         <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Ready to Get Started?</h2>
         <Link href="/register" className="bg-white dark:bg-black text-black dark:text-white font-semibold px-6 sm:px-8 py-3 rounded-lg shadow-lg hover:scale-105 transition inline-flex items-center gap-2 text-sm sm:text-base">
-          Start Free Now →
+          Register Now
         </Link>
       </section>
 
