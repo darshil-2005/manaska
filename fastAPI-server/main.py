@@ -40,6 +40,7 @@ app.add_middleware(
 )
 
 _LANGS = os.environ.get("EASYOCR_LANGS", "en").split(",")
+API_KEY = os.environ.get('GEMINI_API_KEY')
 
 _use_gpu = bool(int(os.environ.get("EASYOCR_GPU", "0")))
 reader = easyocr.Reader(_LANGS, gpu=_use_gpu)  # this loads model into memory
@@ -389,7 +390,7 @@ Create a mindmap in the required JSON tree schema for this topic or content:
 
     reply = await _call_llm(
         model=body.model,
-        api_key=body.api_key,
+        api_key=API_KEY,
         messages=messages,
         max_tokens=body.max_tokens,
         temperature=body.temperature,
@@ -644,7 +645,7 @@ Final note
 
     explanation = await _call_llm(
         model=body.model,
-        api_key=body.api_key,
+        api_key=API_KEY,
         messages=messages,
         max_tokens=body.max_tokens,
         temperature=body.temperature,

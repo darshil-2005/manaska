@@ -27,8 +27,6 @@ export async function GET(request) {
 
       const userId = response.data.userId;
 
-
-       // Retrieve all maps for the user, ordered by most recent first
         const userMaps = await db
             .select()
             .from(maps)

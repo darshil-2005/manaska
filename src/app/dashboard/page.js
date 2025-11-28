@@ -79,7 +79,7 @@ export default function DashboardPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/canvas?ts=${Date.now()}`, {
+      const res = await fetch(`/api/canvas`, {
         cache: "no-store",
         headers: {
           "Cache-Control": "no-cache",
@@ -96,6 +96,7 @@ export default function DashboardPage() {
       }
 
       const data = await res.json();
+      
       setMaps(
         Array.isArray(data?.maps)
           ? data.maps.map((m) => ({
@@ -104,6 +105,7 @@ export default function DashboardPage() {
           }))
           : []
       );
+
     } catch (err) {
       console.error(err);
       setError("Unable to load your mind maps. Please try again.");
@@ -170,7 +172,15 @@ export default function DashboardPage() {
   const handleTogglePin = async (id) => {
     setPendingPinId(id);
     try {
-      
+
+      const res = await fetch("/api/user/pin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mapId: id }),
+      });
+
       if (res.status === 401) {
         router.push("/login");
         return;
@@ -195,7 +205,7 @@ export default function DashboardPage() {
             };
           }
 
-          return pinState ? { ...m, pinned: false } : m;
+          return m;
         });
       });
     } catch {
