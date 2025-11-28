@@ -125,7 +125,7 @@ export default function SettingsPage() {
 
         <header className="md:hidden flex items-center justify-between p-4 border-b dark:border-gray-800 bg-background sticky top-0 z-30">
           <Link href="/dashboard" className="flex items-center space-x-2">
-            <Brain className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+            {/* <Brain className="h-6 w-6 text-indigo-600 dark:text-indigo-400" /> */}
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Manaska</h2>
           </Link>
           <button
@@ -153,7 +153,7 @@ export default function SettingsPage() {
             href="/dashboard"
             className="hidden md:flex items-center space-x-2.5 mb-6 px-2 group"
           >
-            <Brain className="h-6 w-6 text-gray-800 dark:text-gray-200 transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
+            {/* <Brain className="h-6 w-6 text-gray-800 dark:text-gray-200 transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400" /> */}
             <h2 className="text-xl font-semibold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
               Manaska
             </h2>
