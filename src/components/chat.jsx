@@ -129,7 +129,7 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
       try {
         const data = {
           model: "gemini-2.5-flash",
-          api_key: process.env.NEXT_PUBLIC_TEMP_API_KEY,
+          api_key: process.env.NEXT_PUBLIC_TEMP_API_KEY || "No-key",
           topic: fullPrompt,
           max_tokens: 800,
           temperature: 0.2,

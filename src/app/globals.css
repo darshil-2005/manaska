@@ -159,7 +159,7 @@
   display: none !important;
 }
 
-[title="Arrow — A or 5"], [title="Draw — P or 7"], [title="Insert image — 9"], [title="Line — L or 6"], .App-toolbar__extra-tools-trigger {
+[title="Draw — P or 7"], [title="Insert image — 9"], .App-toolbar__extra-tools-trigger {
   display: none !important;
 }
 

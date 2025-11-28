@@ -86,7 +86,7 @@ export default function DashboardPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/canvas?ts=${Date.now()}`, {
+      const res = await fetch(`/api/canvas`, {
         cache: "no-store",
         headers: {
           "Cache-Control": "no-cache",
@@ -103,6 +103,7 @@ export default function DashboardPage() {
       }
 
       const data = await res.json();
+      
       setMaps(
         Array.isArray(data?.maps)
           ? data.maps.map((m) => ({
@@ -111,6 +112,7 @@ export default function DashboardPage() {
             }))
           : []
       );
+
     } catch (err) {
       console.error(err);
       setError("Unable to load your mind maps. Please try again.");
@@ -184,14 +186,15 @@ export default function DashboardPage() {
   const handleTogglePin = async (id) => {
     setPendingPinId(id);
     try {
-      
-      const currentMap = maps.find((m) => m.id === id);
-      const res = await fetch(`/api/mindmap/${id}`, {
-         method: "PATCH",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ pinned: !currentMap?.pinned }),
+
+      const res = await fetch("/api/user/pin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mapId: id }),
       });
-      
+
       if (res.status === 401) {
         router.push("/login");
         return;
@@ -215,8 +218,8 @@ export default function DashboardPage() {
               updatedAt: data?.map?.updatedAt ?? m.updatedAt,
             };
           }
-        
-          return m;
+
+          return pinState ? { ...m, pinned: false } : m;
         });
       });
     } catch {
@@ -270,6 +273,7 @@ export default function DashboardPage() {
     setPendingDeleteId(id);
     try {
       const res = await fetch(`/api/mindmap/${id}`, { method: "DELETE" });
+      console.log("Response: ", res)
       if (!res.ok) throw new Error();
       setMaps((prev) => prev.filter((m) => m.id !== id));
       toast.success("Mind map deleted.");
@@ -465,9 +469,13 @@ export default function DashboardPage() {
       </div>
 
       <div className="relative max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
-        
+        {/* Header Section - Responsive */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 lg:mb-16">
           <div className="flex gap-4 sm:gap-6 items-center sm:items-start w-full sm:w-auto">
+            {/* <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl shrink-0">
+              <Brain className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white dark:text-black" />
+            </div> */}
+
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight truncate">
                 Manaska
@@ -518,7 +526,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-       
+        {/* Search and Actions Bar - Responsive */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 lg:mb-12">
           <div className="relative flex-1">
             <SearchIcon className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5" />
@@ -598,7 +606,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Mind Maps Grid */}
         {loading ? (
           <div className="flex justify-center py-16 sm:py-20 text-muted-foreground">
             <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mr-2" />

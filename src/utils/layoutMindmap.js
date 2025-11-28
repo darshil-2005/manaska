@@ -57,6 +57,7 @@ export function layoutMindmap(root, type, options = {}) {
     const copy = {
       id: node.id,
       label: node.label,
+      relation: node.relation || "",
       children: Array.isArray(node.children) ? node.children.map((c) => build(c, depth + 1)) : [],
       meta: { ...(node.meta || {}) },
       depth,
