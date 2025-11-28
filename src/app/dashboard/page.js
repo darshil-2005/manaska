@@ -250,6 +250,7 @@ export default function DashboardPage() {
     setPendingDeleteId(id);
     try {
       const res = await fetch(`/api/mindmap/${id}`, { method: "DELETE" });
+      console.log("Response: ", res)
       if (!res.ok) throw new Error();
       setMaps((prev) => prev.filter((m) => m.id !== id));
       toast.success("Mind map deleted.");
