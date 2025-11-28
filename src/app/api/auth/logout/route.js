@@ -12,15 +12,9 @@ export async function POST() {
       expires: new Date(0),
     });
 
-    response.cookies.set("__Secure-authjs.session-token", "", {
-      path: "/",
-      expires: new Date(0),
-    });
-
-    response.cookies.set("authjs.session-token", "", {
-      path: "/",
-      expires: new Date(0),
-    });
+    const res = await signOut({
+      redirect: false,
+    })
 
     return response;
   } catch (err) {

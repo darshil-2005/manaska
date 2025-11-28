@@ -171,7 +171,6 @@ export default function DashboardPage() {
     setPendingPinId(id);
     try {
       
-      
       if (res.status === 401) {
         router.push("/login");
         return;
@@ -435,15 +434,9 @@ export default function DashboardPage() {
       </div>
 
       <div className="relative max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
-        {/* Header Section - Responsive */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 lg:mb-16">
-          {/* Logo and Title */}
           <div className="flex gap-4 sm:gap-6 items-center sm:items-start w-full sm:w-auto">
-            {/* <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl shrink-0">
-              <Brain className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white dark:text-black" />
-            </div> */}
-
-            <div className="flex-1 min-w-0">
+                 <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight truncate">
                 Manaska
               </h1>
@@ -453,7 +446,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Actions - Theme Toggle and User Menu */}
           <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 self-end sm:self-auto">
             <div className="scale-110 sm:scale-125">
               <ModeToggle />
@@ -494,9 +486,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Search and Actions Bar - Responsive */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 lg:mb-12">
-          {/* Search Input */}
           <div className="relative flex-1">
             <SearchIcon className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5" />
             <input
@@ -507,7 +497,6 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-3 sm:gap-4">
             <Button
               id="refresh-maps-button"
@@ -551,7 +540,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Stats Cards - Responsive */}
         <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12 max-w-3xl">
           <Card className="rounded-xl sm:rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
             <CardHeader className="flex flex-row items-center justify-between pb-2 sm:pb-4">
@@ -576,7 +564,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Mind Maps Grid - Responsive */}
         {loading ? (
           <div className="flex justify-center py-16 sm:py-20 text-muted-foreground">
             <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin mr-2" />

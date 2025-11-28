@@ -113,7 +113,7 @@ export async function PATCH(request, { params }) {
     const [updatedMap] = await db
       .update(maps)
       .set(updates)
-      .where(eq(map.id, mapId))
+      .where(eq(maps.id, mapId))
       .returning();
 
     return NextResponse.json({ map: updatedMap });
