@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
 import {
@@ -33,6 +34,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/themeToggle.jsx";
 
+
 function formatTimestamp(value) {
   if (!value) return null;
   const date = new Date(value);
@@ -40,6 +42,8 @@ function formatTimestamp(value) {
 }
 
 export default function DashboardPage() {
+   const { theme } = useTheme();
+
     useEffect(() => {
     document.title = "Dashboard";
   }, []);
@@ -139,15 +143,6 @@ export default function DashboardPage() {
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [fetchMaps]);
-  /*
-    const refreshParam = searchParams.get("refresh");
-    useEffect(() => {
-      if (refreshParam) {
-        fetchMaps();
-        router.replace("/dashboard");
-      }
-    }, [refreshParam, fetchMaps, router]);
-    */
 
   const filteredMaps = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -175,12 +170,8 @@ export default function DashboardPage() {
   const handleTogglePin = async (id) => {
     setPendingPinId(id);
     try {
-      const res = await fetch("/api/user/pin", {
-        method: "POST",
-        body: JSON.stringify({ mapId: id }),
-        headers: { "Content-Type": "application/json" },
-      });
-
+      
+      
       if (res.status === 401) {
         router.push("/login");
         return;
@@ -426,7 +417,16 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <ToastContainer theme="dark" />
+      <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={true}
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={theme}
+        />
 
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-10%] right-[5%] w-[700px] h-[700px] rounded-full blur-[140px] bg-black/5 dark:bg-white/5" />

@@ -175,6 +175,7 @@ export default function ProfileSettings() {
               {isEditing && (
                 <Button
                   onClick={handleCancel}
+                  variant={"destructive"}
                   disabled={isSaving}
                 >
                   Cancel

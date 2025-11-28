@@ -222,8 +222,7 @@ export default function AccountSecuritySettings() {
 
               <div className="flex items-center justify-end space-x-2 pt-2">
                 <Button
-                  id="close-password-form"
-                  variant="outline"
+                  id="close-password-form" 
                   onClick={() => setIsChangePasswordSectionOpen(false)}
                 >
                   Close
