@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Head from "next/head";
+import { useState, useEffect, useRef, use } from 'react';
 import Link from 'next/link';
 import ProfileSettings from '@/components/ProfileSettings';
 import AccountSecuritySettings from '@/components/AccountSecuritySettings';
@@ -10,10 +9,12 @@ import APIKeysSettings from '@/components/APIKeysSettings';
 import { User, KeyRound, Palette, ShieldCheck, Brain, LogOut, Trash2, Menu, X, MessageSquare } from 'lucide-react';
 import LogoutSettings from '@/components/LogoutSettings';
 import DeleteAccountSettings from '@/components/DeleteAccountSettings';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from "next-themes";
 import FeedbackSettings from '@/components/FeedbackSettings';
+import { useRouter } from "next/navigation";
+import axios from 'axios';
 
 
 function SettingsNavLink({ href, icon: Icon, children, isActive, onClick }) {
@@ -55,6 +56,8 @@ export default function SettingsPage() {
   const { theme } = useTheme();
 
   const isManualScroll = useRef(false);
+
+  const router = useRouter();
 
   const handleNavClick = (sectionId) => {
     setActiveSection(sectionId);
@@ -114,33 +117,6 @@ export default function SettingsPage() {
       });
       mainEl.removeEventListener('scroll', handleScroll);
     };
-  }, []);
-
-  useEffect(() => {
-
-    async function fetchUser() {
-      try {
-
-        const response = await axios.get("/api/auth/me");
-
-        if (response.status != 200 || response.data.ok != true) {
-          router.push("/login");
-        }
-
-
-        setUser(response.data);
-
-      } catch (error) {
-        toast.error("Error Authenticating!!");
-        router.push("/login")
-      }
-    }
-
-    async function loadUser() {
-      await fetchUser();
-    }
-    loadUser();
-
   }, []);
 
   return (
@@ -267,7 +243,6 @@ export default function SettingsPage() {
         >
           <ProfileSettings />
           <AppearanceSettings />
-          <APIKeysSettings />
           <FeedbackSettings />
           <AccountSecuritySettings />
           <LogoutSettings />
