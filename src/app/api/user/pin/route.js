@@ -1,22 +1,28 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-
-// Check strict relative paths. If using Next.js aliases, '@/db/db' is safer.
 import { db } from "../../../../../db/db"; 
-// Alias 'map' to 'mapTable' to avoid conflict with JS Map or Array.map
 import { maps } from "../../../../../db/schema"; 
 import { verifyAuth } from "../../../../utils/verifyAuth";
+import {cookies} from "next/headers"
+import axios from 'axios'
 
 export async function POST(request) {
   try {
-    const auth = await verifyAuth(request);
-    if (!auth.valid) {
-      return NextResponse.json(
-        { error: auth.error || "Unauthorized" },
-        { status: 401 }
-      );
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await axios.get(`${process.env.BASE_URL}/api/auth/me`, {
+      headers: {
+        Cookie: cookieHeader,
+      }
+    });
+
+    if (response.data.ok != true) {
+      return NextResponse.json({status: 401});
     }
 
+    const userId = response.data.userId;
+ 
     const body = await request.json().catch(() => ({}));
     const { mapId } = body;
 
@@ -40,7 +46,7 @@ export async function POST(request) {
       );
     }
 
-    if (currentMap.userId !== auth.user.id) {
+    if (currentMap.userId !== userId) {
       return NextResponse.json(
         { error: "Forbidden" },
         { status: 403 }
@@ -66,13 +72,6 @@ export async function POST(request) {
         { status: 200 }
       );
     }
-
-    // 2. If pinning: First, unpin ALL other maps for this user (Single Pin Mode)
-    // This ensures only one map is pinned at a time.
-    await db
-      .update(maps)
-      .set({ pinned: false, updatedAt: now })
-      .where(eq(maps.userId, auth.user.id));
 
     // 3. Then, pin the requested map
     const [updated] = await db
