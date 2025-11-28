@@ -27,7 +27,8 @@ MAX_FILE_SIZE = 5 * 1024 * 1024
 app = FastAPI(title="PDF + Image OCR (EasyOCR)")
 
 origins = [
-    "http://localhost:3000",      # Allow localhost to request in development.
+    "http://localhost:3000", 
+    "https://manaska.vercel.app"    
 ]
 
 app.add_middleware(
