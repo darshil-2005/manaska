@@ -132,37 +132,6 @@ export default function ProfileSettings() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          
-          
-          <div className="space-y-3">
-            <Label>Profile Picture</Label>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src="https://placehold.co/80x80/6366f1/white?text=MA" alt="MA" />
-                <AvatarFallback className="text-lg bg-indigo-500 text-white">MA</AvatarFallback>
-              </Avatar>
-              <Input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/png, image/jpeg, image/webp"
-                onChange={handleFileSelect}
-              />
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  id="upload-profile-picture"
-                  onClick={() => fileInputRef.current.click()}
-                >
-                  Upload New
-                </Button>
-                <Button id="remove-profile-picture">
-                  Remove
-                </Button>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Update your profile picture. (Max 5MB: JPG, PNG, WEBP)</p>
-          </div>
-
           {/* Form Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Profile Information</h3>
@@ -192,6 +161,8 @@ export default function ProfileSettings() {
               <Input id="email" value={email} disabled readOnly />
               <p className="text-sm text-gray-500 dark:text-gray-400">Email address cannot be changed.</p>
             </div>
+
+            <div className="flex justify-end space-x-2">
             <Button
               id="edit-profile-button"
               className="float-right"
@@ -201,23 +172,14 @@ export default function ProfileSettings() {
               {isEditing ? (isSaving ? 'Saving...' : 'Save Changes') : 'Edit Profile'}
             </Button>
 
-            <div className="flex justify-end gap-3 mt-4">
               {isEditing && (
                 <Button
-                  
                   onClick={handleCancel}
                   disabled={isSaving}
                 >
                   Cancel
                 </Button>
-              )}
-              
-              <Button
-                onClick={handleToggleEdit}
-                disabled={isLoading || (isEditing && isSaving) || (isEditing && !hasChanges)}
-              >
-                {isEditing ? (isSaving ? 'Saving...' : 'Save Changes') : 'Edit Profile'}
-              </Button>
+              )}             
             </div>
             
           </div>
