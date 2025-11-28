@@ -55,35 +55,8 @@ export default function RegisterPage() {
   const [isGithubLoading, setIsGithubLoading] = useState(false);
 
   const {data} = useSession();
-
   const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
-
   const router = useRouter();
-
-  useEffect(() => {
-     
-      async function fetchUser() {
-        try {
-  
-          const response = await axios.get("/api/auth/me");
-  
-          if (response.status === 200 && response.data.ok === true) {
-            router.push("/dashboard");
-          }
-  
-          
-  
-        } catch(error) {
-          console.log("User not found.");
-        }
-      }
-  
-      async function loadUser() {
-        await fetchUser();
-      }
-      loadUser();
-  
-    }, [router]);
 
   const emailIsValid = useMemo(() => {
     return validateEmail(formData.email);

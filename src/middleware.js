@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
+  const homeRegex = /^\/$/
 
   // Helper: ask /api/auth/me if the user is authenticated
   async function isAuthenticated() {
@@ -27,6 +28,13 @@ export async function middleware(request) {
     } catch (err) {
       console.error("Auth check failed in middleware:", err);
       return false;
+    }
+  }
+
+  if (pathname.startsWith("/register") || pathname.startsWith("/login") || homeRegex.test(pathname)) {
+    const ok = await isAuthenticated();
+    if (ok) {
+      return NextResponse.redirect(new URL("/dashboard", request.url))
     }
   }
 

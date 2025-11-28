@@ -63,31 +63,6 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-
-    async function fetchUser() {
-      try {
-
-        const response = await axios.get("/api/auth/me");
-
-        if (response.status === 200 && response.data.ok === true) {
-          router.push("/dashboard");
-        }
-
-        
-
-      } catch (error) {
-        console.log("User not found.");
-      }
-    }
-
-    async function loadUser() {
-      await fetchUser();
-    }
-    loadUser();
-
-  }, [router]);
-
   // Smart validation for the "Email or username" field
   const emailCheck = useMemo(() => {
     const input = formData.email;
@@ -97,10 +72,7 @@ export default function LoginPage() {
     return { active: true, valid: validateEmail(input) };
   }, [formData.email]);
 
-
-  // Combined state to disable all buttons/inputs when any login is active
   const isAnyLoading = isLoading || isGoogleLoading || isGithubLoading;
-
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -115,8 +87,6 @@ export default function LoginPage() {
     setShowPassword((prev) => !prev);
   };
 
-
-  // --- Handler for standard form login ---
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -126,10 +96,7 @@ export default function LoginPage() {
       return;
     }
 
-
-    // Start loading state
     setIsLoading(true);
-
 
     try {
       const response = await axios.post(
@@ -144,8 +111,6 @@ export default function LoginPage() {
 
       toast.success("Login successful! Redirecting...");
 
-      // Keep isLoading=true until the redirect happens.
-      // We rely on the navigation to change the page, which clears the state.
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
@@ -156,15 +121,12 @@ export default function LoginPage() {
         error.response?.data?.message || "Invalid credentials. Please try again.";
       toast.error(message);
 
-      // Stop loading ONLY if the login failed and we remain on the page
       setIsLoading(false);
     }
   };
 
 
-  // --- Handler to trigger specific social loading state ---
   const handleSocialLogin = (provider) => {
-    // Disable all other elements by setting the specific provider's loading state
     if (provider === 'google') {
       setIsGoogleLoading(true);
       setIsGithubLoading(false);
@@ -172,7 +134,6 @@ export default function LoginPage() {
       setIsGithubLoading(true);
       setIsGoogleLoading(false);
     }
-    // No need to set it back to false, as the redirection handles the page change.
     console.log(`Starting login with ${provider}...`);
   };
 
@@ -180,7 +141,6 @@ export default function LoginPage() {
   return (
     
     <div className="min-h-screen flex items-center justify-center bg-muted/20 font-inter px-4 sm:px-6">
-      {/* --- TOAST CONTAINER --- */}
       <ToastContainer
         position="top-center"
         autoClose={8000}
@@ -191,13 +151,9 @@ export default function LoginPage() {
       />
 
       <div className="w-full max-w-5xl bg-background shadow-lg rounded-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden border border-border">
-        {/* LEFT PANEL */}
         <LeftPanel />
 
-
-        {/* RIGHT PANEL */}
         <div className="p-6 sm:p-10 md:p-12 flex flex-col justify-center">
-          {/* Header */}
           <div>
             <h2 className="text-3xl font-semibold mb-2 text-foreground text-center md:text-left">
               Welcome back
@@ -207,10 +163,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-
-          {/* LOGIN FORM */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email or username */}
             <div className="space-y-2">
               <Label htmlFor="email">Email or username</Label>
               <Input
@@ -222,7 +175,6 @@ export default function LoginPage() {
                 disabled={isAnyLoading} // Disable input fields while any login is pending
               />
 
-              {/* Conditional Email Validation */}
               {emailCheck.active && !emailCheck.valid && (
                 <PasswordRuleCheck
                   text="Must be a valid email format"
@@ -233,7 +185,6 @@ export default function LoginPage() {
             </div>
 
 
-            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
 
@@ -267,7 +218,6 @@ export default function LoginPage() {
             </div>
 
 
-            {/* Remember Me + Forgot Password */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 text-sm">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -297,7 +247,6 @@ export default function LoginPage() {
             </div>
 
 
-            {/* Submit Button */}
             <Button
               id="login-submit-button"
               type="submit"
@@ -312,7 +261,6 @@ export default function LoginPage() {
           </form>
 
 
-          {/* Divider */}
           <div className="my-6 flex items-center justify-center">
             <span className="text-muted-foreground text-sm">
               Or continue with
@@ -320,7 +268,6 @@ export default function LoginPage() {
           </div>
 
 
-          {/* SOCIAL LOGIN (GOOGLE / GITHUB) */}
           <Social
             onSocialClick={handleSocialLogin}
             isGoogleLoading={isGoogleLoading}
@@ -328,8 +275,6 @@ export default function LoginPage() {
             isAnyLoading={isAnyLoading} // Pass to disable the buttons
           />
 
-
-          {/* REGISTER LINK */}
           <div className="text-center text-muted-foreground text-sm mt-8">
             Don’t have an account?{" "}
             <Link
