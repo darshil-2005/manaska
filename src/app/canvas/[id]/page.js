@@ -118,33 +118,7 @@ export default function MindMapDesigner({params}) {
   const [showEditor, setShowEditor] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showExportPopover, setShowExportPopover] = useState(false);
-
-  useEffect(() => {
-   
-    async function fetchUser() {
-      try {
-
-        const response = await axios.get("/api/auth/me");
-
-        if (response.status != 200 || response.data.ok != true) {
-          router.push("/login");
-        }
-
-        setUser(response.data);
-
-      } catch(error) {
-        toast.error("Error Authenticating!!");
-        router.push("/login")
-      }
-    }
-
-    async function loadUser() {
-      await fetchUser();
-    }
-    loadUser();
-
-  }, []);
-
+  
   useEffect(() => {
 
     if (user == undefined || id == undefined) {
