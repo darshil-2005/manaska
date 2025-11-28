@@ -187,15 +187,7 @@ export default function SettingsPage() {
                 Appearance
               </SettingsNavLink>
 
-              <SettingsNavLink
-                href="#api-keys"
-                icon={KeyRound}
-                isActive={activeSection === 'api-keys'}
-                onClick={() => handleNavClick('api-keys')}
-              >
-                API Keys
-              </SettingsNavLink>
-
+             
               <SettingsNavLink
                 href="#feedback"
                 icon={MessageSquare}
