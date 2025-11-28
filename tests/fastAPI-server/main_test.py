@@ -136,6 +136,182 @@ def test_health():
     assert "easyocr_langs" in data
     assert "easyocr_gpu" in data
 
+    
+# /extract-pdf tests
+
+def test_extract_pdf_success(monkeypatch):
+    # Use DummyDoc with two pages
+    monkeypatch.setattr(main, "fitz", main.fitz)
+    monkeypatch.setattr(
+        main.fitz, "open", lambda stream, filetype=None: DummyDoc(["Page 1", "Page 2"])
+    )
+
+    pdf_bytes = b"%PDF-FAKE\n"
+    files = {"file": ("test.pdf", io.BytesIO(pdf_bytes), "application/pdf")}
+    r = client.post("/extract-pdf", files=files)
+    assert r.status_code == 200
+    j = r.json()
+    assert j["filename"] == "test.pdf"
+    assert "Page 1" in j["text"] and "Page 2" in j["text"]
+
+
+def test_extract_pdf_too_large_content(monkeypatch):
+    # Content > 3000 chars should 413
+    large_text = "x" * 4000
+    monkeypatch.setattr(
+        main.fitz, "open", lambda stream, filetype=None: DummyDoc([large_text])
+    )
+    pdf_bytes = b"%PDF-FAKE\n"
+    files = {"file": ("big.pdf", io.BytesIO(pdf_bytes), "application/pdf")}
+    r = client.post("/extract-pdf", files=files)
+    assert r.status_code == 413
+
+
+def test_extract_pdf_invalid_content_type():
+    files = {"file": ("test.txt", io.BytesIO(b"hello"), "text/plain")}
+    r = client.post("/extract-pdf", files=files)
+    assert r.status_code == 400
+    assert "File must be a PDF" in r.json()["detail"]
+
+
+def test_extract_pdf_too_large_header():
+    pdf_bytes = b"%PDF-FAKE\n"
+    files = {"file": ("big.pdf", io.BytesIO(pdf_bytes), "application/pdf")}
+    headers = {"content-length": str(main.MAX_FILE_SIZE + 1)}
+    r = client.post("/extract-pdf", files=files, headers=headers)
+    assert r.status_code == 413
+
+
+def test_extract_pdf_open_error(monkeypatch):
+    monkeypatch.setattr(main, "fitz", main.fitz)
+
+    def _bad_open(stream, filetype=None):
+        raise Exception("bad pdf")
+
+    monkeypatch.setattr(main.fitz, "open", _bad_open)
+
+    pdf_bytes = b"%PDF-FAKE\n"
+    files = {"file": ("bad.pdf", io.BytesIO(pdf_bytes), "application/pdf")}
+    r = client.post("/extract-pdf", files=files)
+    assert r.status_code == 400
+    assert "Unable to open PDF" in r.json()["detail"]
+
+
+def test_extract_pdf_get_text_fallback(monkeypatch):
+    # get_text("text") fails → fallback to get_text()
+    class FallbackPage:
+        def get_text(self, arg=None):
+            if arg == "text":
+                raise Exception("primary")
+            return "fallback text"
+
+    class FallbackDoc:
+        def __iter__(self):
+            return iter([FallbackPage()])
+
+    monkeypatch.setattr(main, "fitz", main.fitz)
+    monkeypatch.setattr(
+        main.fitz, "open", lambda stream, filetype=None: FallbackDoc()
+    )
+
+    pdf_bytes = b"%PDF-FAKE\n"
+    files = {"file": ("test.pdf", io.BytesIO(pdf_bytes), "application/pdf")}
+    r = client.post("/extract-pdf", files=files)
+    assert r.status_code == 200
+    assert "fallback text" in r.json()["text"]
+
+
+# /extract-image tests
+
+
+def test_extract_image_success(monkeypatch):
+    # Monkeypatch PIL.Image.open to return a small RGB image
+    class DummyImage:
+        def convert(self, mode):
+            return np.zeros((4, 4, 3), dtype=np.uint8)
+
+    monkeypatch.setattr(main, "Image", main.Image)
+    monkeypatch.setattr(main.Image, "open", lambda stream: DummyImage())
+
+    # EasyOCR result
+    monkeypatch.setattr(
+        main.reader, "readtext", lambda arr, detail=0: ["Hello", "World"]
+    )
+
+    img_bytes = b"\x89PNG\r\n\x1a\nFAKE"
+    files = {"file": ("img.png", io.BytesIO(img_bytes), "image/png")}
+    r = client.post("/extract-image", files=files)
+    assert r.status_code == 200
+    j = r.json()
+    assert "Hello" in j["text"]
+    assert "World" in j["text"]
+
+
+def test_extract_image_too_large_text(monkeypatch):
+    class DummyImage:
+        def convert(self, mode):
+            return np.zeros((2, 2, 3), dtype=np.uint8)
+
+    monkeypatch.setattr(main.Image, "open", lambda stream: DummyImage())
+
+    long_list = ["x" * 200] * 6  # 1200 chars
+    monkeypatch.setattr(main.reader, "readtext", lambda arr, detail=0: long_list)
+
+    img_bytes = b"FAKEIMAGE"
+    files = {"file": ("bigtext.png", io.BytesIO(img_bytes), "image/png")}
+    r = client.post("/extract-image", files=files)
+    assert r.status_code == 413
+
+
+def test_extract_image_invalid_content_type():
+    img_bytes = b"notimage"
+    files = {"file": ("test.pdf", io.BytesIO(img_bytes), "application/pdf")}
+    r = client.post("/extract-image", files=files)
+    assert r.status_code == 400
+    assert "File must be an image" in r.json()["detail"]
+
+
+def test_extract_image_too_large_header():
+    img_bytes = b"fake"
+    files = {"file": ("img.png", io.BytesIO(img_bytes), "image/png")}
+    headers = {"content-length": str(main.MAX_FILE_SIZE + 1)}
+    r = client.post("/extract-image", files=files, headers=headers)
+    assert r.status_code == 413
+
+
+def test_extract_image_open_error(monkeypatch):
+    def _bad_open(stream):
+        raise Exception("broken")
+
+    monkeypatch.setattr(main, "Image", main.Image)
+    monkeypatch.setattr(main.Image, "open", _bad_open)
+
+    img_bytes = b"fake"
+    files = {"file": ("img.png", io.BytesIO(img_bytes), "image/png")}
+    r = client.post("/extract-image", files=files)
+    assert r.status_code == 400
+    assert "Unable to open image" in r.json()["detail"]
+
+
+def test_extract_image_ocr_error(monkeypatch):
+    class DummyImage:
+        def convert(self, mode):
+            return np.zeros((2, 2, 3), dtype=np.uint8)
+
+    monkeypatch.setattr(main, "Image", main.Image)
+    monkeypatch.setattr(main.Image, "open", lambda stream: DummyImage())
+
+    def _bad_read(arr, detail=0):
+        raise Exception("ocr fail")
+
+    monkeypatch.setattr(main.reader, "readtext", _bad_read)
+
+    img_bytes = b"fake"
+    files = {"file": ("img.png", io.BytesIO(img_bytes), "image/png")}
+    r = client.post("/extract-image", files=files)
+    assert r.status_code == 500
+    assert "OCR failed" in r.json()["detail"]
+
 
 # /mindmap/generate tests
 
