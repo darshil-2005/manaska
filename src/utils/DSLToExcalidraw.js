@@ -169,7 +169,8 @@ export function DSLToExcalidraw(DSLSrcipt) {
         strokeStyle: currentElement.properties.borderStyle,
         fillStyle: currentElement.properties.backgroundStyle,
         strokeWidth: currentElement.properties.borderWidth,
-        roundness: roundness == undefined ? {type: roundness} : {type: 3},
+        // FIX 1: Fixed roundness logic
+        roundness: !isNaN(roundness) ? {type: roundness} : {type: 3},
         label: {
           text: label,
           fontSize: currentElement.properties.fontSize ? currentElement.properties.fontSize : 20,
@@ -217,6 +218,11 @@ export function DSLToExcalidraw(DSLSrcipt) {
         y = parseFloat(currentElement.properties.y);
       } else {
         points = arrowMeta.points;
+        // FIX 2: Add null check for absoluteStart
+        if (!arrowMeta.absoluteStart) {
+          console.warn("Missing points or absoluteStart for connection:", currentElement.name);
+          continue;
+        }
         x = arrowMeta.absoluteStart.x;
         y = arrowMeta.absoluteStart.y;
       }
