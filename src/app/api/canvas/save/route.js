@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "../../../../../db/db";
 import { maps } from "../../../../../db/schema";
-import { verifyAuth } from "@/utils/verifyAuth";
+import { verifyAuth } from "../../../../utils/verifyAuth";
 import {cookies} from "next/headers"
 import axios from 'axios'
 
