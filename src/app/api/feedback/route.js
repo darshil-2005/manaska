@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 
 import { db } from "../../../../db/db";
 import { feedback } from "../../../../db/schema";
-import { verifyAuth } from "@/utils/verifyAuth";
+import { verifyAuth } from "../../../../src/utils/verifyAuth";
 
 export async function POST(req) {
   try {
