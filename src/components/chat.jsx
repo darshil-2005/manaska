@@ -173,7 +173,7 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
 
         const data = {
           model: "gemini-2.5-flash",
-          api_key: process.env.NEXT_PUBLIC_TEMP_API_KEY,
+          api_key: process.env.NEXT_PUBLIC_TEMP_API_KEY || "No-key",
           mindmap: jsonMap,
           question: input,
           max_tokens: 800,
@@ -186,6 +186,7 @@ export default function Chat({messages, setMessages, scriptCode, setScriptCode})
 
       } catch (error) {
         toast.error("Error processing prompt!!");
+        console.log("Error: ", error)
         return -1;
       }
     }
