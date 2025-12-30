@@ -34,7 +34,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/themeToggle.jsx";
 
-
 function formatTimestamp(value) {
   if (!value) return null;
   const date = new Date(value);
@@ -42,24 +41,32 @@ function formatTimestamp(value) {
 }
 
 export default function DashboardPage() {
-   const { theme } = useTheme();
+  const { theme } = useTheme();
 
-    useEffect(() => {
+  useEffect(() => {
     document.title = "Dashboard";
   }, []);
+
   const router = useRouter();
+  
+  // --- States ---
   const [maps, setMaps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Action States
   const [pendingPinId, setPendingPinId] = useState(null);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [renamingId, setRenamingId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [openingId, setOpeningId] = useState(null); 
+  
+  // User/Nav States
   const [profile, setProfile] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [navigatingToCanvas, setNavigatingToCanvas] = useState(false);
+  const [navigatingToCanvas, setNavigatingToCanvas] = useState(false); 
 
   useEffect(() => {
     const warmUpCanvas = async () => {
@@ -100,9 +107,9 @@ export default function DashboardPage() {
       setMaps(
         Array.isArray(data?.maps)
           ? data.maps.map((m) => ({
-            ...m,
-            pinned: m.pinned === true || m.pinned === "true" || m.pinned === 1,
-          }))
+              ...m,
+              pinned: m.pinned === true || m.pinned === "true" || m.pinned === 1,
+            }))
           : []
       );
 
@@ -159,15 +166,22 @@ export default function DashboardPage() {
 
     return term
       ? sorted.filter(
-        (m) =>
-          (m.title || "").toLowerCase().includes(term) ||
-          (m.description || "").toLowerCase().includes(term)
-      )
+          (m) =>
+            (m.title || "").toLowerCase().includes(term) ||
+            (m.description || "").toLowerCase().includes(term)
+        )
       : sorted;
   }, [maps, searchTerm]);
 
   const pinnedMaps = filteredMaps.filter((m) => m.pinned);
   const regularMaps = filteredMaps.filter((m) => !m.pinned);
+
+  
+  const handleOpenMap = (id) => {
+    if (openingId) return; 
+    setOpeningId(id);
+    router.push(`/canvas/${id}`);
+  };
 
   const handleTogglePin = async (id) => {
     setPendingPinId(id);
@@ -205,7 +219,7 @@ export default function DashboardPage() {
             };
           }
 
-          return m;
+          return pinState ? { ...m, pinned: false } : m;
         });
       });
     } catch {
@@ -318,12 +332,23 @@ export default function DashboardPage() {
 
   const renderCard = (map) => {
     const timestamp = formatTimestamp(map.updatedAt ?? map.createdAt);
+    const isOpening = openingId === map.id; 
+
     return (
       <Card
         key={map.id}
-        className="flex flex-col border border-black/5 dark:border-white/5 shadow-sm rounded-xl sm:rounded-2xl backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
-        onClick={() => router.push(`/canvas/${map.id}`)}
+       
+        className={`flex flex-col border border-black/5 dark:border-white/5 shadow-sm rounded-xl sm:rounded-2xl backdrop-blur-sm transition-all relative overflow-hidden
+          ${isOpening ? "ring-2 ring-primary/50 opacity-80 cursor-wait" : "hover:shadow-md cursor-pointer"}`}
+        onClick={() => handleOpenMap(map.id)}
       >
+        
+        {isOpening && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/20 dark:bg-black/20 backdrop-blur-[1px]">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        )}
+
         <CardHeader className="pb-3 sm:pb-4">
           <div className="flex justify-between items-start gap-2">
             <div className="flex-1 min-w-0">
@@ -363,7 +388,7 @@ export default function DashboardPage() {
                   e.stopPropagation();
                   handleRenameMap(map);
                 }}
-                disabled={renamingId === map.id}
+                disabled={renamingId === map.id || isOpening} // Disabled when opening
               >
                 {renamingId === map.id ? (
                   <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
@@ -381,7 +406,7 @@ export default function DashboardPage() {
                   e.stopPropagation();
                   handleTogglePin(map.id);
                 }}
-                disabled={pendingPinId === map.id}
+                disabled={pendingPinId === map.id || isOpening} // Disabled when opening
               >
                 {pendingPinId === map.id ? (
                   <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
@@ -401,12 +426,12 @@ export default function DashboardPage() {
                   e.stopPropagation();
                   handleDeleteMap(map.id);
                 }}
-                disabled={pendingDeleteId === map.id}
+                disabled={pendingDeleteId === map.id || isOpening} // Disabled when opening
               >
                 {pendingDeleteId === map.id ? (
                   <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                 ) : (
-                  <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-destructive" />
                 )}
               </Button>
             </div>
@@ -444,9 +469,14 @@ export default function DashboardPage() {
       </div>
 
       <div className="relative max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        {/* Header Section - Responsive */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8 sm:mb-12 lg:mb-16">
           <div className="flex gap-4 sm:gap-6 items-center sm:items-start w-full sm:w-auto">
-                 <div className="flex-1 min-w-0">
+            {/* <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl shrink-0">
+              <Brain className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white dark:text-black" />
+            </div> */}
+
+            <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold tracking-tight truncate">
                 Manaska
               </h1>
@@ -457,7 +487,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 self-end sm:self-auto">
-            <div className="scale-110 sm:scale-125">
+            <div className="scale-135 sm:scale-150">
               <ModeToggle />
             </div>
 
@@ -496,6 +526,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Search and Actions Bar - Responsive */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10 lg:mb-12">
           <div className="relative flex-1">
             <SearchIcon className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5" />
@@ -550,7 +581,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12 max-w-3xl">
+        
+        <div className="grid gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
           <Card className="rounded-xl sm:rounded-2xl shadow-sm border border-black/10 dark:border-white/10">
             <CardHeader className="flex flex-row items-center justify-between pb-2 sm:pb-4">
               <CardTitle className="text-sm sm:text-base">Pinned</CardTitle>

@@ -327,7 +327,7 @@ export default function RegisterPage() {
                   className="text-muted-foreground text-xs sm:text-sm leading-snug"
                 >
                   I agree to the{" "}
-                  <a href="#" className="text-foreground font-medium hover:underline">
+                  <a href="/documentation" className="text-foreground font-medium hover:underline">
                     Terms of Service
                   </a>{" "}
                   and{" "}
